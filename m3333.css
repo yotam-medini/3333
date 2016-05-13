@@ -1,0 +1,41 @@
+.smallletters
+{
+  font-size:60%;
+}
+.bigletters
+{
+  font-size:200;
+  font-weight:bold;
+}
+body
+{
+  height: 100%;
+  overflow:hidden;
+}
+div.centered
+{
+    margin: 0 auto; 
+    text-align: center;
+}
+div.centered table 
+{
+    margin: 0 auto; 
+    text-align: left;
+}
+#help-content
+{
+  position:absolute;
+  width:95%;
+  height:95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.good {color: rgb(0,84,0);} /* green */
+.bad {color: rgb(144,0,0);} /* red */
+
+.inlineIcon {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    margin-right: 6px;
+}

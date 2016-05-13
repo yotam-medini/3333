@@ -1,0 +1,120 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>3333-Game Club</title>
+    <meta name="keywords" lang="en" 
+	  content="set game, network, multi player, combinatorics">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link href="3333.css" rel="stylesheet" type="text/css"/>
+    <link
+      href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"
+      rel="stylesheet" type="text/css"/>
+    <script 
+      src="http://code.jquery.com/jquery-1.10.2.min.js">
+    </script>
+    <script
+      src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js">
+    </script>
+    <script src="3333.js"></script>
+  </head>
+<body>
+  <div id="debug"></div>
+  <div id="main-tabs">
+    <ul>
+      <li><a href="#tabs-club">Club</a></li>
+      <li><a href="#tabs-table">Table</a></li>
+      <li><a href="#tabs-help">Help</a></li>
+    </ul>
+    <div id="tabs-club" class="NOTyscroll">
+      <var id="clubtitle">3333-Game Club</var>
+      &nbsp;
+      Similar to <em>Set&copy; Game</em> 
+      by <a href="http://www.setgame.com/">SET Enterprises&copy;</a>.
+      <div class="centered">
+        <table>
+          <tr>
+            <td><button id="newtbl">New Table</button></td>
+          </tr>
+        </table>
+      </div>
+      <div id="clubview">
+	<hr>
+	<div id="tables">
+	</div>
+	<hr>
+	<div id="crefresh" class="centered">
+	  <button id="club-refresh"
+            title="Refresh tables status ">Refresh</button>
+	</div>
+      </div>
+    </div>
+    <div id="tabs-table">
+      <div id="table">
+        <div class="centered">
+          <table>
+           <tr>
+             <td id="tdtblctl">
+               <table>
+                 <tr class="heightall">
+                   <td class="widththird heightall">
+                     <button id="newgame" class="cmd" title="Start new Game"
+                             >New Game</button>
+                   </td>
+                   <td class="widththird heightall">
+                     <button id="nomore"
+                        class="cmd" title="Are there no more sets?"
+                        >No More?</button>
+                   </td>
+                   <td title="Number of cards still in deck">
+                     Deck: <var id="indeck"></var>
+                   </td>
+                 </tr>
+               </table>
+             </td>
+             <td id="players">
+               <div id="tableplayers"></div>
+             </td>
+             <td>
+               <button id="closetable" class="cmd" title="Close this Table"
+                       >Close</button>
+             </td>
+           </tr>
+          </table>
+        </div>
+        <div id="boardwrap" class="centered">
+          <canvas id="board" width="600" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <div id="tabs-help" title="Help" class="noyscroll">
+    </div>
+  </div>
+  <div class="centered">
+    <br>
+    <div id="gameover" title="Hooray! Game Over"></div>
+    <div id="newjointbl" title="Create/Join New Table" class="centered">
+      <div id="newjointbl-text"></div>
+      <table>
+	<tr>
+	  <td>Name</td>
+	  <td><input id="name" type="text"></td>
+	</tr>
+	<tr>
+	  <td>Table Pass <span class="smallletters">(optional)</span>
+	  </td>
+	  <td><input id="tpass" type="text">
+	  </td>
+	</tr>
+	<tr>
+	  <td>Player Pass <span class="smallletters">(optional)</span>
+	  </td>
+	  <td><input id="upass" type="text"></td>
+	</tr>
+      </table>
+    </div>
+  </div>
+  <div id="warning" title="Warning"> </div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>3333-Game Club / Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="m3333.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" 
+      href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+      <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script
+      src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js">
+    </script>
+    <script src="3333.js"></script>
+  </head>
+
+<body>
+
+  <div data-role="page" id="club">
+    <div data-role="header">
+        <a id="newtbl" href="#newjointbl" data-rel="popup"
+	  data-position-to="window"
+          data-inline="true" data-icon="plus">New Table
+        </a>
+      <h1 id="clubtitle">Club</h1>
+      <button id="club-refresh" data-inline="true"
+        data-icon="refresh">Refresh</button>
+    </div>
+    <div data-role="content">	
+	<div id="tables"></div>
+    </div>
+
+    <div id="newjointbl" data-role="popup">
+      <a href="#" data-rel="back"
+        class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete
+          ui-btn-icon-notext ui-btn-right"
+        >Close</a>
+
+      <div data-role="header">
+        <h1 id="tbl-popup-header">Table Open/Join</h1>
+      </div>
+      <div class="ui-content">
+        <table>
+          <tbody>
+            <tr>
+              <td><h3>Name:</h3></td>
+              <td>
+                <input type="text" id="name" placeholder="yourname...">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="bigletters">Table Pass:</span>
+                <span class="smallletters">(optional)</span>:
+              </td>
+              <td>
+                <input type="text" id="tpass"
+                  placeholder="password 4 joining...">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="bigletters">User Pass:</span>
+                <span class="smallletters">(optional)</span>:</td>
+              <td>
+                <input type="text" id="upass" placeholder="your pw...">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+	<button id="newtbl-ok" data-icon="plus">Open</button>
+      </div>
+    </div>
+
+#include "footer-club.html"
+  </div>
+
+  <div data-role="page" id="table">
+    <div data-role="header">
+      <div class="ui-btn-left" data-role="controlgroup" data-type="horizontal">
+        <button id="newgame" data-inline="true" data-icon="arrow-r">
+          New Game
+        </button>
+        <button id="nomore" data-inline="true" data-icon="plus">
+          No More?
+        </button>
+        <span title="Number of cards still in deck">
+          Deck: <var id="indeck"></var>
+        </span>
+      </div>
+      <h1 id="table-title">Table</h1>
+      <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal">
+        <button id="closetable" data-inline="true" data-icon="delete">
+          Close
+        </button>
+      </div>
+    </div>
+    <div data-role="content">	
+      <div id="boardwrap" class="centered">
+        <canvas id="board"></canvas>
+      </div>
+    </div>
+#include "footer-table.html"
+  </div>
+
+  <div data-role="page" id="players">
+    <div data-role="header">
+      <h1 id="players-title">Players</h1>
+    </div>
+    <div data-role="content" class="centered">	
+      <div id="tableplayers" class="centered"></div>
+    </div>
+#include "footer-players.html"
+  </div>
+
+  <div data-role="page" id="help">
+    <div data-role="header">
+      <h1>Help</h1>
+    </div>
+    <div id="help-content" data-role="content">	
+      <p>Help content</p>		
+    </div>
+#include "footer-help.html"
+  </div>
+
+
+  <div id="popup-warning" data-role="popup" class="ui-content"
+    data-theme="a" data-overlay-theme="b">
+    <a href="#" data-rel="back"
+      class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete
+	ui-btn-icon-notext ui-btn-right"
+      >Close</a>
+
+    <div data-role="header" class="warnheader">
+      <h1 id="warning-popup-header">Warning</h1>
+    </div>
+    <div id="warning" data-role="content"  class="ui-content">
+        <table>
+          <tbody>
+            <tr>
+	      <td>
+		<div>
+		  <span class="ui-icon-alert ui-btn-icon-notext inlineIcon
+                    warnbg">
+		  </span>
+		</div>    
+	      </td>
+              <td><div id="warn-text">Be Careful</div></td>
+	    </tr>
+	  </tbody>
+	</table>
+    </div>
+  </div>
+
+  <div id="popup-info" data-role="popup" class="ui-content"
+    data-theme="a" data-overlay-theme="b">
+    <div data-role="header">
+      <a href="#" data-rel="back" data-role="button"
+        class="ui-btn ui-icon-delete ui-btn-icon-left">
+      </a>
+      <h2 id="info-header">Info</h2>
+    </div>
+    <span class="ui-icon-info ui-btn-icon-notext"></span>
+    <div id="info" data-role="content"></div>
+  </div>
+
+</body>
+</html>

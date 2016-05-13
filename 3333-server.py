@@ -1,0 +1,941 @@
+#!/usr/bin/env python3
+# 4tri game - server
+# Author:  Yotam Medini  yotam.medini@gmail.com -- Created: 2011/July/03
+
+
+# import StringIO
+import datetime
+import json
+import os
+import pickle
+import random
+import socket
+import sys
+import time
+import traceback
+
+import asyncio
+import websockets
+
+import consts
+
+
+def safe_int(s, defret=-1):
+    try:
+        ret = int(s)
+    except:
+        ret = defret
+    return ret;
+
+
+def strnow():
+    "Return current time as yyyy/mm/dd:HH:MM:SS"
+    now = int(time.time())
+    nowlocal = time.localtime(now)
+    lta = time.localtime(now)
+    s = "%d/%02d/%02d:%02d:%02d:%02d" % lta[0:6]
+    return s
+
+
+cards = 81*[None]
+ci = 0;
+for i in range(3):
+    for j in range(3):
+        for k in range(3):
+            for l in range(3):
+                cards[ci] = (i, j, k, l)
+                ci += 1
+
+
+def is_set(ci3):
+    global cards
+    [c0, c1, c2] = list(map(lambda ci: cards[ci], ci3))
+    summod3 = 0
+    dim = 0
+    while dim < 4 and summod3 == 0:
+        summod3 = (c0[dim] + c1[dim] + c2[dim]) % 3
+        dim += 1
+    return summod3 == 0
+
+
+class Player:
+
+    def __init__(self, ws_client, name, table, passcode):
+        self.ws_client = ws_client
+        self.name = name
+        self.table = table
+        self.passcode = passcode
+        self.say = ""
+        self.tcreated = int(time.time())
+        self.time_last_action = self.tcreated
+        self.time_left = -1
+        self.new_game()
+        self.log("Player %s" % name)
+
+    def __str__(self):
+        return "{Player: %s@%s}" % (self.name, self.table.name())
+
+    def new_game(self):
+        self.sets_found = 0
+        self.bad_calls = 0
+        self.add3s_good = 0
+        self.add3s_bad = 0
+        self.no_more_good = 0
+        self.no_more_bad = 0
+
+
+    def action_time(self):
+        self.time_last_action = int(time.time())
+        self.table.action_time(self.time_last_action)
+
+
+    def simple_repr(self):
+        return {
+            'name': self.name,
+            'say': self.say,
+            'numbers': self.numbers(),
+            'tcreated': self.tcreated,
+            'taction': self.time_last_action
+        }
+
+
+    def numbers(self):
+        return [self.sets_found,
+                self.bad_calls,
+                self.add3s_good + self.no_more_good,
+                self.add3s_bad + self.no_more_bad]
+
+    def is_owner(self):
+        return self is self.table.players[0]
+
+
+    def left(self):
+        t = time.time()
+        self.log("Player %s left t=%d" % (self.name, t))
+        self.time_left = t
+        self.ws_client = None
+        # Should put a time to leave table and disconnect
+
+
+    def log(self, msg):
+        self.table.log(msg, tb_up=4)
+        
+
+
+class Table:
+
+
+    def __init__(self, server, passcode):
+        self.server = server
+        self.passcode = passcode
+        self.tstate = 0;
+        self.gstate = 0;
+        self.game_active = False
+        self.players = [] # owner will bw the first
+        self.cards_init()
+        self.tcreated = int(time.time())
+        self.time_last_action = self.tcreated
+
+
+    def name(self):
+        return self.players[0].name
+
+
+    def close(self):
+        for player in self.players:
+            player.table = None
+
+
+    def leave(self, player):
+        found = False
+        i = len(self.players)
+        while i > 0 and not found:
+            i -= 1
+            found = self.players[i] is player
+        if found:
+            self.players[i] = self.players.pop()
+            self.game_state_bump()
+
+
+    def cards_init(self):
+        self.cards_deck = list(range(81)) # Indices to cards
+        self.cards_active = [] # Indices to cards
+
+
+    def join(self, ws_client, player_name, passcode, upass):
+        ret = consts.E3333_OK
+        player = None
+        if not self.passcode in ("", passcode):
+            self.log("self.passcode=%s, passcode=%s" %
+                (self.passcode, passcode))
+            ret = consts.E3333_TABLE_NOT_AUTHORIZED
+        else:
+            player = self.player_by_name(player_name)
+            if player is None:
+                if len(self.players) >= self.server.maxplayers:
+                    ret = consts.E3333_TABLE_FULL
+                else:
+                    player = Player(ws_client, player_name, self, upass)
+                    self.players.append(player)
+                    self.state_bump()
+            else: # re-connect
+                if not player.passcode in ("", upass):
+                    ret = consts.E3333_NAME_USED
+                else:
+                    self.log("reconnect player=%s, s_client: old=%s new=%s" % 
+                             (player_name, player.ws_client, ws_client))
+                    self.server.player_close_current_connection(player)
+                    player.ws_client = ws_client
+        self.log("player_name=%s, passcode=%s, upass=%s, ret=%d" %
+            (player_name, passcode, upass, ret))
+        return (ret, player);
+
+
+    def owner_left_get(self):
+        return self.players[0].time_left
+
+
+    def player_say(self, player_name, say):
+        player = self.player_by_name(player_name)
+        if player is not None:
+            if player.say != say:
+                player.say = say
+                self.state_bump();
+
+
+    def new_game(self):
+        self.log("")
+        self.game_state_bump()
+        self.cards_init()
+        for player in self.players:
+            player.new_game()
+        self.deal_cards_append(12)
+        self.game_active = True
+
+
+    def deal_card(self):
+        di = random.randint(0, len(self.cards_deck) - 1)
+        # TEMPORARY - An easy trivial: 'first-3 set'.
+        # easy = 81 - len(self.cards_deck)
+        # if easy < 3:
+        #     di = easy
+        ci = self.cards_deck[di]
+        last = self.cards_deck.pop()
+        if di < len(self.cards_deck):
+            self.cards_deck[di] = last
+        # self.log("di=%d, ci=%d" % (di, ci))
+        return ci
+
+
+    def deal_cards_append(self, n):
+        self.game_state_bump()
+        for i in range(n):
+            self.cards_active.append(self.deal_card())
+
+
+    def deal_cards_to(self, to3):
+        self.game_state_bump()
+        to3.sort()
+        for i in (2, 1, 0):
+            self.cards_active[to3[i]] = self.deal_card()
+
+
+    def active_popi(self, ai):
+        last = self.cards_active.pop()
+        if ai < len(self.cards_active):
+            self.cards_active[ai] = last
+
+
+    def active_pop3(self, a3i):
+        a3i.sort()
+        for i in (2, 1, 0):
+            self.active_popi(a3i[i])
+
+
+    def add3(self, gstate, player):
+        self.log("gstate=%d, self.gstate=%d" % (gstate, self.gstate))
+        ret = consts.E3333_OK
+        if gstate != self.gstate:
+            ret = consts.E3333_COLLISION
+        else:
+            player.action_time();
+            if self.active_has_set():
+                player.add3s_bad += 1
+                ret = consts.E3333_FALSE_NONE
+            else:
+                player.add3s_good += 1
+            self.deal_cards_append(3)
+        return ret
+
+
+    def try3(self, gstate, player, a3i):
+        self.log("gstate=%d, player.name=%s, a3i=%s" %
+                 (gstate, player.name, str(a3i)))
+        ret = consts.E3333_OK
+        if gstate != self.gstate:
+            ret = consts.E3333_COLLISION
+        else:
+            player.action_time();
+            c3i = list(map(lambda ai: self.cards_active[ai], a3i))
+            good = is_set(c3i)
+            self.log("good?=%d" % good)
+            if is_set(c3i):
+                player.sets_found += 1
+                if len(self.cards_active) <= 12 and len(self.cards_deck) >= 3:
+                    self.deal_cards_to(a3i)
+                else:
+                    self.active_pop3(a3i)
+                self.game_state_bump()
+            else:
+                ret = consts.E3333_NOT_A_SET
+                player.bad_calls += 1
+                self.state_bump()
+        self.log("ret=%d" % ret)
+        return ret;
+
+
+    def no_more(self, gstate, player):
+        self.log("gstate=%d, player_name=%s" % (gstate, player.name))
+        ret = consts.E3333_OK
+        if gstate != self.gstate:
+            ret = consts.E3333_COLLISION
+        else:
+            player.action_time();
+            if len(self.cards_deck) == 0 and not self.active_has_set():
+                self.game_active = False
+                player.no_more_good += 1
+                self.game_state_bump()
+            else:
+                ret = consts.E3333_YES_MORE
+                player.no_more_bad += 1
+                self.state_bump()
+        self.log("ret=%d" % ret)
+        return ret;
+
+
+    def player_by_name(self, name):
+        player = None
+        i = 0
+        while i < len(self.players) and player is None:
+            if self.players[i].name == name:
+                player = self.players[i]
+            i += 1
+        return player
+
+
+    def owner(self):
+        return self.players[0]
+
+    #def passcode(self):
+    #    return self.owner().passcode
+
+
+    def active_has_set(self):
+        # Naive implementation
+        found = False
+        na = len(self.cards_active)
+        i = 0
+        c3i = [None, None, None]
+        while i < na and not found:
+            c3i[0] = self.cards_active[i]
+            j = i + 1
+            while j < na and not found:
+                c3i[1] = self.cards_active[j]
+                k = j + 1
+                while k < na and not found:
+                    c3i[2] = self.cards_active[k]
+                    found = is_set(c3i)
+                    k += 1
+                j += 1
+            i += 1
+        self.log("found=%d" % found);
+        return found
+
+
+    def state_bump(self):
+        self.tstate += 1
+        self.log("tstate=%d" % self.tstate)
+
+
+    def game_state_bump(self):
+        self.time_last_action = int(time.time())
+        self.state_bump()
+        self.gstate += 1
+
+
+    def get_state(self):
+        d = {
+            "tstate": self.tstate,
+            "gstate": self.gstate,
+            "gactive": self.game_active,
+            "players": list(map(lambda p: p.simple_repr(), self.players)),
+            "deck": len(self.cards_deck),
+            "active": self.cards_active
+        }
+        return d
+
+
+    def action_time(self, t):
+        self.time_last_action = t
+
+
+    def log(self, msg, tb_up=3):
+        if self.server is None:
+            sys.stderr.write("%s\n" % msg)
+        else:
+            self.server.log(msg, tb_up=tb_up)
+
+
+class AppBase:
+
+
+    def __init__(self, argv, logname):
+        self.argv = argv
+        self.rc = 0
+        self.helped = False
+        self.debug = False
+        self.flog = None
+        try:
+            os.stat("/tmp/43333.debug")
+            self.debug = True
+        except:
+            pass
+        if self.debug:
+            self.flog = open(logname, "a")
+            try:
+                os.chmod(logname, 0o666)
+            except:
+                pass
+
+
+    def ok(self):
+        return self.rc == 0
+
+    def mayrun(self):
+        return self.ok() and not self.helped
+
+    def error(self, msg):
+        self.log(msg)
+        if self.ok():
+            self.rc = 1
+            sys.stderr.write("%s\n" % msg)
+            self.usage()
+
+
+    def log(self, msg, tb_up=2):
+        if self.debug:
+            scaller = ""
+            tb = traceback.extract_stack()
+            if len(tb) >= tb_up:
+                e = tb[-tb_up]
+                fn = e[0].split("/")[-1]
+                scaller = "%s[%s:%d<%s>]" % (self.prelog(), fn, e[1], e[2])
+            self.flog.write("%s %s: %s\n" % (strnow(), scaller, msg))
+            self.flog.flush()
+
+
+    def prelog(self):
+        return ""
+
+
+class NameTPassUPass:
+
+    def __init__(self, args_tail, log):
+        """ Possible args_tail:  
+        <name> 0
+        <name> 1 <tpass>
+        <name> 2 <upass>
+        <name> 3 <tpass> <upass>
+        """
+        log("args_tail=%s" % str(args_tail))
+        self.rc = consts.E3333_OK
+        self.name = ""
+        self.tpass = ""
+        self.upass = ""
+        if len(args_tail) < 2:
+            self.rc = consts.E3333_BAD_COMMAND
+        else:
+            self.name = args_tail[0]
+            ai = 1
+            pw_flags = safe_int(args_tail[ai], 0);
+            log("pw_flags=0x%x" % pw_flags)
+            if not 0 <= pw_flags <= 3:
+                self.rc = consts.E3333_BAD_COMMAND
+            else:
+                na_expected = 2 + [0, 1, 1, 2][pw_flags];
+                if len(args_tail) != na_expected:
+                    self.rc = consts.E3333_BAD_COMMAND
+            if self.rc == consts.E3333_OK:
+                if (pw_flags & 0x1) == 0x1:
+                    ai += 1
+                    self.tpass = args_tail[ai]
+                if (pw_flags & 0x2) == 0x2:
+                    ai += 1
+                    self.upass = args_tail[ai]
+        log("name=%s, tpass=%s, upass=%s." %
+            (self.name, self.tpass, self.upass))
+
+
+class ConnectionAssociated:
+    def __init__(self, player, ws_producer):
+        self.player = player
+        self.ws_producer = ws_producer
+    def __str__(self):
+        return "{AC:player=%s}" % self.player
+
+class Server(AppBase):
+
+    default_maxtables = 24
+    default_maxplayers = 4
+    default_expire = 300
+    leave_grace = 60
+
+    def usage(self):
+        self.helped = True
+        sys.stderr.write(
+"""
+Usage:                   # [Default]
+  %s
+  [-h | -help | --help]  # This message
+  [-maxtables <n>]       # [%d]
+  [-maxplayers <n>]      # [%d]
+  [-expire <n>]          # [%d] seconds of no action of at least 2 players.
+  [-pidfn <fn>]          # [None] File to record my PID
+"""[1:] %
+            (self.argv[0],
+             self.__class__.default_maxtables,
+             self.__class__.default_maxplayers,
+             self.__class__.default_expire))
+
+
+    def __init__(self, argv):
+        super().__init__(argv, "/tmp/43333-server.log")
+        self.log("")
+        self.argv = argv
+
+        self.ws2a = {}
+
+        # Tables
+        self.name2table = {}
+
+        self.maxtables = self.__class__.default_maxtables
+        self.maxplayers = self.__class__.default_maxplayers
+        self.expire = self.__class__.default_expire
+        self.pidfn = None
+
+        self.command_handlers = {
+            consts.S3333_C2S_GNEW: self.new_game,
+            consts.S3333_C2S_TBLS: self.tables_status,
+            consts.S3333_C2S_NTBL: self.new_table,
+            consts.S3333_C2S_TRY3: self.try3,
+            consts.S3333_C2S_ADD3: self.add3,
+            consts.S3333_C2S_NMOR: self.no_more,
+            consts.S3333_C2S_JOIN: self.table_join,
+            consts.S3333_C2S_CLOS: self.table_close,
+        }
+
+        ai = 1
+        while ai < len(argv) and self.mayrun():
+            opt = argv[ai]
+            ai += 1
+            if opt in ('-h', '-help', '--help'):
+                self.usage()
+            elif opt == '-maxtables':
+                self.maxtables = int(argv[ai]); ai += 1;
+            elif opt == '-maxplayers':
+                self.maxplayers = int(argv[ai]); ai += 1;
+            elif opt == '-expire':
+                self.expire = int(argv[ai]); ai += 1;
+            elif opt == '-pidfn':
+                self.pidfn = argv[ai]; ai += 1;
+            else:
+                self.error("Unsupported option: '%s'" % opt)
+        self.log("mayrun=%s" % self.mayrun())
+
+    def ws2player(self, ws):
+        a = self.ws2a.get(ws.remote_address, None)
+        self.log("a=%s" % a)
+        return None if a is None else a.player
+
+    @asyncio.coroutine
+    def ws_producer(self, ws):
+        self.log("ws=%s" % str(ws.remote_address))
+        while True:
+            self.log("yield...")
+            x = yield
+            self.log("x=%s" % x)
+            yield x
+        self.log("exit")
+
+    def ws_table(self, ws):
+        p = self.ws2player(ws)
+        self.log("@=%s, player=%s" % (str(ws.remote_address), p))
+        table = None if p is None else p.table
+        self.log("table=%s" % table)
+        return table
+
+    def make_s2c_command(self, op, error_code, value=None):
+        cmd = { 'cmd': op, 'rc': error_code, 'result': value }
+        self.log("cmd=%s" % str(cmd))
+        return json.dumps(cmd)
+
+
+    def client_error_response(self, ws_client, error_code, value=None):
+        return self.make_s2c_command(None, error_code, value)
+
+    def OBSOLETE_client_error_send(self, ws_client, error_code, value=None):
+        cmd = self.make_s2c_command(None, error_code, value)
+        ws_client.write_message(cmd)
+
+
+    def refresh_players(self, table):
+        self.log("#(players)=%d" % len(table.players));
+        tstate = table.get_state()
+        s2c_command = self.make_s2c_command(consts.E3333_S2C_GSTATE,
+            consts.E3333_OK, tstate)
+        self.log("s2c_command=%s" % s2c_command)
+        # dstate =  json.dumps(table.get_state());
+        for p in table.players:
+            if p.ws_client is None:
+                self.log("p.name=%s ws_client=None" % p.name)
+            else:
+                p.ws_client.send(s2c_command)
+        return s2c_command
+
+    def set_announce(self, table, a3i):
+        self.log("");
+        tstate =  table.get_state()
+        c2s_command = self.make_s2c_command(consts.E3333_S2C_SET_FOUND,
+            consts.E3333_OK, a3i)
+        for p in table.players:
+            p.ws_client.write_message(c2s_command)
+
+
+    @asyncio.coroutine
+    def ws_handlerOLD(self, websocket, path):
+        self.log("dir(websocket)=%s" % dir(websocket))
+        self.log("remote_address=(%s, %d)" % websocket.remote_address)
+        cmd_line = yield from websocket.recv()
+        while cmd_line is not None:
+            self.log("< cmd_line=%s" % cmd_line)
+            cmd_args = cmd_line.split()
+            cmd0 = (cmd_args + [None])[0]
+            handler_bad = lambda clnt, args: consts.E3333_BAD_COMMAND
+            h = self.command_handlers.get(cmd0, handler_bad)
+            self.log("cnd0=%s, h=%s" % (cmd0, h))
+            # yield from h(websocket, cmd_args)
+            response = h(websocket, cmd_args)
+            self.log("response=%s" % response)
+            if response is not None:
+                yield from websocket.send(response)
+            cmd_line = yield from websocket.recv()
+        self.log("ws_handler %s ended" % str(websocket.remote_address))
+
+    @asyncio.coroutine
+    def ws_handler(self, websocket, path):
+        self.log("")
+        ra = websocket.remote_address
+        ca = self.ws2a.get(ra)
+        if ca is None or ca.ws_producer is None:
+            producer = self.ws_producer(websocket)
+            self.log("producer=%s" % str(producer))
+            producer.send(None)
+            if ca is None:
+                ca = ConnectionAssociated(None, producer)
+                self.ws2a[ra] = ca
+            else:
+                ca.ws_producer = producer
+        alive = True
+        loop_count = 0
+        while alive:
+            loop_count += 1
+            # ensure_future ~=~ async
+            listener_task = asyncio.async(websocket.recv())
+            producer_task = asyncio.async(ca.ws_producer)
+            done, pending = yield from asyncio.wait(
+                [listener_task, producer_task],
+                return_when=asyncio.FIRST_COMPLETED)
+            self.log("loop_count=%d, #(done)=%d" % (loop_count, len(done)))
+
+            if listener_task in done:
+                self.log("listener")
+                message = listener_task.result()
+                if message is None:
+                    alive = False
+                else:
+                    self.ws_message_handle(websocket, message)
+            else:
+                listener_task.cancel()
+
+            if producer_task in done:
+                self.log("producer")
+                message = producer_task.result()
+                self.log("message=%s" % str(message))
+                if not websocket.open:
+                    alive = False
+                else:
+                    yield from websocket.send(message)
+            else:
+                producer_task.cancel()
+        self.log("ra=%s, return" % str(ra))
+
+    def ws_message_handle(self, ws, message):
+        self.log("ws=%s, message=%s" % (str(ws.remote_address), message))
+        cmd_args = message.split()
+        cmd0 = (cmd_args + [None])[0]
+        handler_bad = lambda clnt, args: consts.E3333_BAD_COMMAND
+        h = self.command_handlers.get(cmd0, handler_bad)
+        self.log("cnd0=%s, h=%s" % (cmd0, h))
+        # yield from h(websocket, cmd_args)
+        response = h(ws, cmd_args)
+        self.log("response=%s" % response)
+        if response is not None:
+            self.ws2a[ws.remote_address].ws_producer.send(response)
+
+    def run(self):
+        sys.stderr.write("Server.run\n")
+        self.log("")
+        start_server = websockets.serve(self.ws_handler, 'localhost',
+                                        consts.CS3333_PORT)
+        asyncio.get_event_loop().run_until_complete(start_server)
+        self.log("Calling run_forever")
+        asyncio.get_event_loop().run_forever()
+
+    def tables_status(self, ws_client, cmd_args):
+        self.log("")
+        names = sorted(self.name2table)
+        result = []
+        for name in names:
+            table = self.name2table[name]
+            nopw = int(table.passcode == "")
+            tblinf = (name, len(table.players), nopw,table.tcreated,
+                      table.time_last_action, table.owner_left_get())
+            result.append(tblinf)
+        s2c_cmd = self.make_s2c_command(consts.E3333_S2C_TBLS,
+            consts.E3333_OK, result)
+        # ws_client.write_message(s2c_cmd)
+        # ws_client.send(s2c_cmd)
+        return s2c_cmd
+
+
+    def new_table(self, ws_client, cmd_args):
+        self.log("cmd_args=%s" % str(cmd_args))
+        rc = consts.E3333_OK
+        response = ""
+        if len(cmd_args) < 2:
+            rc = consts.E3333_BAD_COMMAND
+        else:
+            ntu = NameTPassUPass(cmd_args[1:], self.log)
+            rc = ntu.rc
+            if rc == consts.E3333_OK:
+                self.log("owner=%s, passcode=%s, upass=%s" % (
+                    ntu.name, ntu.tpass, ntu.upass))
+                (rc, table) = self.table_allocate(ws_client,
+                    ntu.name, ntu.tpass, ntu.upass)
+                self.log("rc=%d" % rc)
+                if rc == consts.E3333_OK: # and not table is None:
+                    ra = ws_client.remote_address
+                    producer = self.ws_producer(ws_client)
+                    self.ws2a[ra] = ConnectionAssociated(table.owner(), producer)
+                    response = self.make_s2c_command(consts.E3333_S2C_NTBL,
+                        consts.E3333_OK)
+        self.log("rc=%d, response=%s" % (rc, response))
+        if rc != consts.E3333_OK:
+            response = self.client_error_response(ws_client, rc)
+        return response
+
+
+    def table_close(self, ws_client, cmd_args):
+        self.log("")
+        player = ws_client.player
+        table = player.table if player else None
+        self.log("player=%s, table=%s" % (player, table))
+        if not table is None:
+            if player.is_owner():
+                table.close()
+                self.log("delete the table")
+                del self.name2table[player.name]
+            else:
+                self.log("Leave the table")
+                table.leave(player)
+                self.refresh_players(table)
+            player.table = None
+
+
+    def table_join(self, ws_client, cmd_args):
+        self.log("cmd_args=%s" % str(cmd_args))
+        table = None
+        rc = consts.E3333_OK
+        if len(cmd_args) < 3:
+            rc = consts.E3333_BAD_COMMAND
+        else:
+            table_name = cmd_args[1]
+            table = self.name2table.get(table_name, None)
+            if table is None:
+                self.log("No such table")
+                rc = consts.E3333_NO_TABLE
+            else:
+                ntu = NameTPassUPass(cmd_args[2:], self.log)
+                rc = ntu.rc
+                if rc == consts.E3333_OK:
+                    (rc, player) = table.join(
+                        ws_client, ntu.name, ntu.tpass, ntu.upass)
+                    if rc == consts.E3333_OK:
+                        ws_client.player = player
+                        s2c_cmd = self.make_s2c_command(
+                            consts.E3333_S2C_JOIN, consts.E3333_OK)
+                        ws_client.write_message(s2c_cmd)
+                        self.refresh_players(table)
+        if rc != consts.E3333_OK:
+            self.client_error_send(ws_client, rc)
+
+
+    def player_remove(self, player):
+        self.log("player=%s" % player)
+
+
+    def player_left(self, player):
+        self.log("player=%s" % player)
+        player.left()
+        # Need refresh...
+        self.main_loop.add_timeout(
+            datetime.timedelta(seconds=self.__class__.leave_grace),
+            lambda: self.player_remove(player))
+
+    def player_close_current_connection(self, player):
+        self.log("player=%s" % player)
+        if not player.ws_client is None:
+            s2c_cmd = self.make_s2c_command(
+                consts.E3333_S2C_CONNECTION_TAKEN, consts.E3333_OK)
+            player.ws_client.write_message(s2c_cmd)
+            del player.ws_client
+            player.ws_client = None
+
+    def new_game(self, ws_client, cmd_args):
+        self.log("")
+        response = ""
+        ret = consts.E3333_OK
+        table = self.ws_table(ws_client)
+        self.log("table=%s" % table)
+        if table is None:
+            response = self.client_error_response(ws_client,
+                                                  consts.E3333_NO_TABLE)
+        else:
+            table.new_game()
+            self.log("call refresh_players")
+            response = self.refresh_players(table)
+        self.log("response=%s" % response)
+        return response
+
+
+    def add3(self, ws_client, cmd_args):
+        self.log("")
+        player = ws_client.player
+        table = player.table if player else None
+        if len(cmd_args) != 2:
+            self.client_error_send(ws_client. consts.E3333_BAD_COMMAND)
+        if table is None:
+            self.client_error_send(ws_client. consts.E3333_NO_TABLE)
+        else:
+            gstate = safe_int(cmd_args[1])
+            ret = table.add3(gstate, player)
+            self.log("ret=%d" % ret)
+            if ret != consts.E3333_OK:
+                self.client_error_send(ws_client, ret)
+            if ret != consts.E3333_COLLISION:
+                self.refresh_players(table)
+
+
+    def try3(self, ws_client, cmd_args):
+        self.log("")
+        player = ws_client.player
+        table = player.table if player else None
+        self.log("player=%s, table=%s" % (player, table))
+        if len(cmd_args) != 5:
+            self.client_error_send(ws_client, consts.E3333_BAD_COMMAND)
+        elif table is None:
+            self.client_error_send(ws_client, consts.E3333_NO_TABLE)
+        else:
+            gstate = safe_int(cmd_args[1])
+            a3i = list(map(safe_int, cmd_args[2:]))
+            self.log("table.name=%s, gstate=%d, player=%s, a3i=%s" %
+                     (table.name(), gstate, player, a3i))
+            ret = table.try3(gstate, player, a3i)
+            self.log("ret=%d" % ret);
+            if ret != consts.E3333_OK:
+                self.client_error_send(ws_client, ret)
+            if ret != consts.E3333_COLLISION:
+                if ret == consts.E3333_OK:
+                    self.set_announce(table, a3i)
+                self.refresh_players(table)
+
+
+    def no_more(self, ws_client, cmd_args):
+        self.log("")
+        player = ws_client.player
+        table = player.table if player else None
+        if len(cmd_args) != 2:
+            self.client_error_send(ws_client. consts.E3333_BAD_COMMAND)
+        elif table is None:
+            self.client_error_send(ws_client. consts.E3333_NO_TABLE)
+        if table is None:
+            ret = consts.E3333_NO_TABLE
+        else:
+            gstate = safe_int(cmd_args[1])
+            self.log("gstate=%d, player=%s" % (gstate, player))
+            ret = table.no_more(gstate, player)
+            if ret != consts.E3333_OK:
+                self.client_error_send(ws_client, ret)
+            if ret != consts.E3333_COLLISION:
+                self.refresh_players(table)
+
+
+    def table_allocate(self, ws_client, owner_name, passcode, upass):
+        self.log("owner_name=%s, passcode=%s" % (owner_name, passcode))
+        ret = consts.E3333_OK
+        table = None
+        if len(self.name2table) > self.maxtables:
+            ret = self.expire_old_table()
+        if ret == consts.E3333_OK:
+            if owner_name in self.name2table.keys():
+                ret = consts.E3333_NAME_USED
+        if ret == consts.E3333_OK:
+            table = Table(self, passcode)
+            owner = Player(ws_client, owner_name, table, upass)
+            table.players = [owner]
+            ws_client.player = owner
+            self.name2table[owner_name] = table
+        self.log("ret=%d" % ret)
+        return (ret, table)
+
+
+    def expire_old_table(self):
+        ret = consts.E3333_OK
+        toble_old = None
+        now = int(time.time())
+        age_max = -1
+        for (id, table) in self.id2table.items():
+            age = now - table.time_last_action
+            if age < age_max:
+                age = age_max
+                table_old = table
+        if age_max >= self.expire:
+            self.log("Table expired: name=%s, age=%d" % (table.name(), age_max))
+            self.table_free(table)
+        else:
+            ret = consts.E3333_CLUB_FULL
+        self.log("ret=%d" % ret)
+        return ret
+
+
+    def table_free(self, table):
+        self.log("name=%s" % (table.name()))
+        del self.name2table[table.name()]
+        del table
+
+
+if __name__ == "__main__":
+    p = Server(sys.argv)
+    if p.mayrun():
+        p.run()
+    sys.exit(p.rc)
