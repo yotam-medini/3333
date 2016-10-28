@@ -889,6 +889,8 @@ if (false) {
         canvas.width = 9*(winw - 2*position.left)/10;
         canvas.height = 9*(winh - position.top)/10;
         var width = canvas.width, height = canvas.height;
+	console.log("window: "+winw + "x" + winh + 
+		    ", canvas: "+width +"x"+height);
         context.fillStyle = "#242";
         context.fillStyle = "#777";
         context.fillRect(0, 0, width, height);
@@ -934,6 +936,29 @@ if (false) {
     };
 
 
+    _o.cheat_tip = function () {
+        console.log("cheat_tip:");
+        var n = _o.state.cards_active_idx.length;
+        for (var i = 0; i < n; i++) {
+            var i_card = _o.cards[_o.state.cards_active_idx[i]]
+	    for (var j = i + 1; j < n; j++) {
+                var j_card = _o.cards[_o.state.cards_active_idx[j]]
+		for (var k = j + 1; k < n; k++) {
+		    var k_card = _o.cards[_o.state.cards_active_idx[k]]
+		    var is_set = true;
+		    for (var d = 0; is_set && d < 4; d++)
+		    {
+		        s = i_card[d] + j_card[d] + k_card[d];
+			is_set = ((s % 3) == 0);
+		    }
+		    if (is_set) {
+		        console.log("is_set: ["+i+", "+j+", "+k+"]");
+		    }
+		}
+	    }
+	}
+    }
+
     _o.state_update = function (rstate) {
         console.log("state_update");
         if (_o.state.tstate < rstate['tstate']) {
@@ -951,6 +976,7 @@ if (false) {
             if (!_o.state.game_active) {
                 _o.game_over();
             }
+            _o.cheat_tip()
         }
     },
 
@@ -1192,6 +1218,11 @@ if (false) {
         _o.init_common();
         $("#popup-warning").popup();
         $("#popup-info").popup();
+        $(window).resize(_o.board_show);
+	$(window).on( "orientationchange", function( event ) {
+	     console.log("device in " + event.orientation + " mode");
+	     // _o.board_show();
+	});
     }
 
 
