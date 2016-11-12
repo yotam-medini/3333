@@ -289,34 +289,35 @@ var set3333 = ( function () {
             .attr({"id": "tableplayers", "border": "1"});
         var t2s = [_o.ymdhms, _o.ymdhms]; // may change
         var epochs;
-        table_players.append($('<thead>')
-            .append($('<tr>')
-                .append($('<th>')
-                    .append('Player')
-                )
-                .append($('<th>')
-                    .append('Found').addClass('good')
-                )
-                .append($('<th>')
-                    .append('Bad Calls').addClass('bad')
-                )
-                .append($('<th>')
-                    .append('True None').addClass('good')
-                )
-                .append($('<th>')
-                    .append('False None').addClass('bad')
-                )
-                .append($('<th>')
-                    .append('Time Joined')
-                )
-                .append($('<th>')
-                    .append('Last Action')
-                )
-                .append($('<th>')
-                    .append('Say/Said')
-                )
+        var tr = $('<tr>')
+            .append($('<th>')
+                .append('Player')
             )
-        );
+            .append($('<th>')
+                .append('Found').addClass('good')
+            )
+            .append($('<th>')
+                .append('Bad Calls').addClass('bad')
+            )
+            .append($('<th>')
+                .append('True None').addClass('good')
+            )
+            .append($('<th>')
+                .append('False None').addClass('bad')
+            )
+            .append($('<th>')
+                .append('Time Joined')
+            )
+            .append($('<th>')
+                .append('Last Action')
+            );
+        if (!_o.state.mobile) {
+            console.log("Adding say column");
+            tr.append($('<th>')
+                .append('Say/Said')
+            );
+        }
+        table_players.append($('<thead>').append(tr));
 
         epochs = [new Array(players.line), new Array(players.line)];
         for (var pi = 0; pi < players.length; pi++) {
@@ -343,16 +344,18 @@ var set3333 = ( function () {
             }
             tr.append($('<td>').append(t2s[0](p["tcreated"])));
             tr.append($('<td>').append(t2s[1](p["taction"])));
-            if (p["name"] == _o.state.myname) {
-                if (_o.state.my_say_entry) {
-                    _o.state.my_say_entry.parentNode.removeChild(
-                        _o.state.my_say_entry);
+            if (!_o.state.mobile) {
+                if (p["name"] == _o.state.myname) {
+                    if (_o.state.my_say_entry) {
+                        _o.state.my_say_entry.parentNode.removeChild(
+                            _o.state.my_say_entry);
+                    } else {
+                        _o.state.my_say_entry = document.createElement("input");
+                    }
+                    tr.append(_o.state.my_say_entry);
                 } else {
-                    _o.state.my_say_entry = document.createElement("input");
+                    tr.append(p["say"]);
                 }
-                tr.append(_o.state.my_say_entry);
-            } else {
-                tr.append(p["say"]);
             }
             table_players.append(tr);
         }
