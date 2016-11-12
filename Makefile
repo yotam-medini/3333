@@ -38,7 +38,7 @@ TGZFILES = \
 	${BIN_3333}
 
 MAINJS=${WWWINSTDISR}/3333.js
-# Insert Python constants after maguic line in Javascript
+# Insert Python constants after magic line in Javascript
 ${MAINJS}: 3333.js consts.py Makefile
 	(N=$$(grep -n consts.py < 3333.js | cut -d: -f1); \
 	head -n $${N} 3333.js > $@; \
@@ -51,18 +51,18 @@ ${MAINJS}: 3333.js consts.py Makefile
 STEP2 = ${MAINJS}
 
 # { Static mobile navbars
-MPAGES = club table players help
-MFOOTERS = $(foreach p, $(MPAGES), footer-${p}.html)
-mfooters: ${MFOOTERS}
+# MPAGES = club table players help
+# MFOOTERS = $(foreach p, $(MPAGES), footer-${p}.html)
+# mfooters: ${MFOOTERS}
 
-${MFOOTERS}: footer-all.html Makefile
-	@echo $@
-	for p in ${MPAGES}; do \
-	  grep -v $$p footer-all.html > footer-$$p.html; \
-	done
+#${MFOOTERS}: footer-all.html Makefile
+#	@echo $@
+#	for p in ${MPAGES}; do \
+#	  grep -v $$p footer-all.html > footer-$$p.html; \
+#	done
 
 ifneq ($(MAKECMDGOALS),3333-install)
-m3333.html: m3333-0.html ${MFOOTERS} Makefile
+m3333.html: m3333-0.html select-page.html Makefile
 	gpp $< > $@
 endif
 

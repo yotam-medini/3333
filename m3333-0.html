@@ -1,5 +1,6 @@
 <!DOCTYPE html> 
 <html>
+  <!--This is a comment. Comments are not displayed in the browser-->
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     <title>3333-Game Club / Mobile</title>
@@ -19,19 +20,32 @@
 
   <div data-role="page" id="club">
     <div data-role="header">
-        <a id="newtbl" href="#newjointbl" data-rel="popup"
-	  data-position-to="window"
-          data-inline="true" data-icon="plus">New Table
-        </a>
-      <h1 id="clubtitle">Club</h1>
-      <button id="club-refresh" data-inline="true"
-        data-icon="refresh">Refresh</button>
+      <div>
+        <table class="headtable">
+	  <tr>
+	    <td>
+	      <input type="button" id="newtbl" href="#newjointbl"
+	        data-rel="popup"
+		data-position-to="window"
+		data-inline="true" data-icon="plus" value="New Table"
+	      >
+	    </td>
+	    <td>
+#include "select-page.html"
+	    </td>
+	    <td>
+	      <button id="club-refresh" data-inline="true"
+		data-icon="refresh">Refresh</button>
+	    </td>
+	  </tr>
+	</table>
+      </div>
     </div>
     <div data-role="content">	
 	<div id="tables"></div>
     </div>
 
-    <div id="newjointbl" data-role="popup">
+    <div id="newjointbl" data-role="popup" data-history="false">
       <a href="#" data-rel="back"
         class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete
           ui-btn-icon-notext ui-btn-right"
@@ -73,27 +87,41 @@
       </div>
     </div>
 
-#include "footer-club.html"
   </div>
 
   <div data-role="page" id="table">
     <div data-role="header">
-      <div class="ui-btn-left" data-role="controlgroup" data-type="horizontal">
-        <button id="newgame" data-inline="true" data-icon="arrow-r">
-          New Game
-        </button>
-        <button id="nomore" data-inline="true" data-icon="plus">
-          No More?
-        </button>
-        <span title="Number of cards still in deck">
-          Deck: <var id="indeck"></var>
-        </span>
-      </div>
-      <h1 id="table-title">Table</h1>
-      <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal">
-        <button id="closetable" data-inline="true" data-icon="delete">
-          Close
-        </button>
+      <div>
+        <table class="headtable1">
+	  <tr>
+	    <td>
+	      <!-- div class="ui-btn-left" data-role="controlgroup" data-type="horizontal" -->
+
+		<button id="newgame" data-inline="true" data-icon="arrow-r">
+		  New Game
+		</button>
+		<button id="nomore" data-inline="true" data-icon="plus">
+		  No More?
+		</button>
+               <!--
+		<span title="Number of cards still in deck">
+		  Deck: <var id="indeck"></var>
+		</span>
+               -->
+	      <!-- /div -->
+	    </td>
+	    <td>
+#include "select-page.html"
+	    </td>
+	    <td>
+	      <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal">
+		<button id="closetable" data-inline="true" data-icon="delete">
+		  Close
+		</button>
+	      </div>
+	    </td>
+	  </tr>
+	</table>
       </div>
     </div>
     <div data-role="content">	
@@ -101,29 +129,28 @@
         <canvas id="board"></canvas>
       </div>
     </div>
-#include "footer-table.html"
   </div>
 
   <div data-role="page" id="players">
     <div data-role="header">
-      <h1 id="players-title">Players</h1>
+      <div>
+        <table class="headtable">
+	  <tr>
+	    <td>
+	    </td>
+	    <td>
+#include "select-page.html"
+	    </td>
+	    <td>
+	    </td>
+	  </tr>
+	</table>
+      </div>
     </div>
     <div data-role="content" class="centered">	
       <div id="tableplayers" class="centered"></div>
     </div>
-#include "footer-players.html"
   </div>
-
-  <div data-role="page" id="help">
-    <div data-role="header">
-      <h1>Help</h1>
-    </div>
-    <div id="help-content" data-role="content">	
-      <p>Help content</p>		
-    </div>
-#include "footer-help.html"
-  </div>
-
 
   <div id="popup-warning" data-role="popup" class="ui-content"
     data-theme="a" data-overlay-theme="b">

@@ -370,10 +370,14 @@ var set3333 = ( function () {
                     .attr("title", "Click if you think there are\n" +
                         "no more sets for this game.");
             } else {
-                $("#nomore")
-                    .html("Add 3")
-                    .attr("title", "Add 3 cards, if you think\n" +
-                        "the displayed cards have no set.");
+                if (_o.state.mobile) {
+                    $("#nomore").html("Add 3/" + _o.state.deck_size);
+                } else {
+                    $("#nomore")
+                        .html("Add 3")
+                        .attr("title", "Add 3 cards, if you think\n" +
+                            "the displayed cards have no set.");
+                }
             }
         } else {
             $("#nomore").attr("disabled", true);
@@ -445,7 +449,9 @@ var set3333 = ( function () {
 	if (_o.state.mobile) {
             // $.mobile.changePage("#table");
             _o.mobile_set_titles();
-            $("body").pagecontainer("change", "#table");
+            $("body").pagecontainer("change", "#table", {changeHash: false});
+	    // $(".change_page").children('option:selected')
+	    //    .attr('value', "table");
 	} else {
             $("#table").show();
             $("#newgame").show();
@@ -513,23 +519,14 @@ var set3333 = ( function () {
     };
 
     _o.new_table_dialog = function () {
-        console.log("new_table_dialog");
+        console.log("new_table_dialog, mobile?=" + _o.state.mobile);
         if (_o.state.mobile) {
             $("#newtbl-ok").click(function () {
 		console.log("newtbl-ok");
                 $("#newjointbl").popup("close");
                 _o.new_table(); 
             });
-if (false) {
-            $("#njt-h2").html("Open Table");
-            $("#newjointbl").dialog();
-            $("#newtbl-ok").click(function () {
-                 $("#newjointbl").dialog("close");
-                 _o.new_table(); 
-            });
-            $.mobile.changePage("#newjointbl", {
-                transition: "pop", role: "dialog" })
-}
+	    $("#newjointbl").popup("open");
         } else {
             $("#newjointbl").dialog({
                 title: "New Table",
@@ -1213,6 +1210,21 @@ if (false) {
 
     _o.init_mobile = function () {
         console.log("init_mobile");
+
+	$(".change_page").change(function() {
+	    var v = $(this).children('option:selected').attr('value');
+	    console.log("v=" + v);
+	    var curr = $("body").pagecontainer("getActivePage").attr("id");
+	    console.log("curr=" + curr);
+	    if (v != curr) {
+		var nextpage = "#" + v
+		console.log("nextpage=" + nextpage);
+		$("body").pagecontainer("change", nextpage,
+		     {changeHash: false});
+		$(nextpage + " select").val(v).change();
+	    }
+	});
+
         _o.state.mobile = true;
         // $("#help-content").load("help.html");
         _o.init_common();
