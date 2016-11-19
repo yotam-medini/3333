@@ -482,7 +482,7 @@ var set3333 = ( function () {
         console.log("msgh_join_mobile");
         _o.mobile_set_titles();
         _o.board_show();
-        $("body").pagecontainer("change", "#table");
+        $("body").pagecontainer("change", "#table", {changeHash: false});
     };
 
     _o.msgh_join = function (result) {
