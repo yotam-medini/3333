@@ -483,6 +483,7 @@ var set3333 = ( function () {
         _o.mobile_set_titles();
         _o.board_show();
         $("body").pagecontainer("change", "#table", {changeHash: false});
+        $("#table select").val("table").change();
     };
 
     _o.msgh_join = function (result) {
