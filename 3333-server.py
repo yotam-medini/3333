@@ -159,14 +159,8 @@ class Table:
 
 
     def leave(self, player):
-        found = False
-        i = len(self.players)
-        while i > 0 and not found:
-            i -= 1
-            found = self.players[i] is player
-        if found:
-            self.players[i] = self.players.pop()
-            self.game_state_bump()
+        self.players.remove(player)
+        self.state_bump()
 
 
     def cards_init(self):
@@ -693,9 +687,19 @@ Usage:                   # [Default]
                     self.ws_message_handle(ws, message)
                     listener_task = asyncio.ensure_future(ws.recv())
 
-        if client.player is not None:
-            client.player.ws = None
-        del client
+        player = client.player
+        self.log("client dead: ra=%s, player=%s" % (str(ra), player))
+        if player is not None:
+            if player.is_owner():
+                self.log("delete table player=%s" % player)
+            else:
+                table = player.table
+                self.log("leave player=%s, %s" % (player, table))
+                table.leave(player)
+                self.refresh_players(table)
+                
+        del self.ra_to_client[ra]
+        # del client
 
     def ws_message_handle(self, ws, message):
         self.log("ws=%s, message=%s" % (str(ws.remote_address), message))
