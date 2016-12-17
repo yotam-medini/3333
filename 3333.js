@@ -278,6 +278,11 @@ var set3333 = ( function () {
         _o.set_club_view();
     };
 
+    _o.table_closed = function (data) {
+        console.log("table_closed");
+	_o.set_club_view();
+    };
+
     _o.tables_status = function () {
         console.log("tables_status");
         _o.web_socket.send(_o.c.S3333_C2S_TBLS);
@@ -438,7 +443,7 @@ var set3333 = ( function () {
     _o.set_club_view = function () {
 	console.log("set_club_view");
 	if (_o.state.mobile) {
-            $("body").pagecontainer("change", "#club");
+            $("body").pagecontainer("change", "#club", {changeHash: false});
 	} else {
             $("#main-tabs").tabs({ active: 0 });
         }
@@ -879,22 +884,29 @@ var set3333 = ( function () {
         return draw_mode;
     }
 
-    _o.board_show = function () {
-        console.log("board_show");
+    _o.board_clear = function () {
+        console.log("board_clear");
         var bw = $("#boardwrap");
         var position = bw.position();
-        console.log("position: left="+position.left+", top="+position.top);
         var winw = $(window).width(), winh = $(window).height();
         var canvas = $("#board")[0];
         var context = canvas.getContext("2d"); // Get 2D drawing context
         canvas.width = 9*(winw - 2*position.left)/10;
         canvas.height = 9*(winh - position.top)/10;
+        context.fillStyle = "#242";
+        context.fillStyle = "#777";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        return { canvas: canvas, context: context };
+    }
+
+    _o.board_show = function () {
+        console.log("board_show");
+	var bret = _o.board_clear();
+        var canvas = bret.canvas;
+        var context = bret.context;
         var width = canvas.width, height = canvas.height;
 	console.log("window: "+winw + "x" + winh + 
 		    ", canvas: "+width +"x"+height);
-        context.fillStyle = "#242";
-        context.fillStyle = "#777";
-        context.fillRect(0, 0, width, height);
 
         var n_cards = _o.state.cards_active_idx.length;
         var columns = _o.board.n_columns = 
@@ -1171,6 +1183,7 @@ var set3333 = ( function () {
         _o.message_handlers[_o.c.E3333_S2C_SET_FOUND] = _o.msgh_set_found;
         _o.message_handlers[_o.c.E3333_S2C_CONNECTION_TAKEN] =
 	    _o.connection_taken;
+        _o.message_handlers[_o.c.E3333_S2C_TABLE_CLOSED] = _o.table_closed;
 
         _o.c.draw_mode_frame_rgb[_o.c.DRAW_CARD_NORMAL] = "#888"; // unused
         _o.c.draw_mode_frame_rgb[_o.c.DRAW_CARD_SELECTED] = "#111";
