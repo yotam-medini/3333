@@ -164,7 +164,9 @@ class Table:
 
 
     def cards_init(self):
-        self.cards_deck = list(range(81)) # Indices to cards
+        N_CARDS = os.getenv("N_CARDS")
+        n_cards = 81 if N_CARDS is None else int(N_CARDS)
+        self.cards_deck = list(range(n_cards)) # Indices to cards 
         self.cards_active = [] # Indices to cards
 
 

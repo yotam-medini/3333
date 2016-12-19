@@ -119,8 +119,8 @@ var set3333 = ( function () {
         console.log("warning_mobile: "+text);
         $("#warn-text").html(text);
         $("#popup-warning").popup({
-	    afterclose: function( event, ui ) { if (okfunc) { okfunc() } }
-	});
+            afterclose: function( event, ui ) { if (okfunc) { okfunc() } }
+        });
         $("#popup-warning").popup("open");
     };
 
@@ -249,7 +249,7 @@ var set3333 = ( function () {
  
         var e = document.getElementById("tables");
         _o.replace_append(e, tbl);
-	if (apid !== "club") { // Implies also _o.state.mobile
+        if (apid !== "club") { // Implies also _o.state.mobile
             $("body").pagecontainer("change", "#"+apid);
         }
     };
@@ -261,12 +261,12 @@ var set3333 = ( function () {
         _o.board_show(); // For all players!
         _o.state.delayed = true;
         setTimeout(function () {
-	    _o.state.delayed = false;
-	    _o.state.cards_selected = [];
-	    _o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
-	    _o.board_show();
-	    _o.handle_delayed_events();
-	}, 600);
+            _o.state.delayed = false;
+            _o.state.cards_selected = [];
+            _o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
+            _o.board_show();
+            _o.handle_delayed_events();
+        }, 600);
     };
 
     _o.connection_taken = function (data) {
@@ -280,7 +280,7 @@ var set3333 = ( function () {
 
     _o.table_closed = function (data) {
         console.log("table_closed");
-	_o.set_club_view();
+        _o.set_club_view();
     };
 
     _o.tables_status = function () {
@@ -371,7 +371,7 @@ var set3333 = ( function () {
     _o.no_more_button_set = function () {
         if (_o.state.game_active) {
             $("#nomore").attr("disabled", false);
-            var nomore = document.getElementById("nomore");
+            // var nomore = document.getElementById("nomore");
             if (_o.state.deck_size == 0) {
                 $("#nomore")
                     .html("No More")
@@ -394,7 +394,7 @@ var set3333 = ( function () {
 
 
     _o.info_mobile = function (text, okfunc) {
-        console.log("info_mobile: text="+text);
+        console.log("info_mobile: text="+text + ", okfunc="+okfunc);
         $("#info").html(text);
         $("#popup-info").popup({afterclose: function (event, ui) {
             console.log("afterclose");
@@ -418,6 +418,7 @@ var set3333 = ( function () {
     };
 
     _o.game_over_mobile = function (text, okfunc) {
+         _o.mobile_page_set("players");
          _o.info_mobile(text, okfunc);
     };
 
@@ -429,7 +430,8 @@ var set3333 = ( function () {
             (_o.state.owner
                 ? "Please start <em>New Game</em>."
                 : "Wait for table owner to start a new game.");
-        var okfunc = _o.state.owner ? _o.new_game : undefined;
+        // var okfunc = _o.state.owner ? _o.new_game : undefined;
+        var okfunc = undefined;
         console.log("game_over: text="+text);
         if (_o.state.mobile) {
             _o.game_over_mobile(text, okfunc);
@@ -440,11 +442,17 @@ var set3333 = ( function () {
 
     _o.my_say_last = "",
 
+    _o.mobile_page_set = function (page) {
+        console.log("mobile_page_set: page=" + page);
+        $("body").pagecontainer("change", "#" + page, {changeHash: false});
+        $("#" + page + " select").val(page).change();
+    }   
+
     _o.set_club_view = function () {
-	console.log("set_club_view");
-	if (_o.state.mobile) {
-            $("body").pagecontainer("change", "#club", {changeHash: false});
-	} else {
+        console.log("set_club_view");
+        if (_o.state.mobile) {
+            _o.mobile_page_set("club");
+        } else {
             $("#main-tabs").tabs({ active: 0 });
         }
     };
@@ -454,13 +462,13 @@ var set3333 = ( function () {
         _o.state.owner = true;
         _o.board_show();
         _o.web_socket.send(_o.c.S3333_C2S_TBLS)
-	if (_o.state.mobile) {
+        if (_o.state.mobile) {
             // $.mobile.changePage("#table");
             _o.mobile_set_titles();
-            $("body").pagecontainer("change", "#table", {changeHash: false});
-	    // $(".change_page").children('option:selected')
-	    //    .attr('value', "table");
-	} else {
+            _o.mobile_page_set("table");
+            // $(".change_page").children('option:selected')
+            //    .attr('value', "table");
+        } else {
             $("#table").show();
             $("#newgame").show();
             $("#closetable").show();
@@ -478,8 +486,8 @@ var set3333 = ( function () {
     };
 
     _o.mobile_set_titles = function () {
-	$("#players-title").html("Players of Table: " + _o.state.table_name);
-	$("#table-title").html(_o.state.myname + " @ Table owned by " +
+        $("#players-title").html("Players of Table: " + _o.state.table_name);
+        $("#table-title").html(_o.state.myname + " @ Table owned by " +
             _o.state.table_name);
     };
 
@@ -487,18 +495,18 @@ var set3333 = ( function () {
         console.log("msgh_join_mobile");
         _o.mobile_set_titles();
         _o.board_show();
-        $("body").pagecontainer("change", "#table", {changeHash: false});
+        _o.mobile_page_set("table");
         $("#table select").val("table").change();
     };
 
     _o.msgh_join = function (result) {
         console.log("msgh_join");
         _o.state.owner = false;
-	if (_o.state.mobile) {
-	    _o.msgh_join_mobile(result);
-	} else {
-	    _o.msgh_join_desktop(result);
-	}
+        if (_o.state.mobile) {
+            _o.msgh_join_mobile(result);
+        } else {
+            _o.msgh_join_desktop(result);
+        }
     };
 
     _o.table_nj = function (table_name) {
@@ -531,11 +539,11 @@ var set3333 = ( function () {
         console.log("new_table_dialog, mobile?=" + _o.state.mobile);
         if (_o.state.mobile) {
             $("#newtbl-ok").click(function () {
-		console.log("newtbl-ok");
+                console.log("newtbl-ok");
                 $("#newjointbl").popup("close");
                 _o.new_table(); 
             });
-	    $("#newjointbl").popup("open");
+            $("#newjointbl").popup("open");
         } else {
             $("#newjointbl").dialog({
                 title: "New Table",
@@ -591,8 +599,8 @@ var set3333 = ( function () {
         console.log("table_join_request_mobile: table_name=" + table_name);
         $("#tbl-popup-header").html("Join Table: " + table_name);
         // $("#newjointbl").dialog();
-	console.log("Dum-size="+ $("#zbzb").size() + ", newjtbl-size="+
-		  $("#newjointbl").size());
+        console.log("Dum-size="+ $("#zbzb").size() + ", newjtbl-size="+
+                  $("#newjointbl").size());
         // $("#newjointbl").popup("open"); // Why works only  with setTimeout !?
         setTimeout(function () {
             $("#newjointbl").popup("open");
@@ -893,6 +901,8 @@ var set3333 = ( function () {
         var context = canvas.getContext("2d"); // Get 2D drawing context
         canvas.width = 9*(winw - 2*position.left)/10;
         canvas.height = 9*(winh - position.top)/10;
+        console.log("window: "+winw + "x" + winh + 
+                    ", canvas: "+canvas.width +"x"+canvas.height);
         context.fillStyle = "#242";
         context.fillStyle = "#777";
         context.fillRect(0, 0, canvas.width, canvas.height);
@@ -901,12 +911,10 @@ var set3333 = ( function () {
 
     _o.board_show = function () {
         console.log("board_show");
-	var bret = _o.board_clear();
+        var bret = _o.board_clear();
         var canvas = bret.canvas;
         var context = bret.context;
         var width = canvas.width, height = canvas.height;
-	console.log("window: "+winw + "x" + winh + 
-		    ", canvas: "+width +"x"+height);
 
         var n_cards = _o.state.cards_active_idx.length;
         var columns = _o.board.n_columns = 
@@ -954,26 +962,31 @@ var set3333 = ( function () {
         var n = _o.state.cards_active_idx.length;
         for (var i = 0; i < n; i++) {
             var i_card = _o.cards[_o.state.cards_active_idx[i]]
-	    for (var j = i + 1; j < n; j++) {
+            for (var j = i + 1; j < n; j++) {
                 var j_card = _o.cards[_o.state.cards_active_idx[j]]
-		for (var k = j + 1; k < n; k++) {
-		    var k_card = _o.cards[_o.state.cards_active_idx[k]]
-		    var is_set = true;
-		    for (var d = 0; is_set && d < 4; d++)
-		    {
-		        s = i_card[d] + j_card[d] + k_card[d];
-			is_set = ((s % 3) == 0);
-		    }
-		    if (is_set) {
-		        console.log("is_set: ["+i+", "+j+", "+k+"]");
-		    }
-		}
-	    }
-	}
+                for (var k = j + 1; k < n; k++) {
+                    var k_card = _o.cards[_o.state.cards_active_idx[k]]
+                    var is_set = true;
+                    for (var d = 0; is_set && d < 4; d++)
+                    {
+                        s = i_card[d] + j_card[d] + k_card[d];
+                        is_set = ((s % 3) == 0);
+                    }
+                    if (is_set) {
+                        console.log("is_set: ["+i+", "+j+", "+k+"]");
+                    }
+                }
+            }
+        }
     }
 
     _o.state_update = function (rstate) {
         console.log("state_update");
+        if (!_o.state.owner && _o.state.mobile ) {
+            console.log("non owner close info and show table");
+            $('[data-role="popup"]').popup("close");
+            _o.mobile_page_set("table");
+        }
         if (_o.state.tstate < rstate['tstate']) {
             _o.state.tstate = rstate['tstate'];
             _o.players_fill(rstate['players']);
@@ -1041,7 +1054,6 @@ var set3333 = ( function () {
         console.log("card_select: mouse=("+mouseX+","+mouseY+"), ci="+ci);
         if (ci >= 0) {
             var si = $.inArray(ci, _o.state.cards_selected);
-            console.log("cs: ci="+ci+", si="+si);
             if (si == -1) {
                 _o.state.cards_selected.push(ci);
                 if (_o.state.cards_selected.length == 3) {
@@ -1050,7 +1062,6 @@ var set3333 = ( function () {
             } else {
                 _o.popi(_o.state.cards_selected, si);
             }
-            // board_show();
             _o.board_draw_cardi(ci);
         }
     };
@@ -1182,7 +1193,7 @@ var set3333 = ( function () {
         _o.message_handlers[_o.c.E3333_S2C_TBLS] = _o.msgh_tables_status;
         _o.message_handlers[_o.c.E3333_S2C_SET_FOUND] = _o.msgh_set_found;
         _o.message_handlers[_o.c.E3333_S2C_CONNECTION_TAKEN] =
-	    _o.connection_taken;
+            _o.connection_taken;
         _o.message_handlers[_o.c.E3333_S2C_TABLE_CLOSED] = _o.table_closed;
 
         _o.c.draw_mode_frame_rgb[_o.c.DRAW_CARD_NORMAL] = "#888"; // unused
@@ -1201,7 +1212,7 @@ var set3333 = ( function () {
         $("#nomore").attr("disabled", true);
         $("#board").click(_o.card_select);
 
-	_o.web_socket_open();
+        _o.web_socket_open();
     }
 
     _o.init_desktop = function () {
@@ -1228,19 +1239,15 @@ var set3333 = ( function () {
     _o.init_mobile = function () {
         console.log("init_mobile");
 
-	$(".change_page").change(function() {
-	    var v = $(this).children('option:selected').attr('value');
-	    console.log("v=" + v);
-	    var curr = $("body").pagecontainer("getActivePage").attr("id");
-	    console.log("curr=" + curr);
-	    if (v != curr) {
-		var nextpage = "#" + v
-		console.log("nextpage=" + nextpage);
-		$("body").pagecontainer("change", nextpage,
-		     {changeHash: false});
-		$(nextpage + " select").val(v).change();
-	    }
-	});
+        $(".change_page").change(function() {
+            var v = $(this).children('option:selected').attr('value');
+            console.log("v=" + v);
+            var curr = $("body").pagecontainer("getActivePage").attr("id");
+            console.log("curr=" + curr);
+            if (v != curr) {
+                _o.mobile_page_set(v);
+            }
+        });
 
         _o.state.mobile = true;
         // $("#help-content").load("help.html");
@@ -1248,10 +1255,10 @@ var set3333 = ( function () {
         $("#popup-warning").popup();
         $("#popup-info").popup();
         $(window).resize(_o.board_show);
-	$(window).on( "orientationchange", function( event ) {
-	     console.log("device in " + event.orientation + " mode");
-	     // _o.board_show();
-	});
+        $(window).on( "orientationchange", function( event ) {
+             console.log("device in " + event.orientation + " mode");
+             // _o.board_show();
+        });
     }
 
 
