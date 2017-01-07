@@ -992,6 +992,7 @@ var set3333 = ( function () {
             _o.players_fill(rstate['players']);
         }
         if (_o.state.gstate < rstate['gstate']) {
+	    var old_game_active = _o.state.game_active;
             _o.state.gstate = rstate['gstate'];
             _o.state.cards_active_idx = rstate['active'];
             _o.state.deck_size = rstate['deck'];
@@ -999,7 +1000,7 @@ var set3333 = ( function () {
             _o.state.game_active = rstate['gactive'];
             _o.no_more_button_set();
             _o.board_show();
-            if (!_o.state.game_active) {
+            if (old_game_active && !_o.state.game_active) {
                 _o.game_over();
             }
             _o.cheat_tip()
