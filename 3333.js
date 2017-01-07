@@ -982,7 +982,8 @@ var set3333 = ( function () {
 
     _o.state_update = function (rstate) {
         console.log("state_update");
-        if (!_o.state.owner && _o.state.mobile ) {
+        if (!_o.state.owner && _o.state.mobile && 
+	    (_o.state.game_active != rstate['gactive'])) {
             console.log("non owner close info and show table");
             $('[data-role="popup"]').popup("close");
             _o.mobile_page_set("table");
