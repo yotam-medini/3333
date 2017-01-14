@@ -692,10 +692,22 @@ Usage:                   # [Default]
         player = client.player
         self.log("client dead: ra=%s, player=%s" % (str(ra), player))
         if player is not None:
+            table = player.table
             if player.is_owner():
                 self.log("delete table player=%s" % player)
+                for peer in table.players[1:]:
+                    cmd = self.make_s2c_command(consts.E3333_S2C_TABLE_CLOSED,
+                                                consts.E3333_OK, None)
+                    self.ws2client(peer.ws).pre_send(cmd)
+                del self.name2table[player.name]
+                # regresh inform - club tables
+                ts = self.tables_status()
+                self.log("#clients=%d" % len(self.ra_to_client))
+                for c in self.ra_to_client.values():
+                    if c is not client:
+                        self.log("c=%s" % c)
+                        c.pre_send(ts)
             else:
-                table = player.table
                 self.log("leave player=%s, %s" % (player, table))
                 table.leave(player)
                 self.refresh_players(table)

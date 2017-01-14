@@ -281,6 +281,7 @@ var set3333 = ( function () {
     _o.table_closed = function (data) {
         console.log("table_closed");
         _o.set_club_view();
+	_o.warning("Table closed");
     };
 
     _o.tables_status = function () {
