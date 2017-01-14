@@ -30,7 +30,6 @@ def safe_int(s, defret=-1):
 def strnow():
     "Return current time as yyyy/mm/dd:HH:MM:SS"
     now = int(time.time())
-    nowlocal = time.localtime(now)
     lta = time.localtime(now)
     s = "%d/%02d/%02d:%02d:%02d:%02d" % lta[0:6]
     return s
@@ -738,6 +737,24 @@ Usage:                   # [Default]
         self.log("Calling run_forever")
         asyncio.get_event_loop().run_forever()
 
+    def ts_to_ymdhms_compact(self, ts):
+        now = int(time.time())
+        lgma = list(map(time.gmtime, ts))
+        lgma_now = lgma + [time.gmtime(now)]
+        fmt = "%d/%02d/%02d %02d:%02d:%02d"
+        set_years = set(map(lambda gma: gma[0], lgma_now))
+        if len(set_years) == 1:
+            fmt = fmt[3:]
+            set_months = set(map(lambda gma: gma[1], lgma_now))
+            if len(set_months) == 1:
+                fmt = fmt[5:]
+                set_mdays = set(map(lambda gma: gma[2], lgma_now))
+                if len(set_mdays) == 1:
+                    fmt = fmt[5:]
+        b = 6 - fmt.count('%')
+        ret = list(map(lambda gma: fmt % gma[b:6], lgma))
+        return ret
+
     def tables_status(self, ws=None, cmd_args=None):
         self.log("")
         names = sorted(self.name2table)
@@ -745,9 +762,19 @@ Usage:                   # [Default]
         for name in names:
             table = self.name2table[name]
             nopw = int(table.passcode == "")
-            tblinf = (name, len(table.players), nopw,table.tcreated,
-                      table.time_last_action, table.owner_left_get())
+            tblinf = [name, len(table.players), nopw, table.tcreated,
+                      table.time_last_action, table.owner_left_get()]
             result.append(tblinf)
+
+        # Display times in compact way
+        tcreated_dc = self.ts_to_ymdhms_compact(map(lambda r: r[3], result))
+        tlast_acttion = self.ts_to_ymdhms_compact(map(lambda r: r[4], result))
+        for i in range(len(result)):
+            r = result[i]
+            r[3] = tcreated_dc[i]
+            r[4] = tlast_acttion[i]
+            result[i] = tuple(r)
+
         s2c_cmd = self.make_s2c_command(consts.E3333_S2C_TBLS,
             consts.E3333_OK, result)
         return s2c_cmd

@@ -48,3 +48,11 @@ div.centered table
     vertical-align: middle;
     margin-right: 6px;
 }
+.creation
+{
+  color: blue;
+}
+.lastaction
+{
+  color: green;
+}

@@ -234,10 +234,10 @@ var set3333 = ( function () {
                     .append(button))
                 .append($('<td>')
                     .attr({title: "Time the table was created"})
-                    .append(' ' + _o.ymdhms(tti[3])).addClass("creation"))
+                    .append(' ' + tti[3]).addClass("creation"))
                 .append($('<td>')
                     .attr({title: "Time of last action made in the table"})
-                    .append(' ' + _o.ymdhms(tti[4])).addClass("lastaction"))
+                    .append(' ' + tti[4]).addClass("lastaction"))
                 ;
             if (tti[5] > 0) {
                 tr.append($('<td>')
