@@ -699,13 +699,7 @@ Usage:                   # [Default]
                                                 consts.E3333_OK, None)
                     self.ws2client(peer.ws).pre_send(cmd)
                 del self.name2table[player.name]
-                # regresh inform - club tables
-                ts = self.tables_status()
-                self.log("#clients=%d" % len(self.ra_to_client))
-                for c in self.ra_to_client.values():
-                    if c is not client:
-                        self.log("c=%s" % c)
-                        c.pre_send(ts)
+                self.refresh_tables_status([client])
             else:
                 self.log("leave player=%s, %s" % (player, table))
                 table.leave(player)
@@ -780,6 +774,13 @@ Usage:                   # [Default]
         return s2c_cmd
 
 
+    def refresh_tables_status(self, clients_exclude=[]):
+        cmd = self.tables_status()
+        for client in self.ra_to_client.values():
+            if client not in clients_exclude:
+                client.pre_send(cmd)
+        
+
     def new_table(self, ws, cmd_args):
         self.log("cmd_args=%s" % str(cmd_args))
         rc = consts.E3333_OK
@@ -800,7 +801,9 @@ Usage:                   # [Default]
                     response = self.make_s2c_command(consts.E3333_S2C_NTBL,
                         consts.E3333_OK)
         self.log("rc=%d, response=%s" % (rc, response))
-        if rc != consts.E3333_OK:
+        if rc == consts.E3333_OK:
+            self.refresh_tables_status()
+        else:
             response = self.client_error_response(ws, rc)
         return response
 
