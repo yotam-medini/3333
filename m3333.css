@@ -1,6 +1,7 @@
 .headtable
 {
   width: 100%;
+  table-layout: fixed;
 }
 
 .headtable td
