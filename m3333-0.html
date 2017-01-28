@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
   <!--This is a comment. Comments are not displayed in the browser-->
   <head>
@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="m3333.css" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" 
+    <link rel="stylesheet"
       href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
       <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script
@@ -20,30 +20,37 @@
 
   <div data-role="page" id="club">
     <div data-role="header">
-      <div>
-        <table class="headtable">
-	  <tr>
-	    <td>
-	      <input type="button" id="newtbl" href="#newjointbl"
-	        data-rel="popup"
-		data-position-to="window"
-		data-inline="true" data-icon="plus" value="New Table"
-	      >
-	    </td>
-	    <td>
-#include "select-page.html"
-	    </td>
-	    <td>
-	      <button id="club-refresh" data-inline="true"
-		data-icon="refresh">Refresh</button>
-	    </td>
-	  </tr>
-	</table>
-      </div>
+      <a href="#club-panel"
+	 class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+                 ui-btn-icon-left">_
+      </a>
+      <h1>Club</h1>
     </div>
-    <div data-role="content">	
+    <div data-role="content" style="overflow:scroll;">
 	<div id="tables"></div>
     </div>
+
+    <div data-role="panel" id="club-panel" data-display="overlay">
+      <a href="#club" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-l ui-btn-icon-left">Close</a>
+      <table>
+        <tr>
+          <td>
+            <a href="#table"
+              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                     ui-btn-icon-left">Table
+            </a>
+          </td>
+          <td>
+            <a href="#players"
+              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                 ui-btn-icon-left">Players
+            </a>
+          </td>
+        </tr>
+      </table>
+      <a href="" id="newtbl" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-plus ui-btn-icon-right">New Table ...</a>
+    </div>
+
 
     <div id="newjointbl" data-role="popup" data-history="false">
       <a href="#" data-rel="back"
@@ -91,65 +98,79 @@
 
   <div data-role="page" id="table">
     <div data-role="header">
-      <div>
-        <table class="headtable1">
-	  <tr>
-	    <td>
-	      <!-- div class="ui-btn-left" data-role="controlgroup" data-type="horizontal" -->
-
-		<button id="newgame" data-inline="true" data-icon="arrow-r">
-		  New Game
-		</button>
-		<button id="nomore" data-inline="true" data-icon="plus">
-		  No More?
-		</button>
-               <!--
-		<span title="Number of cards still in deck">
-		  Deck: <var id="indeck"></var>
-		</span>
-               -->
-	      <!-- /div -->
-	    </td>
-	    <td>
-#include "select-page.html"
-	    </td>
-	    <td>
-	      <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal">
-		<button id="closetable" data-inline="true" data-icon="delete">
-		  Close
-		</button>
-	      </div>
-	    </td>
-	  </tr>
-	</table>
-      </div>
+      <a href="#table-panel"
+	 class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+                 ui-btn-icon-left">_
+      </a>
+      <h1 id="table-status">Status</h1>
     </div>
-    <div data-role="content">	
+    <div data-role="content">
       <div id="boardwrap" class="centered">
         <canvas id="board"></canvas>
       </div>
     </div>
+
+    <div data-role="panel" id="table-panel" data-display="overlay">
+      <a href="#table" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-l ui-btn-icon-left">Close</a>
+      <table>
+        <tr>
+          <td>
+            <a href="#club"
+              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                ui-btn-icon-left">Club
+            </a>
+          </td>
+          <td>
+            <a href="#players"
+              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                 ui-btn-icon-left">Players
+            </a>
+          </td>
+        </tr>
+      </table>
+      <a href="" id="newgame" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-forward ui-btn-icon-right">New Game</a>
+      <a href="" id="nomore" data-role="button"
+         class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-heart
+           ui-btn-icon-right">No More
+      </a>
+    </div>
+
+
   </div>
 
   <div data-role="page" id="players">
     <div data-role="header">
-      <div>
-        <table class="headtable">
-	  <tr>
-	    <td>
-	    </td>
-	    <td>
-#include "select-page.html"
-	    </td>
-	    <td>
-	    </td>
-	  </tr>
-	</table>
+      <a href="#players-panel"
+	 class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+                 ui-btn-icon-left">_
+      </a>
+      <h1>Players</h1>
+    </div>
+    <div data-role="content" class="centered" style='overflow:scroll;'>
+      <div id="tableplayers" class="centered">
       </div>
     </div>
-    <div data-role="content" class="centered">	
-      <div id="tableplayers" class="centered"></div>
+
+    <div data-role="panel" id="players-panel" data-display="overlay">
+      <a href="#players" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-l ui-btn-icon-left">Close</a>
+      <table>
+        <tr>
+          <td>
+            <a href="#club"
+              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                ui-btn-icon-left">Club
+            </a>
+          </td>
+          <td>
+            <a href="#table"
+              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                ui-btn-icon-left">Table
+            </a>
+          </td>
+        </tr>
+      </table>
     </div>
+
   </div>
 
   <div id="popup-warning" data-role="popup" class="ui-content"
@@ -171,7 +192,7 @@
 		  <span class="ui-icon-alert ui-btn-icon-notext inlineIcon
                     warnbg">
 		  </span>
-		</div>    
+		</div>
 	      </td>
               <td><div id="warn-text">Be Careful</div></td>
 	    </tr>

@@ -281,7 +281,7 @@ var set3333 = ( function () {
     _o.table_closed = function (data) {
         console.log("table_closed");
         _o.set_club_view();
-	_o.warning("Table closed");
+        _o.warning("Table closed");
     };
 
     _o.tables_status = function () {
@@ -443,11 +443,9 @@ var set3333 = ( function () {
 
     _o.my_say_last = "",
 
-    _o.mobile_page_set = function (page) {
-        console.log("mobile_page_set: page=" + page);
-        $("body").pagecontainer("change", "#" + page, {changeHash: false});
-        $("#" + page + " select").val(page).change();
-    }   
+    _o.mobile_page_set = function (page) { 
+        console.log("Dummy mobile_page_set: page=" + page);
+    };
 
     _o.set_club_view = function () {
         console.log("set_club_view");
@@ -542,6 +540,7 @@ var set3333 = ( function () {
             $("#newtbl-ok").click(function () {
                 console.log("newtbl-ok");
                 $("#newjointbl").popup("close");
+                _o.mobile_page_set("table");
                 _o.new_table(); 
             });
             $("#newjointbl").popup("open");
@@ -647,16 +646,19 @@ var set3333 = ( function () {
 
 
     _o.new_game = function () {
+        $("#table-panel").panel("close");
         _o.web_socket.send(_o.c.S3333_C2S_GNEW);
     }
 
 
     _o.user_add3 = function () {
+        $("#table-panel").panel("close");
         _o.web_socket.send(_o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
     };
 
 
     _o.no_more = function () {
+        _o.mobile_page_set("table");
         _o.web_socket.send(_o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
     };
 
@@ -984,7 +986,7 @@ var set3333 = ( function () {
     _o.state_update = function (rstate) {
         console.log("state_update");
         if (!_o.state.owner && _o.state.mobile && 
-	    (_o.state.game_active != rstate['gactive'])) {
+            (_o.state.game_active != rstate['gactive'])) {
             console.log("non owner close info and show table");
             $('[data-role="popup"]').popup("close");
             _o.mobile_page_set("table");
@@ -994,7 +996,7 @@ var set3333 = ( function () {
             _o.players_fill(rstate['players']);
         }
         if (_o.state.gstate < rstate['gstate']) {
-	    var old_game_active = _o.state.game_active;
+            var old_game_active = _o.state.game_active;
             _o.state.gstate = rstate['gstate'];
             _o.state.cards_active_idx = rstate['active'];
             _o.state.deck_size = rstate['deck'];
@@ -1241,6 +1243,13 @@ var set3333 = ( function () {
 
     _o.init_mobile = function () {
         console.log("init_mobile");
+        $.mobile.hashListeningEnabled = false;
+
+        _o.mobile_page_set = function (page) {
+            console.log("mobile_page_set: page=" + page);
+            $("body").pagecontainer("change", "#" + page, {changeHash: false});
+            $("#" + page + " select").val(page).change();
+        }   
 
         $(".change_page").change(function() {
             var v = $(this).children('option:selected').attr('value');
