@@ -722,14 +722,25 @@ Usage:                   # [Default]
             client = self.ra_to_client[ws.remote_address]
             client.pre_send(response)
 
+    async def periodic_clean(self):
+        self.log("")
+        loop_count = 0
+        while True and loop_count < 10:
+            self.log("loop_count=%d" % loop_count)
+            await asyncio.sleep(60)
+            loop_count += 1
+
     def run(self):
         sys.stderr.write("Server.run\n")
         self.log("")
         start_server = websockets.serve(self.ws_handler, self.host,
                                         consts.CS3333_PORT)
-        asyncio.get_event_loop().run_until_complete(start_server)
+        loop = asyncio.get_event_loop()
+        tasks = [self.periodic_clean(), start_server]
+        self.log("#(tasks)=%d" % len(tasks))
+        loop.run_until_complete(asyncio.wait(tasks))
         self.log("Calling run_forever")
-        asyncio.get_event_loop().run_forever()
+        loop.run_forever()
 
     def ts_to_ymdhms_compact(self, ts):
         now = int(time.time())
