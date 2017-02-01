@@ -371,7 +371,7 @@ var set3333 = ( function () {
 
     _o.no_more_button_set = function () {
         if (_o.state.game_active) {
-            $("#nomore").attr("disabled", false);
+            $("#nomore").prop("disabled", false);
             // var nomore = document.getElementById("nomore");
             if (_o.state.deck_size == 0) {
                 $("#nomore")
@@ -389,7 +389,7 @@ var set3333 = ( function () {
                 }
             }
         } else {
-            $("#nomore").attr("disabled", true);
+            $("#nomore").prop("disabled", true);
         }
     };
 
@@ -513,6 +513,8 @@ var set3333 = ( function () {
         var name = $("#name").val().trim();
         var tpass = $("#tpass").val().trim();
         var upass = $("#upass").val().trim();
+        $("#club-to-table").removeClass("ui-disabled");
+        $("#club-to-players").removeClass("ui-disabled");
         _o.state.myname = name;
         console.log("table_nj, table_name="+table_name + 
             ", name="+name + ", pass="+tpass+", upass="+upass);
@@ -531,6 +533,10 @@ var set3333 = ( function () {
     }
 
     _o.new_table = function () {
+        console.log("new_table: newgame disabled false !!!!!!!!!!!!!!!")
+        $("#newgame").prop("disabled", false);
+        // $("#newgame").removeAttr("disabled");
+        // $("#newgame").click(this.new_game);
         _o.table_nj("");
     };
 
@@ -896,7 +902,6 @@ var set3333 = ( function () {
     }
 
     _o.board_clear = function () {
-        console.log("board_clear");
         var bw = $("#boardwrap");
         var position = bw.position();
         var winw = $(window).width(), winh = $(window).height();
@@ -913,7 +918,6 @@ var set3333 = ( function () {
     }
 
     _o.board_show = function () {
-        console.log("board_show");
         var bret = _o.board_clear();
         var canvas = bret.canvas;
         var context = bret.context;
@@ -1214,7 +1218,11 @@ var set3333 = ( function () {
         $("#club-refresh").click(this.tables_status);
         $("#newgame").click(this.new_game);
         $("#nomore").click(this.add3_no_more);
-        $("#nomore").attr("disabled", true);
+        $("#club-to-table").addClass("ui-disabled");
+        $("#club-to-players").addClass("ui-disabled");
+        $("#newgame").prop("disabled", true);
+        $("#nomore").prop("disabled", true);
+        $("#closetable").attr("disabled", true);
         $("#board").click(_o.card_select);
 
         _o.web_socket_open();
@@ -1271,6 +1279,7 @@ var set3333 = ( function () {
              console.log("device in " + event.orientation + " mode");
              // _o.board_show();
         });
+	$("#nomore").prop("disabled", true); 
     }
 
 

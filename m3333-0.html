@@ -21,34 +21,28 @@
   <div data-role="page" id="club">
     <div data-role="header">
       <a href="#club-panel"
-	 class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+         class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
                  ui-btn-icon-left">_
       </a>
       <h1>Club</h1>
     </div>
     <div data-role="content" style="overflow:scroll;">
-	<div id="tables"></div>
+        <div id="tables"></div>
     </div>
 
     <div data-role="panel" id="club-panel" data-display="overlay">
-      <a href="#club" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-l ui-btn-icon-left">Close</a>
-      <table>
-        <tr>
-          <td>
-            <a href="#table"
-              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
-                     ui-btn-icon-left">Table
-            </a>
-          </td>
-          <td>
-            <a href="#players"
-              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
-                 ui-btn-icon-left">Players
-            </a>
-          </td>
-        </tr>
-      </table>
-      <a href="" id="newtbl" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-plus ui-btn-icon-right">New Table ...</a>
+      <a href="#club" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back ui-btn-icon-left"></a>
+      <div data-role="controlgroup" data-type="horizontal">
+        <a href="#table" id="club-to-table"
+          class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+                 ui-btn-icon-left">Table
+        </a>
+        <a href="#players" id="club-to-players"
+          class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+             ui-btn-icon-left">Players
+        </a>
+      </div>
+      <input id="newtbl" type="button" data-icon="plus" value="New Table...">
     </div>
 
 
@@ -90,7 +84,7 @@
             </tr>
           </tbody>
         </table>
-	<button id="newtbl-ok" data-icon="plus">Open</button>
+        <button id="newtbl-ok" data-icon="plus">Open</button>
       </div>
     </div>
 
@@ -99,7 +93,7 @@
   <div data-role="page" id="table">
     <div data-role="header">
       <a href="#table-panel"
-	 class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+         class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
                  ui-btn-icon-left">_
       </a>
       <h1 id="table-status">Status</h1>
@@ -111,37 +105,28 @@
     </div>
 
     <div data-role="panel" id="table-panel" data-display="overlay">
-      <a href="#table" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-l ui-btn-icon-left">Close</a>
-      <table>
-        <tr>
-          <td>
-            <a href="#club"
-              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
-                ui-btn-icon-left">Club
-            </a>
-          </td>
-          <td>
-            <a href="#players"
-              class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
-                 ui-btn-icon-left">Players
-            </a>
-          </td>
-        </tr>
-      </table>
-      <a href="" id="newgame" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-forward ui-btn-icon-right">New Game</a>
-      <a href="" id="nomore" data-role="button"
-         class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-heart
-           ui-btn-icon-right">No More
-      </a>
+      <a href="#table" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back ui-btn-icon-left"></a>
+      <div data-role="controlgroup" data-type="horizontal">
+        <a href="#club"
+          class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+            ui-btn-icon-left">Club
+        </a>
+        <a href="#players"
+          class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
+             ui-btn-icon-left">Players
+        </a>
+      </div>
+      <input id="newgame" type="button" data-icon="right" value="New Game">
+      <input id="nomore" type="button" data-icon="heart" value="No More">
+      <input id="closetable" type="button" data-icon="delete" value="Leave">
     </div>
-
 
   </div>
 
   <div data-role="page" id="players">
     <div data-role="header">
       <a href="#players-panel"
-	 class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+         class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
                  ui-btn-icon-left">_
       </a>
       <h1>Players</h1>
@@ -152,23 +137,20 @@
     </div>
 
     <div data-role="panel" id="players-panel" data-display="overlay">
-      <a href="#players" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-l ui-btn-icon-left">Close</a>
-      <table>
-        <tr>
-          <td>
+      <a href="#players" data-rel="close" 
+        class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back
+           ui-btn-icon-left">
+      </a>
+      <div data-role="controlgroup" data-type="horizontal">
             <a href="#club"
               class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
                 ui-btn-icon-left">Club
             </a>
-          </td>
-          <td>
             <a href="#table"
               class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
                 ui-btn-icon-left">Table
             </a>
-          </td>
-        </tr>
-      </table>
+      </div>
     </div>
 
   </div>
@@ -177,7 +159,7 @@
     data-theme="a" data-overlay-theme="b" data-history="false">
     <a href="#" data-rel="back"
       class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete
-	ui-btn-icon-notext ui-btn-right"
+        ui-btn-icon-notext ui-btn-right"
       >Close</a>
 
     <div data-role="header" class="warnheader">
@@ -187,17 +169,17 @@
         <table>
           <tbody>
             <tr>
-	      <td>
-		<div>
-		  <span class="ui-icon-alert ui-btn-icon-notext inlineIcon
+              <td>
+                <div>
+                  <span class="ui-icon-alert ui-btn-icon-notext inlineIcon
                     warnbg">
-		  </span>
-		</div>
-	      </td>
+                  </span>
+                </div>
+              </td>
               <td><div id="warn-text">Be Careful</div></td>
-	    </tr>
-	  </tbody>
-	</table>
+            </tr>
+          </tbody>
+        </table>
     </div>
   </div>
 
