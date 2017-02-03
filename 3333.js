@@ -100,6 +100,15 @@ var set3333 = ( function () {
         return _o.tr_append_td(tr, e, kls);
     };
 
+    _o.anchor_enable = function(sel, flag) {
+        var qsel = $(sel);
+        qsel.prop("disabled", !flag);
+        if (flag) {
+            qsel.removeClass("ui-disabled");
+        } else {
+            qsel.addClass("ui-disabled");
+        }
+    };
 
     _o.warning_desktop = function (text, okfunc) {
         $("#warning").dialog("option", "buttons",
@@ -249,9 +258,6 @@ var set3333 = ( function () {
  
         var e = document.getElementById("tables");
         _o.replace_append(e, tbl);
-        if (apid !== "club") { // Implies also _o.state.mobile
-            $("body").pagecontainer("change", "#"+apid);
-        }
     };
 
     _o.msgh_set_found = function (a3i) {
@@ -485,9 +491,10 @@ var set3333 = ( function () {
     };
 
     _o.mobile_set_titles = function () {
-        $("#players-title").html("Players of Table: " + _o.state.table_name);
-        $("#table-title").html(_o.state.myname + " @ Table owned by " +
-            _o.state.table_name);
+        $("#players-title").html("Players @ " + _o.state.table_name);
+        $("#table-title").html(_o.state.myname + " @ " + _o.state.table_name +
+            "'s table");
+        
     };
 
     _o.msgh_join_mobile = function (result) {
@@ -513,8 +520,8 @@ var set3333 = ( function () {
         var name = $("#name").val().trim();
         var tpass = $("#tpass").val().trim();
         var upass = $("#upass").val().trim();
-        $("#club-to-table").removeClass("ui-disabled");
-        $("#club-to-players").removeClass("ui-disabled");
+        _o.anchor_enable("#club-to-table", true);
+        _o.anchor_enable("#club-to-players", true);
         _o.state.myname = name;
         console.log("table_nj, table_name="+table_name + 
             ", name="+name + ", pass="+tpass+", upass="+upass);
@@ -543,6 +550,7 @@ var set3333 = ( function () {
     _o.new_table_dialog = function () {
         console.log("new_table_dialog, mobile?=" + _o.state.mobile);
         if (_o.state.mobile) {
+            $("#tbl-popup-header").html("New table");
             $("#newtbl-ok").click(function () {
                 console.log("newtbl-ok");
                 $("#newjointbl").popup("close");
@@ -658,18 +666,20 @@ var set3333 = ( function () {
 
 
     _o.user_add3 = function () {
-        $("#table-panel").panel("close");
         _o.web_socket.send(_o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
     };
 
 
     _o.no_more = function () {
-        _o.mobile_page_set("table");
+        // _o.mobile_page_set("table");
         _o.web_socket.send(_o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
     };
 
 
     _o.add3_no_more = function () {
+        if (_o.state.mobile) {
+            $("#table-panel").panel("close");
+        }
         if (_o.state.deck_size == 0) { _o.no_more(); } else { _o.user_add3(); }
     };
 
@@ -1218,8 +1228,8 @@ var set3333 = ( function () {
         $("#club-refresh").click(this.tables_status);
         $("#newgame").click(this.new_game);
         $("#nomore").click(this.add3_no_more);
-        $("#club-to-table").addClass("ui-disabled");
-        $("#club-to-players").addClass("ui-disabled");
+        _o.anchor_enable("#club-to-table", false);
+        _o.anchor_enable("#club-to-players", false);
         $("#newgame").prop("disabled", true);
         $("#nomore").prop("disabled", true);
         $("#closetable").attr("disabled", true);
@@ -1253,25 +1263,27 @@ var set3333 = ( function () {
         console.log("init_mobile");
         $.mobile.hashListeningEnabled = false;
 
+        // http://stackoverflow.com/questions/14225021
+        $(document).bind("mobileinit", function(){
+            $.mobile.pushStateEnabled = false;
+        });
+
         _o.mobile_page_set = function (page) {
             console.log("mobile_page_set: page=" + page);
-            $("body").pagecontainer("change", "#" + page, {changeHash: false});
-            $("#" + page + " select").val(page).change();
+            $("body").pagecontainer("change", "#" + page, {
+                changeHash: false, reverse: true});
         }   
-
-        $(".change_page").change(function() {
-            var v = $(this).children('option:selected').attr('value');
-            console.log("v=" + v);
-            var curr = $("body").pagecontainer("getActivePage").attr("id");
-            console.log("curr=" + curr);
-            if (v != curr) {
-                _o.mobile_page_set(v);
-            }
-        });
 
         _o.state.mobile = true;
         // $("#help-content").load("help.html");
         _o.init_common();
+        $("#table-to-club").click(function () { 
+            $("#table-panel").panel("close");
+            _o.mobile_page_set("club"); 
+        });
+        $("#table-to-players").click(function () { 
+            _o.mobile_page_set("players"); 
+        });
         $("#popup-warning").popup();
         $("#popup-info").popup();
         $(window).resize(_o.board_show);
@@ -1279,7 +1291,12 @@ var set3333 = ( function () {
              console.log("device in " + event.orientation + " mode");
              // _o.board_show();
         });
-	$("#nomore").prop("disabled", true); 
+        $("#nomore").prop("disabled", true); 
+
+        $("#btndbg").click(function () {
+            console.log("btndbg");
+            // $("#newgame").prop("disabled", false);
+        });
     }
 
 

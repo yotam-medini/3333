@@ -21,7 +21,7 @@
   <div data-role="page" id="club">
     <div data-role="header">
       <a href="#club-panel"
-         class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+         class="ui-btn ui-corner-all ui-shadow ui-icon-bars
                  ui-btn-icon-left">_
       </a>
       <h1>Club</h1>
@@ -31,7 +31,9 @@
     </div>
 
     <div data-role="panel" id="club-panel" data-display="overlay">
-      <a href="#club" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back ui-btn-icon-left"></a>
+      <a href="#club" data-rel="close"
+         class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back
+           ui-btn-icon-left"></a>
       <div data-role="controlgroup" data-type="horizontal">
         <a href="#table" id="club-to-table"
           class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
@@ -42,7 +44,7 @@
              ui-btn-icon-left">Players
         </a>
       </div>
-      <input id="newtbl" type="button" data-icon="plus" value="New Table...">
+      <button id="newtbl" type="button" data-icon="plus">New Table...</button>
     </div>
 
 
@@ -93,10 +95,10 @@
   <div data-role="page" id="table">
     <div data-role="header">
       <a href="#table-panel"
-         class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
+         class="ui-btn ui-corner-all ui-shadow ui-icon-bars
                  ui-btn-icon-left">_
       </a>
-      <h1 id="table-status">Status</h1>
+      <h1 id="table-title">Table</h1>
     </div>
     <div data-role="content">
       <div id="boardwrap" class="centered">
@@ -105,7 +107,10 @@
     </div>
 
     <div data-role="panel" id="table-panel" data-display="overlay">
-      <a href="#table" data-rel="close" class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back ui-btn-icon-left"></a>
+      <a href="#table" data-rel="close"
+          class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-back
+               ui-btn-icon-left">
+      </a>
       <div data-role="controlgroup" data-type="horizontal">
         <a href="#club"
           class="ui-btn ui-btn-inline ui-shadow ui-btn-a ui-icon-arrow-r
@@ -116,9 +121,9 @@
              ui-btn-icon-left">Players
         </a>
       </div>
-      <input id="newgame" type="button" data-icon="right" value="New Game">
-      <input id="nomore" type="button" data-icon="heart" value="No More">
-      <input id="closetable" type="button" data-icon="delete" value="Leave">
+      <button id="newgame" type="button" data-icon="right">New Game</button>
+      <button id="nomore" type="button" data-icon="heart">No More</button>
+      <button id="closetable" type="button" data-icon="delete">Leave</button>
     </div>
 
   </div>
@@ -126,10 +131,9 @@
   <div data-role="page" id="players">
     <div data-role="header">
       <a href="#players-panel"
-         class="iconvc ui-btn ui-corner-all ui-shadow ui-icon-bars
-                 ui-btn-icon-left">_
+         class="ui-btn ui-corner-all ui-shadow ui-icon-barsui-btn-icon-left">_
       </a>
-      <h1>Players</h1>
+      <h1 id="players-title">Players</h1>
     </div>
     <div data-role="content" class="centered" style='overflow:scroll;'>
       <div id="tableplayers" class="centered">
