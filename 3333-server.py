@@ -697,7 +697,9 @@ Usage:                   # [Default]
                 for peer in table.players[1:]:
                     cmd = self.make_s2c_command(consts.E3333_S2C_TABLE_CLOSED,
                                                 consts.E3333_OK, None)
-                    self.ws2client(peer.ws).pre_send(cmd)
+                    pclient = self.ws2client(peer.ws)
+                    pclient.pre_send(cmd)
+                    pclient.player = None
                 del self.name2table[player.name]
                 self.refresh_tables_status([client])
             else:
