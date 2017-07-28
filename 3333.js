@@ -1320,6 +1320,17 @@ var set3333 = ( function () {
             $("#closetable").click(_o.table_close);
             if (m3333) { _o.init_mobile(); } else { _o.init_desktop(); }
         }
+	$(window).bind('beforeunload', function (e) {
+            e = e || window.event;
+            var msg = "Leaving the page will ";
+            if (_o.owner) {
+                msg += "close the table for all players";
+            } else {
+                msg += "delete you from the table players";
+            }
+            if (e) { e.returnValue = msg; }
+            return msg;
+	});
     };
 
     _o.c = {
