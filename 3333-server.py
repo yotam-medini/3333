@@ -13,7 +13,9 @@ import sys
 import time
 import traceback
 
+# sys.path = ['/home/yotam/src/3333/altasio'] + sys.path
 import asyncio
+# sys.path = ['/home/yotam/src/3333/altws'] + sys.path
 import websockets
 
 import consts
@@ -440,6 +442,7 @@ class AppBase:
                 fn = e[0].split("/")[-1]
                 scaller = "%s[%s:%d<%s>]" % (self.prelog(), fn, e[1], e[2])
             self.flog.write("%s %s: %s\n" % (strnow(), scaller, msg))
+            sys.stderr.write("%s: %s\n" % (scaller, msg))
             self.flog.flush()
 
 
@@ -648,13 +651,22 @@ Usage:                   # [Default]
         self.log("");
         client.pre_send(self.tables_status())
 
+    def ws_recv(self, ws):
+        try:
+            ret = ws.recv()
+        except Exception as e:
+            ret = None
+            self.log("ra=%s, %s" % (str(ws.remote_address), str(e)))
+        return ret
+
     async def ws_handler(self, ws, path):
         self.log("path=%s" % str(path))
         ra = ws.remote_address
         self.ra_to_client[ra] = client = Client(ws)
 
         producer_task = asyncio.ensure_future(client.produce())
-        listener_task = asyncio.ensure_future(ws.recv())
+        listener_task = asyncio.ensure_future(self.ws_recv(ws))  # ws.recv()
+        self.log("dir(ws)=%s" % str(dir(ws)))
         self.introduce(client)
 
         loop_count = 0
@@ -665,7 +677,9 @@ Usage:                   # [Default]
             done, pending = await asyncio.wait(
                 [listener_task, producer_task],
                 return_when=asyncio.FIRST_COMPLETED)
-            self.log("loop_count=%d, #(done)=%d" % (loop_count, len(done)))
+            self.log("loop_count=%d, #(done)=%d P?=%s, L?=%s" %
+                     (loop_count, len(done),
+                      producer_task in done, listener_task in done))
 
             if producer_task in done:
                 messages = producer_task.result()
@@ -686,7 +700,7 @@ Usage:                   # [Default]
                     client.alive = False
                 else:
                     self.ws_message_handle(ws, message)
-                    listener_task = asyncio.ensure_future(ws.recv())
+                    listener_task = asyncio.ensure_future(self.ws_recv(ws))
 
         player = client.player
         self.log("client dead: ra=%s, player=%s" % (str(ra), player))
@@ -729,7 +743,7 @@ Usage:                   # [Default]
         loop_count = 0
         while True and loop_count < 10:
             self.log("loop_count=%d" % loop_count)
-            await asyncio.sleep(60)
+            await asyncio.sleep(300)
             loop_count += 1
 
     def run(self):
