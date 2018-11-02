@@ -48,6 +48,13 @@ ${MAINJS}: 3333.js consts.py Makefile
 	tail -n +$${N} 3333.js >> $@)
 	wc -l 3333.js common-consts.py $@
 
+m3333-consts.js: consts.py
+	echo '// Do NOT edit directly' > $@
+	echo 'm3333_consts = {' >> $@
+	sed -e 's/ =/:/g' -e 's/;/,/g' -e 's:#://:g' < consts.py >> $@
+	echo '};' >> $@
+
+
 STEP2 = ${MAINJS}
 
 # { Static mobile navbars
