@@ -1028,7 +1028,7 @@ Usage:                   # [Default]
         del table
 
     def warn(self, msg):
-        sys.stderr.write("Warning: %s\n" % msg)
+        sys.stderr.write("%s Warning: %s\n" % (strnow(), msg))
         self.log(msg, tb_up=3)
 
 
