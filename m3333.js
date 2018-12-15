@@ -4,6 +4,14 @@ document.addEventListener('prechange', function(event) {
   console.log("Yotam addEventListener\n");
 });
 
+popi = function (a, i) {
+  var last = a.pop();
+  if (i < a.length) {
+    a[i] = last;
+  }
+};
+
+
 function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, 
@@ -110,7 +118,7 @@ init_ui = function (_o) {
     console.log('init table page');
     var canvas = gelem('canvas');
     console.log('canvas=' + canvas);
-    url_canvas = getUrlVars()['canvas'];
+    url_canvas = getUrlVars()['board'];
     console.log('url_canvas='+url_canvas);
     if (url_canvas == 'no') { // for css debug
       return;
@@ -150,6 +158,7 @@ init_ui = function (_o) {
     context.fillRect(7*w/8, 0, w, h/8);
     context.fillRect(0, 7*h/8, w/8, h);
     context.fillRect(7*w/8, 7*h/8, w, h);
+    canvas.onclick = function (e) { _o.card_select(e); };
     console.log('canvas: w=' + canvas.width + ', h='+canvas.height);
     return canvas;
   };
@@ -272,6 +281,164 @@ init_ui = function (_o) {
 
   _o.golden = (Math.sqrt(5.)+1.)/2.;
 
+  function draw_diamond(context, x, y, w, h) {
+    context.beginPath();
+    context.moveTo(x + w/2, y);
+    context.lineTo(x + w, y + h/2);
+    context.lineTo(x + w/2, y + h);
+    context.lineTo(x, y + h/2);
+    context.closePath();
+  };
+
+  function aa_round(aa) {
+    for (var i = 0; i < aa.length; i++) {
+      var a = aa[i];
+      for (var j = 0; j < a.length; j++) {
+	a[j] = [Math.round(a[j][0]), Math.round(a[j][1])];
+      }
+    }
+  };
+
+  function draw_squiggle(context, x, y, w, h) {
+    // Draw squiggle within the rectangle whose diagonal (x,y) -> (x+w,y+h)"
+
+    // Build curves array(s). Each curve is made of 3 XY-points:
+    //    [Control-Point1, Control-Point2, Target-Point]
+    // Start with half left contour, top to bottom, counter-clockwise. {
+    // We start relative to (x,y).
+    var rel_curves_left = [
+      [[w/8, 0],      [0,   h/16],   [0,   h/14]],
+      [[w/3, h/8],    [w/4, h/4],    [w/5, 3*h/8]],
+      [[w/5, h/2],    [0,   5*h/8],  [0,   3*h/4]],
+      [[0,   7*h/8],  [w/4, h],      [w/2, h]]
+    ];
+    aa_round(rel_curves_left);
+    // Make the right side curves symmetric.                           }
+    var rel_curves_right = []
+    for (var i = 0; i < rel_curves_left.length; i++) {
+      var xy3_l = rel_curves_left[i];
+      var xy3_r = [undefined, undefined, undefined];
+      for (var j = 0; j < 3; j++) {
+	var xy_l = xy3_l[j];
+	var xy_r = [w - xy_l[0], h - xy_l[1]]; // center symmetry
+	xy3_r[j] = xy_r;
+      }
+      rel_curves_right.push(xy3_r);
+    }
+
+    var curves = []; // Absolute, add (x,y) to each
+    var rel_curves = rel_curves_left.concat(rel_curves_right);
+    for (var i = 0; i < rel_curves.length; i++) {
+      var xy3_rel = rel_curves[i];
+      var xy3 = []
+      for (j = 0; j < 3; j++) {
+	var xy_rel = xy3_rel[j];
+	xy3.push([x + xy_rel[0], y + xy_rel[1]])
+      }
+      curves.push(xy3)
+    }
+    // The last point is also the first!
+    var pt_1st = curves[curves.length - 1][2];
+
+    context.beginPath();
+    context.moveTo(pt_1st[0], pt_1st[1]);
+    for (var i = 0; i < curves.length; i++) {
+      var curve = curves[i];
+      context.bezierCurveTo(
+	curve[0][0], curve[0][1],
+	curve[1][0], curve[1][1],
+	curve[2][0], curve[2][1]);
+    }
+    context.closePath();
+  };
+
+  function draw_oval(context, x, y, w, h) {
+    // Draw an ellipse, within a bounding rectangle
+    //   (x,y)    The left-top point of the bounding rectangle.
+    //   (w,h)    The width and height of the bounding rectangle.
+    //   and rotated by rotation_angle, filled by texture
+
+    // Compute center
+    var cx = x + w/2, cy = y + h/2;
+    // Compute Radii
+    var rx = w/2, ry = h/2;
+
+    context.beginPath();
+    context.moveTo(cx + rx, cy);
+    context.quadraticCurveTo(cx + rx, cy - ry, cx, cy - ry);
+    context.quadraticCurveTo(cx - rx, cy - ry, cx - rx, cy);
+    context.quadraticCurveTo(cx - rx, cy + ry, cx, cy + ry);
+    context.quadraticCurveTo(cx + rx, cy + ry, cx + rx, cy);
+    context.closePath();
+  };
+
+  var shape_draw = [undefined, undefined, undefined];
+  shape_draw[_o.c.SYM_DIAMOND] = draw_diamond;
+  shape_draw[_o.c.SYM_SQUIGGLE] = draw_squiggle;
+  shape_draw[_o.c.SYM_OVAL] = draw_oval;
+
+  function draw_card(context, card, x, y, w, h, draw_mode) {
+    console.log("draw_card: mode="+draw_mode +
+      " x="+x+" y="+y+" w="+w+" h="+h);
+    var n = card[_o.c.DIM_NUMBER] + 1;
+    var symbol = card[_o.c.DIM_SYMBOL];
+    var color  = card[_o.c.DIM_COLOR];
+    var shading  = card[_o.c.DIM_SHADING];
+
+    var brect_width = w/4, brect_height = 3*h/4;
+    var x_gap = (w - (n * brect_width))/(n + 1);
+    var brect_x = x + x_gap;
+    var brect_y = y + (h - brect_height)/2;
+
+    switch (draw_mode) {
+      case _o.c.DRAW_CARD_NORMAL:
+	// Draw white
+	context.fillStyle = "#fff";
+	context.fillRect(x, y, w, h);
+	break;
+      case _o.c.DRAW_CARD_SELECTED:
+      case _o.c.DRAW_CARD_NOT_A_SET:
+      case _o.c.DRAW_CARD_IS_A_SET:
+	context.fillStyle = _o.c.draw_mode_frame_rgb[draw_mode];
+	context.fillRect(x, y, w, h);
+	var bw = Math.max(h / 24, 3); // frame width
+	context.fillStyle = "#ccc";
+	context.fillRect(x + bw, y + bw, w - 2*bw, h - 2*bw);
+	break;
+    }
+
+    draw_func = shape_draw[symbol];
+
+    // console.log("color="+color);
+    var rgbc = _o.c.rgb_colors;
+    var fill_passes = _o.fill_passes[shading];
+    context.fillStyle = rgbc[color];
+    context.strokeStyle = rgbc[color];
+    context.lineWidth = Math.max(brect_width/10, 4);
+    // var pattern_striped = context.createPattern(offscreen, "repeat");
+
+    for (var r = 0; r < n; r++) {
+      context.fillStyle = rgbc[color];
+      for (var fpi = 0; fpi < fill_passes.length; fpi++) {
+	draw_func(
+	  context, Math.round(brect_x), Math.round(brect_y),
+	  Math.round(brect_width), Math.round(brect_height));
+	if (fill_passes[fpi]) {
+	  if (shading == _o.c.SHADING_STRIPED) {
+	    context.fillStyle = _o.c.pattern_stripes[color];
+	  } else {
+	    context.fillStyle = rgbc[color];
+	  }
+	  context.fill();
+	} else {
+	  context.fillStyle = rgbc[color];
+	  context.stroke();
+	}
+      }
+      brect_x += brect_width + x_gap
+    }
+  };
+
   _o.board_show = function (_o) {
     var board_n_columns = function (width, height, n) {
       // Decide how many columns to use for drawing
@@ -305,163 +472,6 @@ init_ui = function (_o) {
       return best_columns
     };
 
-    var draw_diamond = function (context, x, y, w, h) {
-      context.beginPath();
-      context.moveTo(x + w/2, y);
-      context.lineTo(x + w, y + h/2);
-      context.lineTo(x + w/2, y + h);
-      context.lineTo(x, y + h/2);
-      context.closePath();
-    };
-
-    var aa_round = function (aa) {
-      for (var i = 0; i < aa.length; i++) {
-        var a = aa[i];
-        for (var j = 0; j < a.length; j++) {
-          a[j] = [Math.round(a[j][0]), Math.round(a[j][1])];
-        }
-      }
-    };
-
-    var draw_squiggle = function (context, x, y, w, h) {
-      // Draw squiggle within the rectangle whose diagonal (x,y) -> (x+w,y+h)"
-
-      // Build curves array(s). Each curve is made of 3 XY-points:
-      //    [Control-Point1, Control-Point2, Target-Point]
-      // Start with half left contour, top to bottom, counter-clockwise. {
-      // We start relative to (x,y).
-      var rel_curves_left = [
-        [[w/8, 0],      [0,   h/16],   [0,   h/14]],
-        [[w/3, h/8],    [w/4, h/4],    [w/5, 3*h/8]],
-        [[w/5, h/2],    [0,   5*h/8],  [0,   3*h/4]],
-        [[0,   7*h/8],  [w/4, h],      [w/2, h]]
-      ];
-      aa_round(rel_curves_left);
-      // Make the right side curves symmetric.                           }
-      var rel_curves_right = []
-      for (var i = 0; i < rel_curves_left.length; i++) {
-        var xy3_l = rel_curves_left[i];
-        var xy3_r = [undefined, undefined, undefined];
-        for (var j = 0; j < 3; j++) {
-          var xy_l = xy3_l[j];
-          var xy_r = [w - xy_l[0], h - xy_l[1]]; // center symmetry
-          xy3_r[j] = xy_r;
-        }
-        rel_curves_right.push(xy3_r);
-      }
-
-      var curves = []; // Absolute, add (x,y) to each
-      var rel_curves = rel_curves_left.concat(rel_curves_right);
-      for (var i = 0; i < rel_curves.length; i++) {
-        var xy3_rel = rel_curves[i];
-        var xy3 = []
-        for (j = 0; j < 3; j++) {
-          var xy_rel = xy3_rel[j];
-          xy3.push([x + xy_rel[0], y + xy_rel[1]])
-        }
-        curves.push(xy3)
-      }
-      // The last point is also the first!
-      var pt_1st = curves[curves.length - 1][2];
-
-      context.beginPath();
-      context.moveTo(pt_1st[0], pt_1st[1]);
-      for (var i = 0; i < curves.length; i++) {
-        var curve = curves[i];
-        context.bezierCurveTo(
-          curve[0][0], curve[0][1],
-          curve[1][0], curve[1][1],
-          curve[2][0], curve[2][1]);
-      }
-      context.closePath();
-    };
-
-    var draw_oval = function (context, x, y, w, h) {
-      // Draw an ellipse, within a bounding rectangle
-      //   (x,y)    The left-top point of the bounding rectangle.
-      //   (w,h)    The width and height of the bounding rectangle.
-      //   and rotated by rotation_angle, filled by texture
-
-      // Compute center
-      var cx = x + w/2, cy = y + h/2;
-      // Compute Radii
-      var rx = w/2, ry = h/2;
-
-      context.beginPath();
-      context.moveTo(cx + rx, cy);
-      context.quadraticCurveTo(cx + rx, cy - ry, cx, cy - ry);
-      context.quadraticCurveTo(cx - rx, cy - ry, cx - rx, cy);
-      context.quadraticCurveTo(cx - rx, cy + ry, cx, cy + ry);
-      context.quadraticCurveTo(cx + rx, cy + ry, cx + rx, cy);
-      context.closePath();
-    };
-    
-    var shape_draw = [undefined, undefined, undefined];
-    shape_draw[_o.c.SYM_DIAMOND] = draw_diamond;
-    shape_draw[_o.c.SYM_SQUIGGLE] = draw_squiggle;
-    shape_draw[_o.c.SYM_OVAL] = draw_oval;
-
-    var draw_card = function (context, card, x, y, w, h, draw_mode) {
-      console.log("draw_card: mode="+draw_mode +
-        " x="+x+" y="+y+" w="+w+" h="+h);
-      var n = card[_o.c.DIM_NUMBER] + 1;
-      var symbol = card[_o.c.DIM_SYMBOL];
-      var color  = card[_o.c.DIM_COLOR];
-      var shading  = card[_o.c.DIM_SHADING];
-
-      var brect_width = w/4, brect_height = 3*h/4;
-      var x_gap = (w - (n * brect_width))/(n + 1);
-      var brect_x = x + x_gap;
-      var brect_y = y + (h - brect_height)/2;
-
-      switch (draw_mode) {
-        case _o.c.DRAW_CARD_NORMAL:
-          // Draw white
-          context.fillStyle = "#fff";
-          context.fillRect(x, y, w, h);
-          break;
-        case _o.c.DRAW_CARD_SELECTED:
-        case _o.c.DRAW_CARD_NOT_A_SET:
-        case _o.c.DRAW_CARD_IS_A_SET:
-          context.fillStyle = _o.c.draw_mode_frame_rgb[draw_mode];
-          context.fillRect(x, y, w, h);
-          var bw = Math.max(h / 24, 3); // frame width
-          context.fillStyle = "#ccc";
-          context.fillRect(x + bw, y + bw, w - 2*bw, h - 2*bw);
-          break;
-      }
-
-      draw_func = shape_draw[symbol];
-
-      // console.log("color="+color);
-      var rgbc = _o.c.rgb_colors;
-      var fill_passes = _o.fill_passes[shading];
-      context.fillStyle = rgbc[color];
-      context.strokeStyle = rgbc[color];
-      context.lineWidth = Math.max(brect_width/10, 4);
-      // var pattern_striped = context.createPattern(offscreen, "repeat");
-
-      for (var r = 0; r < n; r++) {
-        context.fillStyle = rgbc[color];
-        for (var fpi = 0; fpi < fill_passes.length; fpi++) {
-          draw_func(
-            context, Math.round(brect_x), Math.round(brect_y),
-            Math.round(brect_width), Math.round(brect_height));
-          if (fill_passes[fpi]) {
-            if (shading == _o.c.SHADING_STRIPED) {
-              context.fillStyle = _o.c.pattern_stripes[color];
-            } else {
-              context.fillStyle = rgbc[color];
-            }
-            context.fill();
-          } else {
-            context.fillStyle = rgbc[color];
-            context.stroke();
-          }
-        }
-        brect_x += brect_width + x_gap
-      }
-    };
 
     var pattern_stripes_set = function (_o, card_height) {
       console.log('pattern_stripes_set');
@@ -553,6 +563,63 @@ init_ui = function (_o) {
     }
   };
 
+  // redraw just one card
+  _o.board_draw_cardi = function (ci) {
+    console.log("board_draw_cardi: ci="+ci);
+    var canvas = gelem('board');
+    var context = canvas.getContext("2d"); // Get 2D drawing context
+    var b = _o.board;
+    var xwg = (b.card_width + b.xgap);
+    var yhg = (b.card_height + b.ygap);
+    var x = b.xgap + (ci % b.n_columns) * xwg;
+    var y = b.ygap + Math.floor(ci / b.n_columns) * yhg;
+    var card = _o.cards[_o.state.cards_active_idx[ci]];
+    draw_card(context, card, x, y, b.card_width, b.card_height,
+      _o.card_get_draw_mode(ci));
+  };
+
+
+  function xy2card_index(_o, x, y) {
+    var b = _o.board;
+    var column = (x - b.xgap) / (b.card_width + b.xgap);
+    var row    = (y - b.ygap) / (b.card_height + b.ygap);
+    column = Math.max(Math.floor(column), 0);
+    row = Math.max(Math.floor(row), 0);
+    var i = b.n_columns * row + column;
+    console.log('x='+x + ', y='+y + ', column='+column + ', row='+row +
+        ', n_columns='+b.n_columns + ', i='+i);
+    if (i >= _o.state.cards_active_idx.length) { i = -1; }
+    return i;
+  };
+
+
+    _o.user_try3 = function () {
+        console.log("user_try3");
+        _o.web_socket.send(_o.c.S3333_C2S_TRY3 + " " + _o.state.gstate + " " + 
+            _o.state.cards_selected.join(" "));
+    };
+
+
+  _o.card_select = function (e) {
+    console.log('card_select'); console.log(e);
+    var rect = e.target.getBoundingClientRect();
+    console.log('rect'); console.log(rect); 
+    var ci = xy2card_index(_o, e.clientX - rect.left, e.clientY - rect.top);
+    console.log("card_select: mouse=("+e.clientX+","+e.clientY+"), ci="+ci);
+    if (ci >= 0) {
+      var si = _o.state.cards_selected.indexOf(ci);
+      if (si == -1) {
+        _o.state.cards_selected.push(ci);
+        if (_o.state.cards_selected.length == 3) {
+          _o.user_try3();
+        }
+      } else {
+        popi(_o.state.cards_selected, si);
+      }
+      _o.board_draw_cardi(ci);
+    }
+  };
+
 
   gelem('b-new-table').onclick = function () { _o.show_new_table_dialog(_o); };
   // gelem('start').onclick = function () { _o.new_game(); }
@@ -563,7 +630,7 @@ init_ui = function (_o) {
 init_server = function (_o) {
   console.log('init_server');
 
-  _o.init_state = function (_9) { 
+  _o.init_state = function (_o) { 
     _o.state = {
       myname: "",
       table_name: "",
@@ -574,12 +641,12 @@ init_server = function (_o) {
       game_active: false,
       cards_active_idx: [], // Indices to cards
       cards_selected: [], // Indices to cards_active_idx
-      selected_draw_mode: undefined,
+      selected_draw_mode: _o.c.DRAW_CARD_SELECTED,
       delayed: false,
       delayed_events: [],
     };
   };
-  _o.init_state();
+  _o.init_state(_o);
 
   _o.msgh_new_table = function (_o, result) {
     console.log('msgh_new_table: ...');
