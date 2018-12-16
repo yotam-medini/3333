@@ -196,7 +196,7 @@ init_ui = function (_o) {
     }
   };
 
-  _o.warning_code = function (error_code, okfunc) {
+  _o.warning_code = function (_o, error_code, okfunc) {
     _o.warning('error_code='+error_code, okfunc);
   };
 
@@ -682,8 +682,21 @@ init_server = function (_o) {
 
   console.log(_o.message_handlers);
 
-  _o.tables_status = function (_o) {
+  function tables_status (_o) {
+    console.log('tables_status: not yet impemented');
   };
+
+  function draw_selected(_o) {
+    for (var i = 0; i < _o.state.cards_selected.length; ++i) {
+       _o.board_draw_cardi(_o.state.cards_selected[i]);
+    }
+  };
+
+  function bad_set_show(_o) {
+      _o.state.selected_draw_mode = _o.c.DRAW_CARD_NOT_A_SET; // for redraw
+      draw_selected(_o);
+  };    
+
 
   _o.event_handler_now = function (_o, evt) {
     console.log("evt.data=" + evt.data);
@@ -697,15 +710,15 @@ init_server = function (_o) {
       console.log("not _o.c.E3333_OK");
       if (rc == _o.c.E3333_NOT_A_SET) {
         console.log("Not a set");
-        _o.bad_set_show();
-        _o.warning_code(rc, function () {
+        bad_set_show(_o);
+        _o.warning_code(_o, rc, function () {
           console.log("dm:=selected");
           _o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
           _o.state.cards_selected.pop();
           _o.board_show(_o);
         });
       } else {
-        _o.warning_code(rc);
+        _o.warning_code(_o, rc);
       }
     } else {
       var cmd = edata['cmd'];
@@ -728,13 +741,13 @@ init_server = function (_o) {
   };
 
   _o.event_handler = function (_o, evt) {
-     console.log("event_handler");
-     if (_o.state.delayed) {
-         console.log("Delayed event");
-         _o.state.delayed_events.push(evt);
-     } else {
-         _o.event_handler_now(_o, evt);
-     }
+    console.log("event_handler");
+    if (_o.state.delayed) {
+      console.log("Delayed event");
+      _o.state.delayed_events.push(evt);
+    } else {
+      _o.event_handler_now(_o, evt);
+    }
   };
 
   var win_hostname = window.location.hostname
@@ -745,7 +758,7 @@ init_server = function (_o) {
   console.log("web_socket.readyState=" + _o.web_socket.readyState);
   _o.web_socket.onopen = function () {
       console.log("websocket.onopen");
-      _o.tables_status();
+      tables_status(_o);
   };
   _o.web_socket.onmessage = function (evt) { _o.event_handler(_o, evt); };
 }
