@@ -1,0 +1,137 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: #111;
+}
+#table {
+  background: #ddd;
+  height: 100%;
+}
+
+#table-main {
+  background: #ddd;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+#table-header {
+  background: #c33;
+  display: flex;
+  flex-direction: row;
+}
+
+#start {
+  flex: 10;
+}
+#table-stats-vbox {
+  background: #ccc;
+  flex: 10;
+  display: flex;
+  flex-direction: column;
+}
+.table-stats-sep {
+  flex: 1;
+}
+#table-stats {
+  background: #ccc;
+  display: flex;
+  flex-direction: row;
+}
+#table-found {
+  background: #9f9;
+  flex: 6;
+}
+#deck {
+  background: #99f;
+  flex: 6;
+}
+#table-bad-calls {
+  background: #f99;
+  flex: 6;
+}
+.stat-sep {
+  flex: 1;
+}
+#add3 {
+  flex: 10;
+}
+#done {
+  flex: 10;
+}
+.button-sep {
+  flex: 1;
+}
+
+#table-mid {
+  background: #8c3;
+  flex: 6;
+  /* height: 100%; */
+}
+
+#table-mid-row {
+  background: #a3c;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+#board-left-margin {
+  background: purple;
+  padding: 6px;
+}
+#board-wrap {
+  background: #2b2;
+  flex: 14;
+}
+#board-right-margin {
+  background: purple;
+  padding: 6px;
+}
+#table-footer {
+  padding: 6px;
+  background: mediumpurple;
+}
+
+#players-main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+#players-header {
+  flex: 1;
+}
+#players-mid {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+#players-left {
+  flex: 1;
+}
+#players-table {
+  flex: 2;
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+#players-table th,td {
+  border: 1px solid black;
+}
+#players-right {
+  flex: 1;
+}
+#players-footer {
+  flex: 1;
+}
+
+.centertext {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+}

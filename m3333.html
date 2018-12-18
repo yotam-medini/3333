@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3333</title>
+  <link rel="stylesheet" href="../onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="../onsenui/css/onsen-css-components.min.css">
+  <link rel="stylesheet" href="m3333.css">
+  <script src="../onsenui/js/onsenui.min.js"></script>
+  <script src="m3333-consts.js"></script>
+</head>
+<body>
+
+<template id="warning.html">
+  <ons-alert-dialog id="warning-dialog" modifier="rowfooter">
+    <div class="alert-dialog-title">Warning</div>
+    <div class="alert-dialog-content" id="warning-content">
+      dummy warning
+    </div>
+    <div class="alert-dialog-footer">
+      <ons-alert-dialog-button id="b-warning-ok">OK</ons-alert-dialog-button>
+    </div>
+  </ons-alert-dialog>
+</template>
+
+<ons-page>
+  <ons-tabbar swipeable position="top">
+    <ons-tab page="club.html" label="Club"
+             icon="ion-home, material:md-home" active>
+    </ons-tab>
+    <ons-tab page="table.html" label="Table"
+             icon="ion-card" >
+    </ons-tab>
+    <ons-tab page="players.html" label="Players"
+      icon="ion-ios-people, android:ion-android-people, material:md-people">
+    </ons-tab>
+  </ons-tabbar>
+</ons-page>
+
+<template id="club.html">
+  <ons-page id="club">
+    <p id="p-findme" style="text-align: center;">
+      This is the club page.
+    </p>
+    <ons-button id="b-new-table">
+      <ons-icon icon="ion-plus"></ons-icon>
+      New Table
+    </ons-button>
+  </ons-page>
+</template>
+
+<template id="table.html">
+  <ons-page id="table">
+    <div id="table-main">
+      <div id="table-header">
+        <button class="button" id="start">Start</button>
+        <span class="button-sep"></span>
+        <div id="table-stats-vbox">
+	  <div class="table-stats-sep"></div>
+          <div id="table-stats">
+	    <span class="stat-sep"></span>
+	    <span id="table-found" class="centertext">0</span>
+	    <span class="stat-sep"></span>
+	    <span id="deck" class="centertext">81</span>
+	    <span class="stat-sep"></span>
+	    <span id="table-bad-calls" class="centertext">0</span>
+	    <span class="stat-sep"></span>
+	  </div>
+	  <div class="table-stats-sep"></div>
+        </div>
+        <span class="button-sep"></span>
+        <button class="button" id="add3">+3</button> 
+        <span class="button-sep"></span>
+        <button class="button" id="done">Done</button> 
+      </div>
+      <div id="table-mid">
+        <div id="table-mid-row">
+          <div id="board-left-margin"></div>
+          <div id="board-wrap" class="centered"></div>
+          <div id="board-right-margin"></div>
+        </div>
+      </div>
+      <div id="table-footer">footer</div>
+    </div>
+  </ons-page>
+</template>
+
+<template id="players.html">
+  <ons-page id="players">
+    <div id="players-main">
+      <div id="players-header"></div>
+      <div id="players-mid">
+	<div id="players-left"></div>
+	<table id="players-table">
+	  <tr>
+	    <th>Name</th>
+	    <th>Found</th>
+	    <th>Misses</th>
+	    <th>Good+3</th>
+	    <th>Badd+3</th>
+	    <th>Joined</th>
+	    <th>Recent</th>
+	  </tr>
+	</table>
+	<div id="players-right"></div>
+      </div>
+      <div id="players-footer"></div>
+    </div>
+  </ons-page>
+</template>
+
+<template id="new-table.html">
+  <ons-dialog id="dialog-new-table">
+    <div style="text-align: center; margin-top: 30px;">
+      <p>
+        <ons-button id="bi-table-name" modifier="light">
+          <ons-icon icon="ion-information"></ons-icon>
+        </ons-button>
+        <ons-input id="table-name" modifier="underbar"
+          placeholder="Table/Owner name" float>
+        </ons-input>
+      </p>
+      <p>
+        <ons-button id="bi-owner-password" modifier="light">
+          <ons-icon icon="ion-information"></ons-icon>
+        </ons-button>
+        <ons-input id="owner-password" modifier="underbar" 
+          placeholder="Owner Password" float>
+        </ons-input>
+      </p>
+      <p>
+        <ons-button id="bi-table-password" modifier="light">
+          <ons-icon icon="ion-information"></ons-icon>
+        </ons-button>
+        <ons-input id="table-password" modifier="underbar" 
+          placeholder="Table Password" float>
+        </ons-input>
+      </p>
+      <p style="margin-top: 30px;">
+        <ons-button id="b-create-table">Create New Table</ons-button>
+        <ons-button onclick="hideDialog('dialog-new-table')">
+          Close
+        </ons-button>
+      </p>
+    </div>  
+  </ons-dialog>
+</template>
+
+<ons-popover direction="down" id="popinfo-table-name">
+  <div style="padding: 10px; text-align: center;">
+    <div>
+      The alphanumeric name of both:
+      <ul style="text-align: left;">
+        <li>the created table</li>
+        <li>the owner as a player</li>
+      </ul>
+    </div>
+    <p>
+      <ons-button onclick="hidePopover('popinfo-table-name')">C
+        lose
+      </ons-button>
+    </p>
+  </div>
+</ons-popover>
+
+
+<ons-popover direction="down" id="popinfo-owner-password">
+  <div style="padding: 10px;">
+    <p>
+      The alphanumeric password of the owner as player
+    </p>
+    <p>
+      <ons-button onclick="hidePopover('popinfo-owner-password')">
+        Close
+      </ons-button>
+    </p>
+  </div>
+</ons-popover>
+
+
+<ons-popover direction="up" id="popinfo-table-password">
+  <div style="padding: 10px;">
+    <p>
+      The alphanumeric password for guests to join the table.
+    </p>
+    <p>
+      <ons-button onclick="hidePopover('popinfo-table-password')">
+        Close
+      </ons-button>
+    </p>
+  </div>
+</ons-popover>
+
+  <script src="m3333.js"></script>
+</body>
+</html>
