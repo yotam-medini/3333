@@ -163,12 +163,23 @@ init_ui = function (_o) {
     return canvas;
   };
 
+  function new_game(_o) {
+    console.log('New game');
+    _o.web_socket.send(_o.c.S3333_C2S_GNEW);
+  }
+
+  function add3(_o) {
+    console.log('add3');
+    _o.web_socket.send(_o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
+  }
+
   document.addEventListener('init', function(event) {
     var page = event.target;
     console.log('page=' + page);
     console.log('page,id=' + page.id);
     if (page.matches('#table')) {
-      gelem('start').onclick = function () { _o.new_game(_o); }
+      gelem('start').onclick = function () { new_game(_o); }
+      gelem('add3').onclick = function () { add3(_o); }
       _o.init_canvas(_o);
       _o.ui_completed = true; // may need stronger condition
       _o.init_server(_o);
@@ -197,7 +208,48 @@ init_ui = function (_o) {
   };
 
   _o.warning_code = function (_o, error_code, okfunc) {
-    _o.warning('error_code='+error_code, okfunc);
+    console.log('error_code='+error_code + ', okfunc='+okfunc);
+    var text = ''; // _o.warning_code_to_text[error_code];
+    switch (error_code)
+    {
+     case _o.c.E3333_BAD_COMMAND:
+      text = "Bad Command.";
+      break;
+     case _o.c.E3333_NO_TABLE:
+      text = "No table. Table may have been expired.";
+      break;
+     case _o.c.E3333_NO_PLAYER:
+      text = "No player. may have been expired.";
+      break;
+     case _o.c.E3333_CLUB_FULL:
+      text = "Club full, no more tables available.";
+      break;
+     case _o.c.E3333_COLLISION:
+      text = "Sorry, your action was ignored due to \"cloud collision\". " +
+	  "Probably your action assumed obsolete game state. " +
+	  "Some player was faster than you?";
+      break;
+     case _o.c.E3333_NAME_USED:
+      text = "Name already used, or (if re-joining) wrong passcode";
+      break;
+     case _o.c.E3333_NOT_A_SET:
+      text = "Sorry, not a set!";
+      break;
+     case _o.c.E3333_TABLE_FULL:
+      text = "Sorry, table is full!";
+      break;
+     case _o.c.E3333_TABLE_NOT_AUTHORIZED:
+      text = "Sorry, wrong passcode for the table.";
+      break;
+     case _o.c.E3333_YES_MORE:
+      text = "Hmmm... still there is/are more.";
+      break;
+     case _o.c.E3333_FALSE_NONE:
+      text = "Adding 3 cards was not necessary.";
+      break;
+    }
+    console.log('error_code='+error_code + ', text: ' + text);
+    _o.warning(text, okfunc);
   };
 
   _o.show_new_table_dialog = function(_o) {
@@ -240,11 +292,6 @@ init_ui = function (_o) {
         });
     }
   };
-
-  _o.new_game = function (_o) {
-    console.log('New game');
-    _o.web_socket.send(_o.c.S3333_C2S_GNEW);
-  }
 
   _o.card_get_draw_mode = function(ci) {
     var draw_mode = (_o.state.cards_selected.includes(ci) 
@@ -378,8 +425,8 @@ init_ui = function (_o) {
   shape_draw[_o.c.SYM_OVAL] = draw_oval;
 
   function draw_card(context, card, x, y, w, h, draw_mode) {
-    console.log("draw_card: mode="+draw_mode +
-      " x="+x+" y="+y+" w="+w+" h="+h);
+    // console.log("draw_card: mode="+draw_mode +
+    // " x="+x+" y="+y+" w="+w+" h="+h);
     var n = card[_o.c.DIM_NUMBER] + 1;
     var symbol = card[_o.c.DIM_SYMBOL];
     var color  = card[_o.c.DIM_COLOR];
@@ -542,18 +589,37 @@ init_ui = function (_o) {
     }
   };
 
+  function players_update(_o, rstate) {
+    var table = gelem('players-table');
+    var players = rstate['players'];
+    var rows = table.getElementsByTagName('tr');
+    for (var ri = table.rows.length - 1; ri > 0; --ri) {
+      table.deleteRow(ri);
+    }
+    for (var pi = 0; pi < players.length; ++pi) {
+      var p = players[pi];
+      var row = table.insertRow(pi + 1);
+      row.insertCell(0).innerHTML = p['name'];
+      for (var ni = 0; ni < 4; ++ni) {
+        row.insertCell(ni + 1).innerHTML = p['numbers'][ni];
+      }
+      row.insertCell(5).innerHTML = p['tcreated'];
+      row.insertCell(6).innerHTML = p['taction'];
+    }
+  }
+
   _o.state_update = function (_o, rstate) {
     console.log('state_update'); console.log(rstate);
     if (_o.state.tstate < rstate['tstate']) {
       _o.state.tstate = rstate['tstate'];
       // _o.players_fill(rstate['players']);
+      players_update(_o, rstate);
     }
     if (_o.state.gstate < rstate['gstate']) {
       var old_game_active = _o.state.game_active;
       _o.state.gstate = rstate['gstate'];
       _o.state.cards_active_idx = rstate['active'];
       _o.state.deck_size = rstate['deck'];
-      // $("#indeck").text(_o.state.deck_size);
       _o.state.game_active = rstate['gactive'];
       _o.board_show(_o);
       if (old_game_active && !_o.state.game_active) {
@@ -622,7 +688,6 @@ init_ui = function (_o) {
 
 
   gelem('b-new-table').onclick = function () { _o.show_new_table_dialog(_o); };
-  // gelem('start').onclick = function () { _o.new_game(); }
   console.log('init_ui done');
 };
 
@@ -656,6 +721,30 @@ init_server = function (_o) {
     // _o.web_socket.send(_o.c.S3333_C2S_TBLS)
     // _o.mobile_set_titles();
     // _o.mobile_page_set("table");
+  };
+
+  _o.msgh_join = function (_o, result) {
+    console.log('Not yet!!!');
+  };
+
+  _o.msgh_tables_status = function (_o, result) {
+    console.log('Not yet!!!');
+  };
+
+  _o.msgh_set_found = function (_o, a3i) {
+    console.log("msgh_set_found: a3i="+a3i);
+    _o.state.cards_selected = a3i;
+    _o.state.selected_draw_mode = _o.c.DRAW_CARD_IS_A_SET;
+    _o.board_show(_o); // For all players!
+    _o.state.delayed = true;
+    setTimeout(function () {
+        console.log('after found shown');
+	_o.state.delayed = false;
+	_o.state.cards_selected = [];
+	_o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
+	_o.board_show(_o);
+	_o.handle_delayed_events(_o);
+    }, 600);
   };
 
   var init_gfx_modes = function (_o) {
