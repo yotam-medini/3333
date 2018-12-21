@@ -608,6 +608,29 @@ init_ui = function (_o) {
     }
   }
 
+  function cheat_tip(_o) {
+    console.log("cheat_tip:");
+    var n = _o.state.cards_active_idx.length;
+    for (var i = 0; i < n; i++) {
+      var i_card = _o.cards[_o.state.cards_active_idx[i]]
+      for (var j = i + 1; j < n; j++) {
+        var j_card = _o.cards[_o.state.cards_active_idx[j]]
+        for (var k = j + 1; k < n; k++) {
+          var k_card = _o.cards[_o.state.cards_active_idx[k]]
+          var is_set = true;
+          for (var d = 0; is_set && d < 4; d++)
+          {
+            s = i_card[d] + j_card[d] + k_card[d];
+            is_set = ((s % 3) == 0);
+          }
+          if (is_set) {
+            console.log("is_set: ["+i+", "+j+", "+k+"]");
+          }
+        }
+      }
+    }
+  }
+
   _o.state_update = function (_o, rstate) {
     console.log('state_update'); console.log(rstate);
     if (_o.state.tstate < rstate['tstate']) {
@@ -625,7 +648,7 @@ init_ui = function (_o) {
       if (old_game_active && !_o.state.game_active) {
         _o.game_over();
       }
-      // _o.cheat_tip()
+      cheat_tip(_o)
     }
   };
 
