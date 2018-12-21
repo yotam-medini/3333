@@ -180,6 +180,7 @@ init_ui = function (_o) {
     if (page.matches('#table')) {
       gelem('start').onclick = function () { new_game(_o); }
       gelem('add3').onclick = function () { add3(_o); }
+      gelem('done').disabled = true;
       _o.init_canvas(_o);
       _o.ui_completed = true; // may need stronger condition
       _o.init_server(_o);
@@ -262,6 +263,7 @@ init_ui = function (_o) {
       var pw_flags = 1*(!(table_pw === "")) + 2*(!(owner_pw === ""));
       console.log('name='+name + ', owner_pw='+owner_pw + 
         ', table_pw='+table_pw);
+      _o.state.myname = _o.state.table_name = name;
       _o.web_socket.send([
         _o.c.S3333_C2S_NTBL, name, pw_flags, table_pw, owner_pw].join(" "));
     };
@@ -486,6 +488,21 @@ init_ui = function (_o) {
     }
   };
 
+  function stats_show(_o, rstate) {
+    console.log('myname='+_o.state.myname);
+    gelem('deck').innerHTML = rstate['deck'];
+    var players = rstate['players'];
+    for (var pi = 0; pi < players.length; ++pi) {
+      var player = players[pi];
+      console.log(player);
+      if (player.name == _o.state.myname) {
+        var nums = player['numbers'];
+        gelem('table-found').innerHTML = nums[0] + nums[2];
+        gelem('table-bad-calls').innerHTML = nums[1] + nums[3];
+      }
+    }
+  }
+
   _o.board_show = function (_o) {
     var board_n_columns = function (width, height, n) {
       // Decide how many columns to use for drawing
@@ -518,7 +535,6 @@ init_ui = function (_o) {
       }
       return best_columns
     };
-
 
     var pattern_stripes_set = function (_o, card_height) {
       console.log('pattern_stripes_set');
@@ -637,6 +653,7 @@ init_ui = function (_o) {
       _o.state.tstate = rstate['tstate'];
       // _o.players_fill(rstate['players']);
       players_update(_o, rstate);
+      stats_show(_o, rstate);
     }
     if (_o.state.gstate < rstate['gstate']) {
       var old_game_active = _o.state.game_active;
@@ -738,6 +755,7 @@ init_server = function (_o) {
 
   _o.msgh_new_table = function (_o, result) {
     console.log('msgh_new_table: ...');
+    console.log(result);
     hideDialog('dialog-new-table');
     _o.state.owner = true;
     _o.board_show(_o);
@@ -902,12 +920,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
   // init_server(_o);
 });
 
-document.addEventListener('init', function(event) {
-  console.log('listener: init')
-  var page = event.target;
-  if (page.matches('#table')) {
-    console.log('listener: init: table');
-  }
-});
+// document.addEventListener('init', function(event) {
+//   console.log('listener: init')
+//   var page = event.target;
+//   if (page.matches('#table')) {
+//     console.log('listener: init: table');
+//   }
+// });
 
 console.log('End of 3.js');
