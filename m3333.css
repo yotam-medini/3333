@@ -6,6 +6,50 @@ body {
 body {
   background: #111;
 }
+
+#club {
+  background: #ccc;
+  height: 100%;
+}
+#club-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+#club-bar {
+  display: flex;
+  flex-direction: row;
+}
+.bar-fill {
+  flex: 1;
+}
+#club-table-main {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background: pink;
+  flex: 0 1 100%;
+}
+.club-hfill {
+  flex: 1;
+  background: green;
+}
+.club-vfill {
+  // flex: 1;
+  background: orange;
+}
+#tables-table {
+  display: flex;
+  flex-flow: column;
+}
+#tables-thead {
+  display: block;
+}
+#tables-tbody {
+  display: block;
+  overflow-y: scroll;
+}
+
 #table {
   background: #ddd;
   height: 100%;
@@ -23,7 +67,7 @@ body {
   background: #c33;
   display: flex;
   flex-direction: row;
-}
+o}
 
 #start {
   flex: 10;
@@ -141,3 +185,5 @@ body {
 .label-bad {
   color: #e22;
 }
+
+

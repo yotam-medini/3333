@@ -77,6 +77,48 @@ show_tree = function (root, depth, ci) {
   }
 }
 
+function get_longest_tr(parent, celltag) {
+  let tr_longest = null;
+  let trs = parent.getElementsByTagName('tr');
+  let cells_max = 0;
+  for (let i = 0; i < trs.length; i++) { 
+    let tr = trs[i]; 
+    let cells = tr.getElementsByTagName(celltag);
+    if (cells_max < cells.length) {
+      cells_max = cells.length;
+      tr_longest  = tr;
+    }
+  }
+  return tr_longest;
+}
+
+function table_align_head_body(tbl_id) {
+  let table = document.getElementById(tbl_id);
+  let thead = table.getElementsByTagName('thead');
+  let tbody = table.getElementsByTagName('tbody');
+  let header_tr = get_longest_tr(thead[0], 'th');
+  let body_tr = get_longest_tr(tbody[0], 'td');
+
+  let ths = header_tr.getElementsByTagName("th");
+  let tds = body_tr.getElementsByTagName("td");
+  let ncols = Math.min(ths.length, tds.length);
+  for (var ti = 0; ti < ncols; ++ti) {
+    let cell_big = ths[ti];
+    let cell_small = tds[ti];
+    let wbig = cell_big.offsetWidth;
+    let wsmall= cell_small.offsetWidth;
+    if (wsmall != wbig) {
+      if (wbig < wsmall) {
+	let tcell = cell_big; cell_big = cell_small; cell_small = tcell;
+      }
+      let style = window.getComputedStyle(cell_big, null);
+      let style_width = style.getPropertyValue("width");
+      let sstyle = window.getComputedStyle(cell_small, null);
+      cell_small.setAttribute('width', style_width)
+    }
+  }
+}
+
 init_ui = function (_o) {
 
   console.log('init_ui');
@@ -177,13 +219,17 @@ init_ui = function (_o) {
     var page = event.target;
     console.log('page=' + page);
     console.log('page,id=' + page.id);
+    _o.init_server(_o);
     if (page.matches('#table')) {
       gelem('start').onclick = function () { new_game(_o); }
       gelem('add3').onclick = function () { add3(_o); }
       gelem('done').disabled = true;
       _o.init_canvas(_o);
       _o.ui_completed = true; // may need stronger condition
-      _o.init_server(_o);
+    }
+    if (page.matches('#club')) {
+      console.log('init club page');
+      table_align_head_body('tables-table');
     }
   });
 
@@ -770,6 +816,23 @@ init_server = function (_o) {
 
   _o.msgh_tables_status = function (_o, result) {
     console.log('Not yet!!!');
+    console.log(result);
+    console.log('result.length='+result.length);
+    let tbody = gelem('tables-tbody');
+    let rows = tbody.getElementsByTagName('tr');
+    for (let ri = rows.length - 1; ri >= 0; --ri) {
+      tbody.deleteRow(ri);
+    }
+    for (let ri = 0; ri < result.length; ++ri) {
+      let tblinf = result[ri];
+      let row = tbody.insertRow(ri);
+      row.insertCell(0).innerHTML = 'Join' + ri
+      row.insertCell(1).innerHTML = tblinf[0];
+      row.insertCell(2).innerHTML = tblinf[1];
+      row.insertCell(3).innerHTML = tblinf[3];
+      row.insertCell(4).innerHTML = tblinf[4];
+    }
+    table_align_head_body('tables-table');
   };
 
   _o.msgh_set_found = function (_o, a3i) {
@@ -779,12 +842,12 @@ init_server = function (_o) {
     _o.board_show(_o); // For all players!
     _o.state.delayed = true;
     setTimeout(function () {
-        console.log('after found shown');
-	_o.state.delayed = false;
-	_o.state.cards_selected = [];
-	_o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
-	_o.board_show(_o);
-	_o.handle_delayed_events(_o);
+      console.log('after found shown');
+      _o.state.delayed = false;
+      _o.state.cards_selected = [];
+      _o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
+      _o.board_show(_o);
+      _o.handle_delayed_events(_o);
     }, 600);
   };
 
@@ -813,7 +876,8 @@ init_server = function (_o) {
   console.log(_o.message_handlers);
 
   function tables_status (_o) {
-    console.log('tables_status: not yet impemented');
+    console.log('tables_status ask server');
+    _o.web_socket.send(_o.c.S3333_C2S_TBLS)
   };
 
   function draw_selected(_o) {
@@ -880,6 +944,17 @@ init_server = function (_o) {
     }
   };
 
+  function onconnect(_o, f, timeout) {
+    console.log('readyState='+ _o.web_socket.readyState + ', timeout='+timeout);
+    if (timeout > 0) {
+      if (_o.web_socket.readyState == 1) {
+        f(_o);
+      } else {
+        setTimeout(function () { onconnect(_o, f, timeout - 1); });
+      }
+    } 
+  }
+
   var win_hostname = window.location.hostname
   if (win_hostname == "") { win_hostname = "localhost"; }
   var host = "ws://" + win_hostname + ":" + _o.c.CS3333_PORT + "/ws";
@@ -887,8 +962,8 @@ init_server = function (_o) {
   _o.web_socket = new WebSocket(host);
   console.log("web_socket.readyState=" + _o.web_socket.readyState);
   _o.web_socket.onopen = function () {
-      console.log("websocket.onopen");
-      tables_status(_o);
+      console.log("websocket.onopen: readyState="+ _o.web_socket.readyState);
+      onconnect(_o, tables_status, 10);
   };
   _o.web_socket.onmessage = function (evt) { _o.event_handler(_o, evt); };
 }
