@@ -233,23 +233,25 @@ init_ui = function (_o) {
     }
   });
 
+  function warning_dialog_show(_o, dialog, text, okfunc) {
+    gelem('warning-content').innerHTML = text;
+    dialog.show();
+    gelem('b-warning-ok').onclick = function () {
+      gelem('warning-dialog').hide();
+      if (okfunc) { okfunc(); }
+      console.log('warning done');
+    };
+  }
+
   _o.warning = function (text, okfunc) {
-    var text_set = function(text) { gelem('warning-content').innerHTML = text; }
     console.log('warning: '+text);
     var dialog = gelem('warning-dialog');
     if (dialog) {
-      text_set(text);
-      dialog.show();
+      warning_dialog_show(_o, dialog, text, okfunc);
     } else {
       ons.createElement('warning.html', { append: true })
       .then(function(dialog) {
-        text_set(text);
-        dialog.show();
-        gelem('b-warning-ok').onclick = function () {
-          gelem('warning-dialog').hide();
-          if (okfunc) { okfunc(); }
-          console.log('warning done');
-        };
+        warning_dialog_show(_o, dialog, text, okfunc);
       });
     }
   };
