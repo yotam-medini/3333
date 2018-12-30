@@ -99,8 +99,12 @@ function table_align_head_body(tbl_id) {
   let header_tr = get_longest_tr(thead[0], 'th');
   let body_tr = get_longest_tr(tbody[0], 'td');
 
+  console.log('header_tr='+header_tr + ', body_tr='+body_tr);
   let ths = header_tr.getElementsByTagName("th");
-  let tds = body_tr.getElementsByTagName("td");
+  let tds = [];
+  if (body_tr !== null) {
+    tds = body_tr.getElementsByTagName("td");
+  }
   let ncols = Math.min(ths.length, tds.length);
   for (var ti = 0; ti < ncols; ++ti) {
     let cell_big = ths[ti];
@@ -215,6 +219,11 @@ init_ui = function (_o) {
     _o.web_socket.send(_o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
   }
 
+  function no_more(_o) {
+    console.log('no_more');
+    _o.web_socket.send(_o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
+  }
+
   document.addEventListener('init', function(event) {
     var page = event.target;
     console.log('page=' + page);
@@ -223,6 +232,9 @@ init_ui = function (_o) {
     if (page.matches('#table')) {
       gelem('start').onclick = function () { new_game(_o); }
       gelem('add3').onclick = function () { add3(_o); }
+      gelem('done').onclick = function () { no_more(_o); }
+      gelem('start').disabled = true;
+      gelem('add3').disabled = true;
       gelem('done').disabled = true;
       _o.init_canvas(_o);
       _o.ui_completed = true; // may need stronger condition
@@ -707,7 +719,15 @@ init_ui = function (_o) {
       var old_game_active = _o.state.game_active;
       _o.state.gstate = rstate['gstate'];
       _o.state.cards_active_idx = rstate['active'];
+      if ((rstate['deck'] == 0) && (_o.state.deck_size > 0)) {
+        gelem('add3').disabled = true;
+        gelem('done').disabled = false;
+      }
       _o.state.deck_size = rstate['deck'];
+      if (rstate['gactive'] && !_o.state.game_active) {
+        gelem('add3').disabled = false;
+        gelem('done').disabled = true;
+      }
       _o.state.game_active = rstate['gactive'];
       _o.board_show(_o);
       if (old_game_active && !_o.state.game_active) {
@@ -811,6 +831,7 @@ init_server = function (_o) {
     console.log(result);
     hideDialog('dialog-new-table');
     _o.state.owner = true;
+    gelem('start').disabled = false;
     _o.board_show(_o);
     show_table_name(_o);
     // _o.web_socket.send(_o.c.S3333_C2S_TBLS)
