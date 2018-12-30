@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<!-- This is a comment -->
+  
 <template id="warning.html">
   <ons-alert-dialog id="warning-dialog" modifier="rowfooter">
     <div class="alert-dialog-title">Warning</div>
@@ -29,8 +31,9 @@
     <ons-tab page="club.html" label="Club"
              icon="ion-home, material:md-home" active>
     </ons-tab>
-    <ons-tab page="table.html" label="Table"
-             icon="ion-card" >
+    <ons-tab page="table.html">
+      <ons-icon icon="ion-card"></ons-icon>
+      <span id="tab-table-name"></span>
     </ons-tab>
     <ons-tab page="players.html" label="Players"
       icon="ion-ios-people, android:ion-android-people, material:md-people">
@@ -117,7 +120,11 @@
 <template id="players.html">
   <ons-page id="players">
     <div id="players-main">
-      <div id="players-header"></div>
+      <div id="players-header">
+        <center>
+          <h1>Players of Table: <span id="players-table-name"></span></h1>
+        </center>
+      </div>
       <div id="players-mid">
 	<div id="players-left"></div>
 	<table id="players-table">

@@ -801,12 +801,18 @@ init_server = function (_o) {
   };
   _o.init_state(_o);
 
+  function show_table_name (_o) {
+    gelem('tab-table-name').innerHTML = _o.state.table_name;
+    gelem('players-table-name').innerHTML = _o.state.table_name;
+  }
+
   _o.msgh_new_table = function (_o, result) {
     console.log('msgh_new_table: ...');
     console.log(result);
     hideDialog('dialog-new-table');
     _o.state.owner = true;
     _o.board_show(_o);
+    show_table_name(_o);
     // _o.web_socket.send(_o.c.S3333_C2S_TBLS)
     // _o.mobile_set_titles();
     // _o.mobile_page_set("table");
