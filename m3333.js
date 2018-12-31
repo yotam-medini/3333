@@ -224,6 +224,12 @@ init_ui = function (_o) {
     _o.web_socket.send(_o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
   }
 
+  function game_over(_o) {
+    info(_o, 'Game Over!', function () {
+      gelem('done').disabled = true;
+    });
+  }
+
   document.addEventListener('init', function(event) {
     var page = event.target;
     console.log('page=' + page);
@@ -244,6 +250,30 @@ init_ui = function (_o) {
       table_align_head_body('tables-table');
     }
   });
+
+  function info_dialog_show(_o, dialog, text, okfunc) {
+    console.log('info_dialog_show: ' + text);
+    gelem('info-content').innerHTML = text;
+    dialog.show();
+    gelem('b-info-ok').onclick = function () {
+      gelem('info-dialog').hide();
+      if (okfunc) { okfunc(); }
+      console.log('info done');
+    };
+  }
+
+  function info(_o, text, okfunc) {
+    console.log('info: ' + text);
+    let dialog  = gelem('info-dialog');
+    if (dialog) {
+      info_dialog_show(_o, dialog, text, okfunc);
+    } else {
+      ons.createElement('info.html', { append: true })
+      .then(function(dialog) {
+        info_dialog_show(_o, dialog, text, okfunc);
+      });
+    }
+  }
 
   function warning_dialog_show(_o, dialog, text, okfunc) {
     gelem('warning-content').innerHTML = text;
@@ -269,7 +299,7 @@ init_ui = function (_o) {
   };
 
   _o.warning_code = function (_o, error_code, okfunc) {
-    console.log('error_code='+error_code + ', okfunc='+okfunc);
+    console.log('error_code='+error_code);
     var text = ''; // _o.warning_code_to_text[error_code];
     switch (error_code)
     {
@@ -731,7 +761,7 @@ init_ui = function (_o) {
       _o.state.game_active = rstate['gactive'];
       _o.board_show(_o);
       if (old_game_active && !_o.state.game_active) {
-        _o.game_over();
+        game_over(_o);
       }
       cheat_tip(_o)
     }
