@@ -151,6 +151,14 @@ o}
 #players-header {
   flex: 1;
 }
+#players-legend {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 4px;
+}
+#players-legend td {
+  padding: 4px;
+}
 #players-mid {
   display: flex;
   flex-direction: row;
@@ -186,4 +194,6 @@ o}
   color: #e22;
 }
 
-
+.vertical {  
+  writing-mode: vertical-lr;
+}
