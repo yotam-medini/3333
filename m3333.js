@@ -392,6 +392,45 @@ init_ui = function (_o) {
 
   _o.join_table = function (_o, table_name) {
     console.log('table_name='+table_name);
+    _o.state.table_name = table_name
+    var cb = function (_o) {
+      console.log('join-table');
+      var name = gelem('guest-name').value;
+      var guest_pw = gelem('guest-password').value;
+      var table_pw = gelem('jtable-password').value;
+      var pw_flags = 1*(!(table_pw === "")) + 2*(!(guest_pw === ""));
+      console.log('name='+name + ', guest_pw='+guest_pw + 
+        ', table_pw='+table_pw);
+      _o.state.myname =name;
+      _o.web_socket.send([
+        _o.c.S3333_C2S_JOIN, _o.state.table_name, name, pw_flags, table_pw,
+        guest_pw].join(' '));
+    };
+
+    var dialog = gelem('dialog-join-table');
+    if (dialog) {
+      dialog.show();
+    } else {
+      ons.createElement('join-table.html', { append: true })
+        .then(function(dialog) {
+          dialog.show();
+          ss = ['guest-name', 'guest-password', 'jtable-password'];
+          for (si in ss) {
+            var s = ss[si];
+            var b = gelem('bi-' + s);
+            console.log('si='+si + ', b='+b.id);
+            b.onclick = (function () { 
+              var slocal = s;
+              var blocal = b;
+              return function () {
+                console.log('clicked: ' + blocal.id);
+                gelem('popinfo-' + slocal).show(blocal);
+              };
+            })();
+          };
+          gelem('b-join-table').onclick = function () { cb(_o); }
+        });
+    }
   }
 
   _o.card_get_draw_mode = function(ci) {

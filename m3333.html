@@ -220,6 +220,59 @@
   </ons-dialog>
 </template>
 
+<template id="join-table.html">
+  <ons-dialog id="dialog-join-table">
+    <div style="text-align: center; margin-top: 10px;">
+      <table class="table-center">
+        <tr>
+          <td>
+            <ons-button id="bi-guest-name" modifier="quiet">
+              <ons-icon icon="ion-information"></ons-icon>
+            </ons-button>
+          </td>
+          <td>
+            <ons-input id="guest-name" modifier="underbar"
+              placeholder="Guest name" float>
+            </ons-input>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ons-button id="bi-guest-password" modifier="quiet">
+              <ons-icon icon="ion-information"></ons-icon>
+            </ons-button>
+          </td>
+          <td>
+            <ons-input id="guest-password" modifier="underbar" 
+              placeholder="Guest Password" float>
+            </ons-input>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ons-button id="bi-jtable-password" modifier="quiet">
+              <ons-icon icon="ion-information"></ons-icon>
+            </ons-button>
+          </td>
+          <td>
+            <ons-input id="jtable-password" modifier="underbar" 
+              placeholder="Table Password" float>
+            </ons-input>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="text-align: center;">
+      <p style="margin-top: 30px;">
+        <ons-button id="b-join-table">Join Table</ons-button>
+        <ons-button onclick="hideDialog('dialog-join-table')">
+          Close
+        </ons-button>
+      </p>
+    </div>  
+  </ons-dialog>
+</template>
+
 <ons-popover direction="down" id="popinfo-table-name">
   <div style="padding: 10px; text-align: center;">
     <div>

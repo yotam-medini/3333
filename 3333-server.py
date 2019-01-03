@@ -640,11 +640,11 @@ Usage:                   # [Default]
     def set_announce(self, table, a3i):
         self.log("");
         tstate =  table.get_state()
-        c2s_command = self.make_s2c_command(consts.E3333_S2C_SET_FOUND,
+        s2c_command = self.make_s2c_command(consts.E3333_S2C_SET_FOUND,
             consts.E3333_OK, a3i)
         for p in table.players:
             client = self.ws2client(p.ws)
-            client.pre_send(c2s_command)
+            client.pre_send(s2c_command)
 
 
     def introduce(self, client):
@@ -898,7 +898,8 @@ Usage:                   # [Default]
         if not player.ws is None:
             s2c_cmd = self.make_s2c_command(
                 consts.E3333_S2C_CONNECTION_TAKEN, consts.E3333_OK)
-            player.ws.write_message(s2c_cmd)
+            client = self.ws2client(player.ws)
+            client.pre_send(s2c_cmd)
             del player.ws
             player.ws = None
 
