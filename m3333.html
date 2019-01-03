@@ -138,8 +138,12 @@
           <table id="players-legend">
             <tr><td class="label-good">F</td><td>Number of sets found</td></tr>
             <tr><td class="label-bad">M</td><td>Number of misses calls</td></tr>
-            <tr><td class="label-good">G</td><td>Number of Good +3</td></tr>
-            <tr><td class="label-bad">B</td><td>Number of Bad +3</td></tr>
+            <tr><td class="label-good">G</td>
+              <td>Number of Good +3/Done</td>
+            </tr>
+            <tr><td class="label-bad">B</td>
+              <td>Number of Bad +3/Done</td>
+            </tr>
           </table>
         </center>
       </div>
@@ -165,31 +169,47 @@
 
 <template id="new-table.html">
   <ons-dialog id="dialog-new-table">
-    <div style="text-align: center; margin-top: 30px;">
-      <p>
-        <ons-button id="bi-table-name" modifier="light">
-          <ons-icon icon="ion-information"></ons-icon>
-        </ons-button>
-        <ons-input id="table-name" modifier="underbar"
-          placeholder="Table/Owner name" float>
-        </ons-input>
-      </p>
-      <p>
-        <ons-button id="bi-owner-password" modifier="light">
-          <ons-icon icon="ion-information"></ons-icon>
-        </ons-button>
-        <ons-input id="owner-password" modifier="underbar" 
-          placeholder="Owner Password" float>
-        </ons-input>
-      </p>
-      <p>
-        <ons-button id="bi-table-password" modifier="light">
-          <ons-icon icon="ion-information"></ons-icon>
-        </ons-button>
-        <ons-input id="table-password" modifier="underbar" 
-          placeholder="Table Password" float>
-        </ons-input>
-      </p>
+    <div style="text-align: center; margin-top: 10px;">
+      <table class="table-center">
+        <tr>
+          <td>
+            <ons-button id="bi-table-name" modifier="quiet">
+              <ons-icon icon="ion-information"></ons-icon>
+            </ons-button>
+          </td>
+          <td>
+            <ons-input id="table-name" modifier="underbar"
+              placeholder="Table/Owner name" float>
+            </ons-input>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ons-button id="bi-owner-password" modifier="quiet">
+              <ons-icon icon="ion-information"></ons-icon>
+            </ons-button>
+          </td>
+          <td>
+            <ons-input id="owner-password" modifier="underbar" 
+              placeholder="Owner Password" float>
+            </ons-input>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ons-button id="bi-table-password" modifier="quiet">
+              <ons-icon icon="ion-information"></ons-icon>
+            </ons-button>
+          </td>
+          <td>
+            <ons-input id="table-password" modifier="underbar" 
+              placeholder="Table Password" float>
+            </ons-input>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="text-align: center;">
       <p style="margin-top: 30px;">
         <ons-button id="b-create-table">Create New Table</ons-button>
         <ons-button onclick="hideDialog('dialog-new-table')">

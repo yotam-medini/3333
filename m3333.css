@@ -197,3 +197,9 @@ o}
 .vertical {  
   writing-mode: vertical-lr;
 }
+
+.table-center {
+  text-align: center; 
+  margin-left: auto; 
+  margin-right: auto; 
+}

@@ -343,7 +343,12 @@ init_ui = function (_o) {
     _o.warning(text, okfunc);
   };
 
-  _o.show_new_table_dialog = function(_o) {
+  function refresh_club(_o) {
+    console.log('refresh_club');
+    _o.web_socket.send(_o.c.S3333_C2S_TBLS);
+  }
+
+  function show_new_table_dialog(_o) {
 
     var cb = function (_o) {
       console.log('create-table');
@@ -384,6 +389,10 @@ init_ui = function (_o) {
         });
     }
   };
+
+  _o.join_table = function (_o, table_name) {
+    console.log('table_name='+table_name);
+  }
 
   _o.card_get_draw_mode = function(ci) {
     var draw_mode = (_o.state.cards_selected.includes(ci) 
@@ -825,7 +834,8 @@ init_ui = function (_o) {
   };
 
 
-  gelem('b-new-table').onclick = function () { _o.show_new_table_dialog(_o); };
+  gelem('b-new-table').onclick = function () { show_new_table_dialog(_o); };
+  gelem('reresh').onclick = function () { refresh_club(_o); };
   console.log('init_ui done');
 };
 
@@ -884,9 +894,16 @@ init_server = function (_o) {
     }
     for (let ri = 0; ri < result.length; ++ri) {
       let tblinf = result[ri];
+      let table_name = tblinf[0];
       let row = tbody.insertRow(ri);
-      row.insertCell(0).innerHTML = 'Join' + ri
-      row.insertCell(1).innerHTML = tblinf[0];
+      let button = ons._util.createElement("<ons-button>Join</ons-button>");
+      button.onclick = function () { 
+        console.log('Join table: ' + table_name);
+        _o.join_table(_o, table_name);
+      };
+      let td = row.insertCell(0);
+      td.appendChild(button);
+      row.insertCell(1).innerHTML = table_name;
       row.insertCell(2).innerHTML = tblinf[1];
       row.insertCell(3).innerHTML = tblinf[3];
       row.insertCell(4).innerHTML = tblinf[4];
