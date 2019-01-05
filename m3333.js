@@ -913,17 +913,19 @@ init_server = function (_o) {
     gelem('start').disabled = false;
     _o.board_show(_o);
     show_table_name(_o);
+    gelem('tabbar').setActiveTab(1); // From Club tab to Table tab
     // _o.web_socket.send(_o.c.S3333_C2S_TBLS)
     // _o.mobile_set_titles();
     // _o.mobile_page_set("table");
   };
 
   _o.msgh_join = function (_o, result) {
-    console.log('Not yet!!!');
+    console.log('msgh_join');
+    hideDialog('dialog-join-table')
+    gelem('tabbar').setActiveTab(1); // From Club tab to Table tab
   };
 
   _o.msgh_tables_status = function (_o, result) {
-    console.log('Not yet!!!');
     console.log(result);
     console.log('result.length='+result.length);
     let tbody = gelem('tables-tbody');
