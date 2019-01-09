@@ -632,7 +632,7 @@ init_ui = function (_o) {
     var players = rstate['players'];
     for (var pi = 0; pi < players.length; ++pi) {
       var player = players[pi];
-      console.log(player);
+      // console.log(player);
       if (player.name == _o.state.myname) {
         var nums = player['numbers'];
         gelem('table-found').innerHTML = nums[0] + nums[2];
@@ -717,7 +717,7 @@ init_ui = function (_o) {
       _o.board.card_height = Math.round(q * height / rows);
       _o.board.card_width = Math.round(_o.golden * _o.board.card_height);
     }
-    console.log(_o.board);
+    // console.log(_o.board);
     pattern_stripes_set(_o, _o.board.card_height);
 
     var xgap = (width - (columns * _o.board.card_width)) / (columns + 1);
