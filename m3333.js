@@ -901,6 +901,7 @@ init_server = function (_o) {
   _o.init_state(_o);
 
   function show_table_name (_o) {
+    gelem('tab-player-name').innerHTML = _o.state.myname;
     gelem('tab-table-name').innerHTML = _o.state.table_name;
     gelem('players-table-name').innerHTML = _o.state.table_name;
   }
@@ -922,6 +923,7 @@ init_server = function (_o) {
   _o.msgh_join = function (_o, result) {
     console.log('msgh_join');
     hideDialog('dialog-join-table')
+    show_table_name(_o);
     gelem('tabbar').setActiveTab(1); // From Club tab to Table tab
   };
 
