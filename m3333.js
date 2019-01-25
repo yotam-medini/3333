@@ -29,13 +29,14 @@ gelem = function(idname) {
   return ret;
 };
 
-ymdhms = function () {
-  var d2 = function(n) {
+
+
+function date_ymdhms(d) {
+  function d2(n) {
     if (n < 10) { n = '0' + n; }
     return n;
   }
 
-  var d = new Date();
   s = d.getUTCFullYear() + '/' + 
     d2((d.getUTCMonth() + 1)) + '/' + 
     d2(d.getUTCDate()) + ' ' +
@@ -43,6 +44,17 @@ ymdhms = function () {
     d2((d.getUTCMinutes())) + ':' +
     d2((d.getUTCSeconds()));
   return s;
+};
+
+function now_ymdhms () {
+   var d = new Date();
+   return date_ymdhms(d);
+}
+
+
+function epoch_ymdhms(epoch) {
+  var d = new Date(1000*epoch);
+  return date_ymdhms(d);
 };
 
 console_all_elements = function () {
@@ -757,8 +769,8 @@ init_ui = function (_o) {
       for (var ni = 0; ni < 4; ++ni) {
         row.insertCell(ni + 1).innerHTML = p['numbers'][ni];
       }
-      row.insertCell(5).innerHTML = p['tcreated'];
-      row.insertCell(6).innerHTML = p['taction'];
+      row.insertCell(5).innerHTML = epoch_ymdhms(p['tcreated']);
+      row.insertCell(6).innerHTML = epoch_ymdhms(p['taction']);
     }
   }
 
@@ -928,8 +940,8 @@ init_server = function (_o) {
   };
 
   _o.msgh_tables_status = function (_o, result) {
-    console.log(result);
-    console.log('result.length='+result.length);
+    // console.log(result);
+    // console.log('result.length='+result.length);
     let tbody = gelem('tables-tbody');
     let rows = tbody.getElementsByTagName('tr');
     for (let ri = rows.length - 1; ri >= 0; --ri) {
@@ -1081,8 +1093,12 @@ init_server = function (_o) {
   _o.web_socket = new WebSocket(host);
   console.log("web_socket.readyState=" + _o.web_socket.readyState);
   _o.web_socket.onopen = function () {
-      console.log("websocket.onopen: readyState="+ _o.web_socket.readyState);
-      onconnect(_o, tables_status, 10);
+    console.log("websocket.onopen: readyState="+ _o.web_socket.readyState);
+    onconnect(_o, tables_status, 10);
+  };
+  _o.web_socket.onclose = function () {
+    console.log("websocket.onclose=");
+    _o.warning('Sorry - Disconnected');
   };
   _o.web_socket.onmessage = function (evt) { _o.event_handler(_o, evt); };
 }
@@ -1104,14 +1120,21 @@ init_cards = function() {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-  console.log('DOMContentLoaded called: ' + ymdhms());
+  console.log('DOMContentLoaded called: ' + now_ymdhms());
   var _o = {}
   _o.c = m3333_consts;
   _o.cards = init_cards();
   _o.ui_completed = false;
-  _o.init_server = init_server;
+  _o.init_server_called = false;
+  _o.init_server = function (_o) {
+     if (!_o.init_server_called) {
+       _o.init_server_called = true;
+       init_server(_o);
+     }
+  }
   init_ui(_o);
   // init_server(_o);
+  // _o.warning('Warning Test do u see this message');
 });
 
 // document.addEventListener('init', function(event) {
