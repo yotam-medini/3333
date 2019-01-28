@@ -397,59 +397,6 @@ class Table:
             self.server.log(msg, tb_up=tb_up)
 
 
-class AppBase:
-
-
-    def __init__(self, argv, logname):
-        self.argv = argv
-        self.rc = 0
-        self.helped = False
-        self.debug = False
-        self.flog = None
-        try:
-            os.stat("/tmp/43333.debug")
-            self.debug = True
-        except:
-            pass
-        if self.debug:
-            self.flog = open(logname, "a")
-            try:
-                os.chmod(logname, 0o666)
-            except:
-                pass
-
-
-    def ok(self):
-        return self.rc == 0
-
-    def mayrun(self):
-        return self.ok() and not self.helped
-
-    def error(self, msg):
-        self.log(msg)
-        if self.ok():
-            self.rc = 1
-            sys.stderr.write("%s\n" % msg)
-            self.usage()
-
-
-    def log(self, msg, tb_up=2):
-        if self.debug:
-            scaller = ""
-            tb = traceback.extract_stack()
-            if len(tb) >= tb_up:
-                e = tb[-tb_up]
-                fn = e[0].split("/")[-1]
-                scaller = "%s[%s:%d<%s>]" % (self.prelog(), fn, e[1], e[2])
-            self.flog.write("%s %s: %s\n" % (strnow(), scaller, msg))
-            sys.stderr.write("%s: %s\n" % (scaller, msg))
-            self.flog.flush()
-
-
-    def prelog(self):
-        return ""
-
-
 class NameTPassUPass:
 
     def __init__(self, args_tail, log):
@@ -513,6 +460,59 @@ class Client:
 
     def json_pre_send(self, message):
         self.pre_send(json.dumps(message))
+
+
+class AppBase:
+
+
+    def __init__(self, argv, logname):
+        self.argv = argv
+        self.rc = 0
+        self.helped = False
+        self.debug = False
+        self.flog = None
+        try:
+            os.stat("/tmp/43333.debug")
+            self.debug = True
+        except:
+            pass
+        if self.debug:
+            self.flog = open(logname, "a")
+            try:
+                os.chmod(logname, 0o666)
+            except:
+                pass
+
+
+    def ok(self):
+        return self.rc == 0
+
+    def mayrun(self):
+        return self.ok() and not self.helped
+
+    def error(self, msg):
+        self.log(msg)
+        if self.ok():
+            self.rc = 1
+            sys.stderr.write("%s\n" % msg)
+            self.usage()
+
+
+    def log(self, msg, tb_up=2):
+        if self.debug:
+            scaller = ""
+            tb = traceback.extract_stack()
+            if len(tb) >= tb_up:
+                e = tb[-tb_up]
+                fn = e[0].split("/")[-1]
+                scaller = "%s[%s:%d<%s>]" % (self.prelog(), fn, e[1], e[2])
+            self.flog.write("%s %s: %s\n" % (strnow(), scaller, msg))
+            sys.stderr.write("%s: %s\n" % (scaller, msg))
+            self.flog.flush()
+
+
+    def prelog(self):
+        return ""
 
 
 class Server(AppBase):
@@ -620,8 +620,7 @@ Usage:                   # [Default]
 
     def ws_error_send(self, ws, error_code, value=None):
         client = self.ra_to_client[ws.remote_address]
-        self.client_error_send(client, error_code, value)
-
+        self.client_error_send(client, error_code, 
     def refresh_players(self, table):
         self.log("#(players)=%d" % len(table.players));
         tstate = table.get_state()
