@@ -620,7 +620,8 @@ Usage:                   # [Default]
 
     def ws_error_send(self, ws, error_code, value=None):
         client = self.ra_to_client[ws.remote_address]
-        self.client_error_send(client, error_code, 
+        self.client_error_send(client, error_code, value)
+
     def refresh_players(self, table):
         self.log("#(players)=%d" % len(table.players));
         tstate = table.get_state()
