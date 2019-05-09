@@ -718,8 +718,9 @@ Usage:                   # [Default]
                 self.refresh_tables_status([client])
             else:
                 self.log("leave player=%s, %s" % (player, table))
-                table.leave(player)
-                self.refresh_players(table)
+                # table.leave(player)
+                # self.refresh_players(table)
+                self.player_left(player)
                 
         del self.ra_to_client[ra]
         # del client
@@ -883,6 +884,9 @@ Usage:                   # [Default]
 
     def player_remove(self, player):
         self.log("player=%s" % player)
+        table = player.table
+        table.leave(player)
+        self.refresh_players(table)
 
 
     def player_left(self, player):
