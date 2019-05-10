@@ -752,12 +752,12 @@ Usage:                   # [Default]
         self.log("")
         start_server = websockets.serve(self.ws_handler, self.host,
                                         consts.CS3333_PORT)
-        loop = asyncio.get_event_loop()
+        self.main_loop = asyncio.get_event_loop()
         tasks = [self.periodic_clean(), start_server]
         self.log("#(tasks)=%d" % len(tasks))
-        loop.run_until_complete(asyncio.wait(tasks))
+        self.main_loop.run_until_complete(asyncio.wait(tasks))
         self.log("Calling run_forever")
-        loop.run_forever()
+        self.main_loop.run_forever()
 
     def ts_to_ymdhms_compact(self, ts):
         now = int(time.time())
@@ -893,8 +893,7 @@ Usage:                   # [Default]
         self.log("player=%s" % player)
         player.left()
         # Need refresh...
-        self.main_loop.add_timeout(
-            datetime.timedelta(seconds=self.__class__.leave_grace),
+        self.main_loop.call_later(self.__class__.leave_grace,
             lambda: self.player_remove(player))
 
     def player_close_current_connection(self, player):
