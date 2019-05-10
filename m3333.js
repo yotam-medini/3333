@@ -11,7 +11,6 @@ popi = function (a, i) {
   }
 };
 
-
 function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, 
@@ -28,8 +27,6 @@ gelem = function(idname) {
   }
   return ret;
 };
-
-
 
 function date_ymdhms(d) {
   function d2(n) {
@@ -50,7 +47,6 @@ function now_ymdhms () {
    var d = new Date();
    return date_ymdhms(d);
 }
-
 
 function epoch_ymdhms(epoch) {
   var d = new Date(1000*epoch);
@@ -186,7 +182,8 @@ init_ui = function (_o) {
       // show_tree(document.body, 0, 0);
       var wrap = gelem('board-wrap');
       console.log('Create canvas @ ' + wrap);
-      canvas = document.createElement('canvas');
+      _o.canvas = document.createElement('canvas');
+      canvas = _o.canvas
       canvas.setAttribute('id', "board");
       wrap.appendChild(canvas);
     }
@@ -857,11 +854,11 @@ init_ui = function (_o) {
   };
 
 
-    _o.user_try3 = function () {
-        console.log("user_try3");
-        _o.web_socket.send(_o.c.S3333_C2S_TRY3 + " " + _o.state.gstate + " " + 
-            _o.state.cards_selected.join(" "));
-    };
+  _o.user_try3 = function () {
+    console.log("user_try3");
+    _o.web_socket.send(_o.c.S3333_C2S_TRY3 + " " + _o.state.gstate + " " + 
+      _o.state.cards_selected.join(" "));
+  };
 
 
   _o.card_select = function (e) {
@@ -873,14 +870,17 @@ init_ui = function (_o) {
     if (ci >= 0) {
       var si = _o.state.cards_selected.indexOf(ci);
       if (si == -1) {
-        _o.state.cards_selected.push(ci);
-        if (_o.state.cards_selected.length == 3) {
-          _o.user_try3();
+        if (_o.state.cards_selected.length < 3) { // guard againts slow server
+          _o.state.cards_selected.push(ci);
+          if (_o.state.cards_selected.length == 3) {
+            _o.user_try3();
+          }
+          _o.board_draw_cardi(ci);
         }
       } else {
         popi(_o.state.cards_selected, si);
+        _o.board_draw_cardi(ci);
       }
-      _o.board_draw_cardi(ci);
     }
   };
 
@@ -1098,7 +1098,9 @@ init_server = function (_o) {
   };
   _o.web_socket.onclose = function () {
     console.log("websocket.onclose=");
-    _o.warning('Sorry - Disconnected');
+      _o.warning('Sorry - Disconnected');
+      _o.web_socket = null;
+      _o.canvas.onclick = null;
   };
   _o.web_socket.onmessage = function (evt) { _o.event_handler(_o, evt); };
 }
@@ -1145,4 +1147,4 @@ document.addEventListener("DOMContentLoaded", function (event) {
 //   }
 // });
 
-console.log('End of 3.js');
+console.log('End of m3333.js');
