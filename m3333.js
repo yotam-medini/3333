@@ -218,19 +218,27 @@ init_ui = function (_o) {
     return canvas;
   };
 
+  function web_socket_send(_o, command) {
+    if (_o.web_socket === null) {
+      _o.warning('No connection to server');
+    } else {
+      _o.web_socket.send(command);
+    }
+  }
+
   function new_game(_o) {
     console.log('New game');
-    _o.web_socket.send(_o.c.S3333_C2S_GNEW);
+    web_socket_send(_o, _o.c.S3333_C2S_GNEW);
   }
 
   function add3(_o) {
     console.log('add3');
-    _o.web_socket.send(_o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
+    web_socket_send(_o, _o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
   }
 
   function no_more(_o) {
     console.log('no_more');
-    _o.web_socket.send(_o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
+    web_socket_send(_o, _o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
   }
 
   function game_over(_o) {
@@ -354,7 +362,7 @@ init_ui = function (_o) {
 
   function refresh_club(_o) {
     console.log('refresh_club');
-    _o.web_socket.send(_o.c.S3333_C2S_TBLS);
+    web_socket_send(_o, _o.c.S3333_C2S_TBLS);
   }
 
   function show_new_table_dialog(_o) {
@@ -368,7 +376,7 @@ init_ui = function (_o) {
       console.log('name='+name + ', owner_pw='+owner_pw + 
         ', table_pw='+table_pw);
       _o.state.myname = _o.state.table_name = name;
-      _o.web_socket.send([
+      web_socket_send(_o, [
         _o.c.S3333_C2S_NTBL, name, pw_flags, table_pw, owner_pw].join(" "));
     };
 
@@ -411,7 +419,7 @@ init_ui = function (_o) {
       console.log('name='+name + ', guest_pw='+guest_pw + 
         ', table_pw='+table_pw);
       _o.state.myname =name;
-      _o.web_socket.send([
+      web_socket_send(_o, [
         _o.c.S3333_C2S_JOIN, _o.state.table_name, name, pw_flags, table_pw,
         guest_pw].join(' '));
     };
@@ -856,7 +864,7 @@ init_ui = function (_o) {
 
   _o.user_try3 = function () {
     console.log("user_try3");
-    _o.web_socket.send(_o.c.S3333_C2S_TRY3 + " " + _o.state.gstate + " " + 
+    web_socket_send(_o, _o.c.S3333_C2S_TRY3 + " " + _o.state.gstate + " " + 
       _o.state.cards_selected.join(" "));
   };
 
@@ -885,7 +893,13 @@ init_ui = function (_o) {
   };
 
 
-  gelem('b-new-table').onclick = function () { show_new_table_dialog(_o); };
+  gelem('b-new-table').onclick = function () { 
+    if (_o.web_socket === null) {
+      _o.warning('No connection to server');
+    } else {
+      show_new_table_dialog(_o); 
+    };
+  };
   gelem('reresh').onclick = function () { refresh_club(_o); };
   console.log('init_ui done');
 };
@@ -927,7 +941,7 @@ init_server = function (_o) {
     _o.board_show(_o);
     show_table_name(_o);
     gelem('tabbar').setActiveTab(1); // From Club tab to Table tab
-    // _o.web_socket.send(_o.c.S3333_C2S_TBLS)
+    // web_socket_send(_o, _o.c.S3333_C2S_TBLS)
     // _o.mobile_set_titles();
     // _o.mobile_page_set("table");
   };
@@ -1008,7 +1022,7 @@ init_server = function (_o) {
 
   function tables_status (_o) {
     console.log('tables_status ask server');
-    _o.web_socket.send(_o.c.S3333_C2S_TBLS)
+    web_socket_send(_o, _o.c.S3333_C2S_TBLS)
   };
 
   function draw_selected(_o) {
