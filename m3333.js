@@ -996,6 +996,12 @@ init_server = function (_o) {
     }, 600);
   };
 
+  _o.table_closed = function (_9, ) {
+     _o.warning('Table closed');
+     _o.init_state(_o);
+     _o.board_show(_o);
+  };
+
   var init_gfx_modes = function (_o) {
     _o.fill_passes = [undefined, undefined, undefined];
     _o.fill_passes[_o.c.SHADING_FILL] = [true];

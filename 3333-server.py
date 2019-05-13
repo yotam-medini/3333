@@ -280,8 +280,8 @@ class Table:
 
 
     def try3(self, gstate, player, a3i):
-        self.log("gstate=%d, player.name=%s, a3i=%s" %
-                 (gstate, player.name, str(a3i)))
+        self.log("gstate=%d, self.gstate=%d, player.name=%s, a3i=%s" %
+                 (gstate, self.gstate, player.name, str(a3i)))
         ret = consts.E3333_OK
         if gstate != self.gstate:
             ret = consts.E3333_COLLISION
@@ -708,12 +708,7 @@ Usage:                   # [Default]
             table = player.table
             if player.is_owner():
                 self.log("delete table player=%s" % player)
-                for peer in table.players[1:]:
-                    cmd = self.make_s2c_command(consts.E3333_S2C_TABLE_CLOSED,
-                                                consts.E3333_OK, None)
-                    pclient = self.ws2client(peer.ws)
-                    pclient.pre_send(cmd)
-                    pclient.player = None
+                self.players_table_closed(table.players[1:])
                 del self.name2table[player.name]
                 self.refresh_tables_status([client])
             else:
@@ -742,10 +737,29 @@ Usage:                   # [Default]
     async def periodic_clean(self):
         self.log("")
         loop_count = 0
-        while True and loop_count < 10:
+        while True:
             self.log("loop_count=%d" % loop_count)
-            await asyncio.sleep(300)
+            now = int(time.time())
+            del_names = []
+            for name, table in self.name2table.items():
+                time_idle = now - table.time_last_action
+                self.log('table: %s time_idle=%d' % (name, time_idle))
+                if time_idle > self.expire:
+                    self.log('Delete table: %s' % name)
+                    del_names.append(name)
+                    self.players_table_closed(table.players)
+            for name in del_names:
+                del self.name2table[name]
+            await asyncio.sleep(30)
             loop_count += 1
+
+    def players_table_closed(self, players):
+        cmd = self.make_s2c_command(consts.E3333_S2C_TABLE_CLOSED,
+                                    consts.E3333_OK, None)
+        for player in players:
+            pclient = self.ws2client(player.ws)
+            pclient.pre_send(cmd)
+            pclient.player = None
 
     def run(self):
         sys.stderr.write("Server.run\n")
