@@ -954,15 +954,19 @@ init_server = function (_o) {
   };
 
   _o.msgh_tables_status = function (_o, result) {
-    // console.log(result);
+    console.log(result);
     // console.log('result.length='+result.length);
+    tables = result['tables']  
+    connections = result['connections']
+    console.log('connections: ' + connections)
+    gelem('connections').innerHTML = 'Connections: ' + connections;
     let tbody = gelem('tables-tbody');
     let rows = tbody.getElementsByTagName('tr');
     for (let ri = rows.length - 1; ri >= 0; --ri) {
       tbody.deleteRow(ri);
     }
-    for (let ri = 0; ri < result.length; ++ri) {
-      let tblinf = result[ri];
+    for (let ri = 0; ri < tables.length; ++ri) {
+      let tblinf = tables[ri];
       let table_name = tblinf[0];
       let row = tbody.insertRow(ri);
       let button = ons._util.createElement("<ons-button>Join</ons-button>");

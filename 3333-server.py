@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3
 # 4tri game - server
 # Author:  Yotam Medini  yotam.medini@gmail.com -- Created: 2011/July/03
 
@@ -794,23 +794,24 @@ Usage:                   # [Default]
     def tables_status(self, ws=None, cmd_args=None):
         self.log("")
         names = sorted(self.name2table)
-        result = []
+        tables = []
         for name in names:
             table = self.name2table[name]
             nopw = int(table.passcode == "")
             tblinf = [name, len(table.players), nopw, table.tcreated,
                       table.time_last_action, table.owner_left_get()]
-            result.append(tblinf)
+            tables.append(tblinf)
 
         # Display times in compact way
-        tcreated_dc = self.ts_to_ymdhms_compact(map(lambda r: r[3], result))
-        tlast_acttion = self.ts_to_ymdhms_compact(map(lambda r: r[4], result))
-        for i in range(len(result)):
-            r = result[i]
+        tcreated_dc = self.ts_to_ymdhms_compact(map(lambda r: r[3], tables))
+        tlast_acttion = self.ts_to_ymdhms_compact(map(lambda r: r[4], tables))
+        for i in range(len(tables)):
+            r = tables[i]
             r[3] = tcreated_dc[i]
             r[4] = tlast_acttion[i]
-            result[i] = tuple(r)
+            tables[i] = tuple(r)
 
+        result = {'tables': tables, 'connections': len(self.ra_to_client)}
         s2c_cmd = self.make_s2c_command(consts.E3333_S2C_TBLS,
             consts.E3333_OK, result)
         return s2c_cmd
