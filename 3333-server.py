@@ -757,9 +757,10 @@ Usage:                   # [Default]
         cmd = self.make_s2c_command(consts.E3333_S2C_TABLE_CLOSED,
                                     consts.E3333_OK, None)
         for player in players:
-            pclient = self.ws2client(player.ws)
-            pclient.pre_send(cmd)
-            pclient.player = None
+            if player.ws is not None:
+                pclient = self.ws2client(player.ws)
+                pclient.pre_send(cmd)
+                pclient.player = None
 
     def run(self):
         sys.stderr.write("Server.run\n")
@@ -913,7 +914,7 @@ Usage:                   # [Default]
 
     def player_close_current_connection(self, player):
         self.log("player=%s" % player)
-        if not player.ws is None:
+        if player.ws is not None:
             s2c_cmd = self.make_s2c_command(
                 consts.E3333_S2C_CONNECTION_TAKEN, consts.E3333_OK)
             client = self.ws2client(player.ws)
