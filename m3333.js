@@ -1,7 +1,8 @@
-console.log("Yotam 1\n");
+const DBG3 = true;
+DBG3 && console.log("m3333 1\n");
 
 document.addEventListener('prechange', function(event) {
-  console.log("Yotam addEventListener\n");
+  DBG3 && console.log("m3333 addEventListener\n");
 });
 
 popi = function (a, i) {
@@ -23,7 +24,7 @@ function getUrlVars() {
 gelem = function(idname) { 
   var ret = document.getElementById(idname); 
   if (ret === null) {
-    console.log('gelem: not (yet?) found: "' + idname + '"');
+    DBG3 && console.log('gelem: not (yet?) found: "' + idname + '"');
   }
   return ret;
 };
@@ -56,7 +57,7 @@ function epoch_ymdhms(epoch) {
 console_all_elements = function () {
   var all = document.getElementsByTagName("*");
   for (var i=0, max=all.length; i < max; i++) {
-    console.log('element[' + i + '] = ' + all[i] + ' id='+ all[i].id);
+    DBG3 && console.log('element[' + i + '] = ' + all[i] + ' id='+ all[i].id);
   }
 }
 
@@ -72,7 +73,7 @@ show_tree = function (root, depth, ci) {
   var indent = ''
   for (var i = 0; i < depth; ++i) { indent += '  '; }
   if (root.id !== undefined) {
-    console.log(indent + '[' + ci + '] ' + root + ' id=' + root.id
+    DBG3 && console.log(indent + '[' + ci + '] ' + root + ' id=' + root.id
       + ', w='+root.width + ', h='+root.height 
       + ', cw='+root.clientWidth + ', ch='+root.clientHeight
       // + ', iw='+root.innerWidth + ', ih='+root.innerHeight 
@@ -107,7 +108,7 @@ function table_align_head_body(tbl_id) {
   let header_tr = get_longest_tr(thead[0], 'th');
   let body_tr = get_longest_tr(tbody[0], 'td');
 
-  console.log('header_tr='+header_tr + ', body_tr='+body_tr);
+  DBG3 && console.log('header_tr='+header_tr + ', body_tr='+body_tr);
   let ths = header_tr.getElementsByTagName("th");
   let tds = [];
   if (body_tr !== null) {
@@ -133,7 +134,7 @@ function table_align_head_body(tbl_id) {
 
 init_ui = function (_o) {
 
-  console.log('init_ui');
+  DBG3 && console.log('init_ui');
   // { Add UI constants
   // 4 Dimensions
   _o.c.DIM_NUMBER = 0;
@@ -169,11 +170,11 @@ init_ui = function (_o) {
   // } Added UI constants
 
   _o.init_canvas = function (_o) {
-    console.log('init table page');
+    DBG3 && console.log('init table page');
     var canvas = gelem('canvas');
-    console.log('canvas=' + canvas);
+    DBG3 && console.log('canvas=' + canvas);
     url_canvas = getUrlVars()['board'];
-    console.log('url_canvas='+url_canvas);
+    DBG3 && console.log('url_canvas='+url_canvas);
     if (url_canvas == 'no') { // for css debug
       return;
     }
@@ -181,18 +182,18 @@ init_ui = function (_o) {
     {
       // show_tree(document.body, 0, 0);
       var wrap = gelem('board-wrap');
-      console.log('Create canvas @ ' + wrap);
+      DBG3 && console.log('Create canvas @ ' + wrap);
       _o.canvas = document.createElement('canvas');
       canvas = _o.canvas
       canvas.setAttribute('id', "board");
       wrap.appendChild(canvas);
     }
     bw = gelem('board-wrap');
-    console.log('board-wrap: w=' + bw.width + ', h=' + bw.height);
-    console.log(' .. client: w=' + bw.clientWidth + ', h=' + bw.clientHeight);
-    console.log('y1 canvas=' + canvas);
-    console.log('canvas: w=' + canvas.width + ', h='+canvas.height);
-    console.log('canvasClient: w=' + canvas.clientWidth + 
+    DBG3 && console.log('board-wrap: w=' + bw.width + ', h=' + bw.height);
+    DBG3 && console.log(' .. client: w=' + bw.clientWidth + ', h=' + bw.clientHeight);
+    DBG3 && console.log('y1 canvas=' + canvas);
+    DBG3 && console.log('canvas: w=' + canvas.width + ', h='+canvas.height);
+    DBG3 && console.log('canvasClient: w=' + canvas.clientWidth + 
       ', h='+canvas.clientHeight);
     // Make it visually fill the positioned parent
     if (false) {
@@ -214,7 +215,7 @@ init_ui = function (_o) {
     context.fillRect(0, 7*h/8, w/8, h);
     context.fillRect(7*w/8, 7*h/8, w, h);
     canvas.onclick = function (e) { _o.card_select(e); };
-    console.log('canvas: w=' + canvas.width + ', h='+canvas.height);
+    DBG3 && console.log('canvas: w=' + canvas.width + ', h='+canvas.height);
     return canvas;
   };
 
@@ -227,17 +228,17 @@ init_ui = function (_o) {
   }
 
   function new_game(_o) {
-    console.log('New game');
+    DBG3 && console.log('New game');
     web_socket_send(_o, _o.c.S3333_C2S_GNEW);
   }
 
   function add3(_o) {
-    console.log('add3');
+    DBG3 && console.log('add3');
     web_socket_send(_o, _o.c.S3333_C2S_ADD3 + " " + _o.state.gstate);
   }
 
   function no_more(_o) {
-    console.log('no_more');
+    DBG3 && console.log('no_more');
     web_socket_send(_o, _o.c.S3333_C2S_NMOR + " " + _o.state.gstate);
   }
 
@@ -249,8 +250,8 @@ init_ui = function (_o) {
 
   document.addEventListener('init', function(event) {
     var page = event.target;
-    console.log('page=' + page);
-    console.log('page,id=' + page.id);
+    DBG3 && console.log('page=' + page);
+    DBG3 && console.log('page,id=' + page.id);
     _o.init_server(_o);
     if (page.matches('#table')) {
       gelem('start').onclick = function () { new_game(_o); }
@@ -263,24 +264,24 @@ init_ui = function (_o) {
       _o.ui_completed = true; // may need stronger condition
     }
     if (page.matches('#club')) {
-      console.log('init club page');
+      DBG3 && console.log('init club page');
       table_align_head_body('tables-table');
     }
   });
 
   function info_dialog_show(_o, dialog, text, okfunc) {
-    console.log('info_dialog_show: ' + text);
+    DBG3 && console.log('info_dialog_show: ' + text);
     gelem('info-content').innerHTML = text;
     dialog.show();
     gelem('b-info-ok').onclick = function () {
       gelem('info-dialog').hide();
       if (okfunc) { okfunc(); }
-      console.log('info done');
+      DBG3 && console.log('info done');
     };
   }
 
   function info(_o, text, okfunc) {
-    console.log('info: ' + text);
+    DBG3 && console.log('info: ' + text);
     let dialog  = gelem('info-dialog');
     if (dialog) {
       info_dialog_show(_o, dialog, text, okfunc);
@@ -298,12 +299,12 @@ init_ui = function (_o) {
     gelem('b-warning-ok').onclick = function () {
       gelem('warning-dialog').hide();
       if (okfunc) { okfunc(); }
-      console.log('warning done');
+      DBG3 && console.log('warning done');
     };
   }
 
   _o.warning = function (text, okfunc) {
-    console.log('warning: '+text);
+    DBG3 && console.log('warning: '+text);
     var dialog = gelem('warning-dialog');
     if (dialog) {
       warning_dialog_show(_o, dialog, text, okfunc);
@@ -316,7 +317,7 @@ init_ui = function (_o) {
   };
 
   _o.warning_code = function (_o, error_code, okfunc) {
-    console.log('error_code='+error_code);
+    DBG3 && console.log('error_code='+error_code);
     var text = ''; // _o.warning_code_to_text[error_code];
     switch (error_code)
     {
@@ -356,24 +357,24 @@ init_ui = function (_o) {
       text = "Adding 3 cards was not necessary.";
       break;
     }
-    console.log('error_code='+error_code + ', text: ' + text);
+    DBG3 && console.log('error_code='+error_code + ', text: ' + text);
     _o.warning(text, okfunc);
   };
 
   function refresh_club(_o) {
-    console.log('refresh_club');
+    DBG3 && console.log('refresh_club');
     web_socket_send(_o, _o.c.S3333_C2S_TBLS);
   }
 
   function show_new_table_dialog(_o) {
 
     var cb = function (_o) {
-      console.log('create-table');
+      DBG3 && console.log('create-table');
       var name = gelem('table-name').value;
       var owner_pw = gelem('owner-password').value;
       var table_pw = gelem('table-password').value;
       var pw_flags = 1*(!(table_pw === "")) + 2*(!(owner_pw === ""));
-      console.log('name='+name + ', owner_pw='+owner_pw + 
+      DBG3 && console.log('name='+name + ', owner_pw='+owner_pw + 
         ', table_pw='+table_pw);
       _o.state.myname = _o.state.table_name = name;
       web_socket_send(_o, [
@@ -392,12 +393,12 @@ init_ui = function (_o) {
           for (si in ss) {
             var s = ss[si];
             var b = gelem('bi-' + s);
-            console.log('si='+si + ', b='+b.id);
+            DBG3 && console.log('si='+si + ', b='+b.id);
             b.onclick = (function () { 
               var slocal = s;
               var blocal = b;
               return function () {
-                console.log('clicked: ' + blocal.id);
+                DBG3 && console.log('clicked: ' + blocal.id);
                 gelem('popinfo-' + slocal).show(blocal);
               };
             })();
@@ -408,15 +409,15 @@ init_ui = function (_o) {
   };
 
   _o.join_table = function (_o, table_name) {
-    console.log('table_name='+table_name);
+    DBG3 && console.log('table_name='+table_name);
     _o.state.table_name = table_name
     var cb = function (_o) {
-      console.log('join-table');
+      DBG3 && console.log('join-table');
       var name = gelem('guest-name').value;
       var guest_pw = gelem('guest-password').value;
       var table_pw = gelem('jtable-password').value;
       var pw_flags = 1*(!(table_pw === "")) + 2*(!(guest_pw === ""));
-      console.log('name='+name + ', guest_pw='+guest_pw + 
+      DBG3 && console.log('name='+name + ', guest_pw='+guest_pw + 
         ', table_pw='+table_pw);
       _o.state.myname =name;
       web_socket_send(_o, [
@@ -435,12 +436,12 @@ init_ui = function (_o) {
           for (si in ss) {
             var s = ss[si];
             var b = gelem('bi-' + s);
-            console.log('si='+si + ', b='+b.id);
+            DBG3 && console.log('si='+si + ', b='+b.id);
             b.onclick = (function () { 
               var slocal = s;
               var blocal = b;
               return function () {
-                console.log('clicked: ' + blocal.id);
+                DBG3 && console.log('clicked: ' + blocal.id);
                 gelem('popinfo-' + slocal).show(blocal);
               };
             })();
@@ -461,14 +462,13 @@ init_ui = function (_o) {
     // var winw = $(window).width(), winh = $(window).height();
     var canvas = gelem("board");
     var context = canvas.getContext('2d'); // Get 2D drawing context
-    console.log('window: iw='+window.innerWidth + ', ih='+window.innerHeight);
-    // console.log('canvas: iw='+canvas.innerWidth + ', ih='+canvas.innerHeight);
-    // console.log('window: w='+window.width + ', h='+window.height);
-    console.log('canvas: w='+canvas.width + ', h='+canvas.height);
+    DBG3 && console.log('window: iw='+window.innerWidth +
+      ', ih='+window.innerHeight);
+    DBG3 && console.log('canvas: w='+canvas.width + ', h='+canvas.height);
     // canvas.width = (9*window.innerWidth)/10;
     // canvas.height = (9*window.innerHeight)/10;
     // canvas.width = 180; canvas.height = 220;
-    console.log('board_clear: canvas: w='+canvas.width + ', h='+canvas.height);
+    DBG3 && console.log('board_clear: canvas: w='+canvas.width + ', h='+canvas.height);
     context.fillStyle = "#242";
     context.fillStyle = "#777";
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -582,7 +582,7 @@ init_ui = function (_o) {
   shape_draw[_o.c.SYM_OVAL] = draw_oval;
 
   function draw_card(context, card, x, y, w, h, draw_mode) {
-    // console.log("draw_card: mode="+draw_mode +
+    // DBG3 && console.log("draw_card: mode="+draw_mode +
     // " x="+x+" y="+y+" w="+w+" h="+h);
     var n = card[_o.c.DIM_NUMBER] + 1;
     var symbol = card[_o.c.DIM_SYMBOL];
@@ -613,7 +613,7 @@ init_ui = function (_o) {
 
     draw_func = shape_draw[symbol];
 
-    // console.log("color="+color);
+    // DBG3 && console.log("color="+color);
     var rgbc = _o.c.rgb_colors;
     var fill_passes = _o.fill_passes[shading];
     context.fillStyle = rgbc[color];
@@ -644,12 +644,12 @@ init_ui = function (_o) {
   };
 
   function stats_show(_o, rstate) {
-    console.log('myname='+_o.state.myname);
+    DBG3 && console.log('myname='+_o.state.myname);
     gelem('deck').innerHTML = rstate['deck'];
     var players = rstate['players'];
     for (var pi = 0; pi < players.length; ++pi) {
       var player = players[pi];
-      // console.log(player);
+      // DBG3 && console.log(player);
       if (player.name == _o.state.myname) {
         var nums = player['numbers'];
         gelem('table-found').innerHTML = nums[0] + nums[2];
@@ -681,7 +681,7 @@ init_ui = function (_o) {
         {
           ratio_quality = 1. / ratio_quality;
         }
-        // console.log("columns="+columns + ", quality="+ratio_quality);
+        // DBG3 && console.log("columns="+columns + ", quality="+ratio_quality);
         if (best_ratio_quality < ratio_quality)
         {
           best_columns = columns;
@@ -692,7 +692,7 @@ init_ui = function (_o) {
     };
 
     var pattern_stripes_set = function (_o, card_height) {
-      console.log('pattern_stripes_set');
+      DBG3 && console.log('pattern_stripes_set');
       var pat_height = Math.max(card_height / 24, 10);
       var stripe_height = (3*pat_height)/5;
       for (var ci = 0; ci < 3; ci++) {
@@ -717,14 +717,14 @@ init_ui = function (_o) {
     var canvas = bret.canvas;
     var context = bret.context;
     var width = canvas.width, height = canvas.height;
-    console.log('width='+width + ', height='+height);
+    DBG3 && console.log('width='+width + ', height='+height);
 
     var n_cards = _o.state.cards_active_idx.length;
     var columns = _o.board.n_columns = 
         board_n_columns(width, height, n_cards);
     var rows = Math.floor((n_cards + columns - 1) / columns);
     rows = Math.max(rows, 1); // Avoid zero-division
-    console.log("n_cards="+n_cards+", rows="+rows+", cols="+columns);
+    DBG3 && console.log("n_cards="+n_cards+", rows="+rows+", cols="+columns);
 
     var q = 0.95;
     if (width/columns < (_o.golden * height)/rows) {
@@ -734,13 +734,13 @@ init_ui = function (_o) {
       _o.board.card_height = Math.round(q * height / rows);
       _o.board.card_width = Math.round(_o.golden * _o.board.card_height);
     }
-    // console.log(_o.board);
+    // DBG3 && console.log(_o.board);
     pattern_stripes_set(_o, _o.board.card_height);
 
     var xgap = (width - (columns * _o.board.card_width)) / (columns + 1);
     var ygap = (height - (rows * _o.board.card_height)) / (rows + 1);
     _o.board.xgap = xgap;    _o.board.ygap = ygap;
-    console.log('xgap='+xgap + ', ygap='+ygap);
+    DBG3 && console.log('xgap='+xgap + ', ygap='+ygap);
 
     var xn = xgap, yn = ygap;
     var xi = 0
@@ -780,7 +780,7 @@ init_ui = function (_o) {
   }
 
   function cheat_tip(_o) {
-    console.log("cheat_tip:");
+    DBG3 && console.log("cheat_tip:");
     var n = _o.state.cards_active_idx.length;
     for (var i = 0; i < n; i++) {
       var i_card = _o.cards[_o.state.cards_active_idx[i]]
@@ -795,7 +795,7 @@ init_ui = function (_o) {
             is_set = ((s % 3) == 0);
           }
           if (is_set) {
-            console.log("is_set: ["+i+", "+j+", "+k+"]");
+            DBG3 && console.log("is_set: ["+i+", "+j+", "+k+"]");
           }
         }
       }
@@ -803,7 +803,7 @@ init_ui = function (_o) {
   }
 
   _o.state_update = function (_o, rstate) {
-    console.log('state_update'); console.log(rstate);
+    DBG3 && console.log('state_update'); DBG3 && console.log(rstate);
     if (_o.state.tstate < rstate['tstate']) {
       _o.state.tstate = rstate['tstate'];
       // _o.players_fill(rstate['players']);
@@ -834,7 +834,7 @@ init_ui = function (_o) {
 
   // redraw just one card
   _o.board_draw_cardi = function (ci) {
-    console.log("board_draw_cardi: ci="+ci);
+    DBG3 && console.log("board_draw_cardi: ci="+ci);
     var canvas = gelem('board');
     var context = canvas.getContext("2d"); // Get 2D drawing context
     var b = _o.board;
@@ -855,7 +855,7 @@ init_ui = function (_o) {
     column = Math.max(Math.floor(column), 0);
     row = Math.max(Math.floor(row), 0);
     var i = b.n_columns * row + column;
-    console.log('x='+x + ', y='+y + ', column='+column + ', row='+row +
+    DBG3 && console.log('x='+x + ', y='+y + ', column='+column + ', row='+row +
         ', n_columns='+b.n_columns + ', i='+i);
     if (i >= _o.state.cards_active_idx.length) { i = -1; }
     return i;
@@ -863,18 +863,18 @@ init_ui = function (_o) {
 
 
   _o.user_try3 = function () {
-    console.log("user_try3");
+    DBG3 && console.log("user_try3");
     web_socket_send(_o, _o.c.S3333_C2S_TRY3 + " " + _o.state.gstate + " " + 
       _o.state.cards_selected.join(" "));
   };
 
 
   _o.card_select = function (e) {
-    console.log('card_select'); console.log(e);
+    DBG3 && console.log('card_select'); DBG3 && console.log(e);
     var rect = e.target.getBoundingClientRect();
-    console.log('rect'); console.log(rect); 
+    DBG3 && console.log('rect'); DBG3 && console.log(rect); 
     var ci = xy2card_index(_o, e.clientX - rect.left, e.clientY - rect.top);
-    console.log("card_select: mouse=("+e.clientX+","+e.clientY+"), ci="+ci);
+    DBG3 && console.log("mouse=("+e.clientX+","+e.clientY+"), ci="+ci);
     if (ci >= 0) {
       var si = _o.state.cards_selected.indexOf(ci);
       if (si == -1) {
@@ -901,12 +901,12 @@ init_ui = function (_o) {
     };
   };
   gelem('reresh').onclick = function () { refresh_club(_o); };
-  console.log('init_ui done');
+  DBG3 && console.log('init_ui done');
 };
 
 
 init_server = function (_o) {
-  console.log('init_server');
+  DBG3 && console.log('init_server');
 
   _o.init_state = function (_o) { 
     _o.state = {
@@ -933,8 +933,8 @@ init_server = function (_o) {
   }
 
   _o.msgh_new_table = function (_o, result) {
-    console.log('msgh_new_table: ...');
-    console.log(result);
+    DBG3 && console.log('msgh_new_table: ...');
+    DBG3 && console.log(result);
     hideDialog('dialog-new-table');
     _o.state.owner = true;
     gelem('start').disabled = false;
@@ -947,18 +947,18 @@ init_server = function (_o) {
   };
 
   _o.msgh_join = function (_o, result) {
-    console.log('msgh_join');
+    DBG3 && console.log('msgh_join');
     hideDialog('dialog-join-table')
     show_table_name(_o);
     gelem('tabbar').setActiveTab(1); // From Club tab to Table tab
   };
 
   _o.msgh_tables_status = function (_o, result) {
-    console.log(result);
-    // console.log('result.length='+result.length);
+    DBG3 && console.log(result);
+    // DBG3 && console.log('result.length='+result.length);
     tables = result['tables']  
     connections = result['connections']
-    console.log('connections: ' + connections)
+    DBG3 && console.log('connections: ' + connections)
     gelem('connections').innerHTML = 'Connections: ' + connections;
     let tbody = gelem('tables-tbody');
     let rows = tbody.getElementsByTagName('tr');
@@ -971,7 +971,7 @@ init_server = function (_o) {
       let row = tbody.insertRow(ri);
       let button = ons._util.createElement("<ons-button>Join</ons-button>");
       button.onclick = function () { 
-        console.log('Join table: ' + table_name);
+        DBG3 && console.log('Join table: ' + table_name);
         _o.join_table(_o, table_name);
       };
       let td = row.insertCell(0);
@@ -985,13 +985,13 @@ init_server = function (_o) {
   };
 
   _o.msgh_set_found = function (_o, a3i) {
-    console.log("msgh_set_found: a3i="+a3i);
+    DBG3 && console.log("msgh_set_found: a3i="+a3i);
     _o.state.cards_selected = a3i;
     _o.state.selected_draw_mode = _o.c.DRAW_CARD_IS_A_SET;
     _o.board_show(_o); // For all players!
     _o.state.delayed = true;
     setTimeout(function () {
-      console.log('after found shown');
+      DBG3 && console.log('after found shown');
       _o.state.delayed = false;
       _o.state.cards_selected = [];
       _o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
@@ -1028,10 +1028,10 @@ init_server = function (_o) {
   _o.init_handlers(_o);
 
 
-  console.log(_o.message_handlers);
+  DBG3 && console.log(_o.message_handlers);
 
   function tables_status (_o) {
-    console.log('tables_status ask server');
+    DBG3 && console.log('tables_status ask server');
     web_socket_send(_o, _o.c.S3333_C2S_TBLS)
   };
 
@@ -1048,20 +1048,20 @@ init_server = function (_o) {
 
 
   _o.event_handler_now = function (_o, evt) {
-    console.log("evt.data=" + evt.data);
+    DBG3 && console.log("evt.data=" + evt.data);
     var edata = JSON.parse(evt.data);
     var rc = edata['rc'];
-    console.log("edata="+edata+", rc="+rc);
+    DBG3 && console.log("edata="+edata+", rc="+rc);
     if (rc === undefined) {
         rc = _o.c.E3333_BAD_COMMAND;
     }
     if (rc != _o.c.E3333_OK) {
-      console.log("not _o.c.E3333_OK");
+      DBG3 && console.log("not _o.c.E3333_OK");
       if (rc == _o.c.E3333_NOT_A_SET) {
-        console.log("Not a set");
+        DBG3 && console.log("Not a set");
         bad_set_show(_o);
         _o.warning_code(_o, rc, function () {
-          console.log("dm:=selected");
+          DBG3 && console.log("dm:=selected");
           _o.state.selected_draw_mode = _o.c.DRAW_CARD_SELECTED;
           _o.state.cards_selected.pop();
           _o.board_show(_o);
@@ -1073,26 +1073,26 @@ init_server = function (_o) {
       var cmd = edata['cmd'];
       cmd = Number(cmd); // delete hhis line !?!
       var h = _o.message_handlers[cmd];
-      console.log("cmd="+cmd+", h?="+(!!(h)));
+      DBG3 && console.log("cmd="+cmd+", h?="+(!!(h)));
       if (h) {
         h(_o, edata['result']);
       } else {
-        console.log(_o.message_handlers);
+        DBG3 && console.log(_o.message_handlers);
       }
     }
   };
 
   _o.handle_delayed_events = function (_o) {
-     console.log("handle_delayed_events");
+     DBG3 && console.log("handle_delayed_events");
      while ((!_o.state.delayed) && (_o.state.delayed_events.length > 0)) {
          _o.event_handler_now(_o, _o.state.delayed_events.shift() );
      }
   };
 
   _o.event_handler = function (_o, evt) {
-    console.log("event_handler");
+    DBG3 && console.log("event_handler");
     if (_o.state.delayed) {
-      console.log("Delayed event");
+      DBG3 && console.log("Delayed event");
       _o.state.delayed_events.push(evt);
     } else {
       _o.event_handler_now(_o, evt);
@@ -1100,7 +1100,7 @@ init_server = function (_o) {
   };
 
   function onconnect(_o, f, timeout) {
-    console.log('readyState='+ _o.web_socket.readyState + ', timeout='+timeout);
+    DBG3 && console.log('readyState='+ _o.web_socket.readyState + ', timeout='+timeout);
     if (timeout > 0) {
       if (_o.web_socket.readyState == 1) {
         f(_o);
@@ -1113,15 +1113,15 @@ init_server = function (_o) {
   var win_hostname = window.location.hostname
   if (win_hostname == "") { win_hostname = "localhost"; }
   var host = "ws://" + win_hostname + ":" + _o.c.CS3333_PORT + "/ws";
-  console.log("host="+host)
+  DBG3 && console.log("host="+host)
   _o.web_socket = new WebSocket(host);
-  console.log("web_socket.readyState=" + _o.web_socket.readyState);
+  DBG3 && console.log("web_socket.readyState=" + _o.web_socket.readyState);
   _o.web_socket.onopen = function () {
-    console.log("websocket.onopen: readyState="+ _o.web_socket.readyState);
+    DBG3 && console.log("websocket.onopen: readyState="+ _o.web_socket.readyState);
     onconnect(_o, tables_status, 10);
   };
   _o.web_socket.onclose = function () {
-    console.log("websocket.onclose=");
+    DBG3 && console.log("websocket.onclose=");
       _o.warning('Sorry - Disconnected');
       _o.web_socket = null;
       _o.canvas.onclick = null;
@@ -1146,7 +1146,7 @@ init_cards = function() {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-  console.log('DOMContentLoaded called: ' + now_ymdhms());
+  DBG3 && console.log('DOMContentLoaded called: ' + now_ymdhms());
   var _o = {}
   _o.c = m3333_consts;
   _o.cards = init_cards();
@@ -1164,11 +1164,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 });
 
 // document.addEventListener('init', function(event) {
-//   console.log('listener: init')
+//   DBG3 && console.log('listener: init')
 //   var page = event.target;
 //   if (page.matches('#table')) {
-//     console.log('listener: init: table');
+//     DBG3 && console.log('listener: init: table');
 //   }
 // });
 
-console.log('End of m3333.js');
+DBG3 && console.log('End of m3333.js');
