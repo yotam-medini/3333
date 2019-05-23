@@ -24,7 +24,7 @@ function getUrlVars() {
 gelem = function(idname) {
   var ret = document.getElementById(idname);
   if (ret === null) {
-    DBG3 && console.log('gelem: not (yet?) found: "' + idname + '"');
+    DBG3 && console.log("gelem: not (yet?) found: '" + idname + "'");
   }
   return ret;
 };
@@ -36,13 +36,13 @@ function date_ymdhms(d) {
   }
 
   s = d.getUTCFullYear() + "/" +
-    d2((d.getUTCMonth() + 1)) + "/" +
+    d2(d.getUTCMonth() + 1) + "/" +
     d2(d.getUTCDate()) + " " +
-    d2((d.getUTCHours())) + ":" +
-    d2((d.getUTCMinutes())) + ":" +
-    d2((d.getUTCSeconds()));
+    d2(d.getUTCHours()) + ":" +
+    d2(d.getUTCMinutes()) + ":" +
+    d2(d.getUTCSeconds());
   return s;
-};
+}
 
 function now_ymdhms () {
    var d = new Date();
@@ -52,9 +52,9 @@ function now_ymdhms () {
 function epoch_ymdhms(epoch) {
   var d = new Date(1000*epoch);
   return date_ymdhms(d);
-};
+}
 
-console_all_elements = function () {
+function console_all_elements () {
   var all = document.getElementsByTagName("*");
   for (var i=0, max=all.length; i < max; i++) {
     DBG3 && console.log("element[" + i + "] = " + all[i] + " id="+ all[i].id);
@@ -69,7 +69,7 @@ var hidePopover = function (popid) {
   gelem(popid).hide();
 };
 
-show_tree = function (root, depth, ci) {
+function show_tree (root, depth, ci) {
   var indent = ""
   for (var i = 0; i < depth; ++i) { indent += "  "; }
   if (root.id !== undefined) {
@@ -122,7 +122,7 @@ function table_align_head_body(tbl_id) {
     let wsmall= cell_small.offsetWidth;
     if (wsmall != wbig) {
       if (wbig < wsmall) {
-	let tcell = cell_big; cell_big = cell_small; cell_small = tcell;
+        let tcell = cell_big; cell_big = cell_small; cell_small = tcell;
       }
       let style = window.getComputedStyle(cell_big, null);
       let style_width = style.getPropertyValue("width");
@@ -190,7 +190,8 @@ init_ui = function (_o) {
     }
     bw = gelem("board-wrap");
     DBG3 && console.log("board-wrap: w=" + bw.width + ", h=" + bw.height);
-    DBG3 && console.log(" .. client: w=" + bw.clientWidth + ", h=" + bw.clientHeight);
+    DBG3 && console.log(" .. client: w=" + bw.clientWidth + ", h=" +
+      bw.clientHeight);
     DBG3 && console.log("y1 canvas=" + canvas);
     DBG3 && console.log("canvas: w=" + canvas.width + ", h="+canvas.height);
     DBG3 && console.log("canvasClient: w=" + canvas.clientWidth +
@@ -336,8 +337,8 @@ init_ui = function (_o) {
       break;
      case _o.c.E3333_COLLISION:
       text = "Sorry, your action was ignored due to \"cloud collision\". " +
-	  "Probably your action assumed obsolete game state. " +
-	  "Some player was faster than you?";
+          "Probably your action assumed obsolete game state. " +
+          "Some player was faster than you?";
       break;
      case _o.c.E3333_NAME_USED:
       text = "Name already used, or (if re-joining) wrong passcode";
@@ -469,7 +470,8 @@ init_ui = function (_o) {
     // canvas.width = (9*window.innerWidth)/10;
     // canvas.height = (9*window.innerHeight)/10;
     // canvas.width = 180; canvas.height = 220;
-    DBG3 && console.log("board_clear: canvas: w="+canvas.width + ", h="+canvas.height);
+    DBG3 && console.log("board_clear: canvas: w="+canvas.width + ", h=" +
+      canvas.height);
     context.fillStyle = "#242";
     context.fillStyle = "#777";
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -484,7 +486,7 @@ init_ui = function (_o) {
     return { canvas: canvas, context: context };
   }
 
-  _o.golden = (Math.sqrt(5.)+1.)/2.;
+  _o.golden = (Math.sqrt(5.0)+1.0)/2.0;
 
   function draw_diamond(context, x, y, w, h) {
     context.beginPath();
@@ -499,7 +501,7 @@ init_ui = function (_o) {
     for (var i = 0; i < aa.length; i++) {
       var a = aa[i];
       for (var j = 0; j < a.length; j++) {
-	a[j] = [Math.round(a[j][0]), Math.round(a[j][1])];
+        a[j] = [Math.round(a[j][0]), Math.round(a[j][1])];
       }
     }
   };
@@ -524,9 +526,9 @@ init_ui = function (_o) {
       var xy3_l = rel_curves_left[i];
       var xy3_r = [undefined, undefined, undefined];
       for (var j = 0; j < 3; j++) {
-	var xy_l = xy3_l[j];
-	var xy_r = [w - xy_l[0], h - xy_l[1]]; // center symmetry
-	xy3_r[j] = xy_r;
+        var xy_l = xy3_l[j];
+        var xy_r = [w - xy_l[0], h - xy_l[1]]; // center symmetry
+        xy3_r[j] = xy_r;
       }
       rel_curves_right.push(xy3_r);
     }
@@ -537,8 +539,8 @@ init_ui = function (_o) {
       var xy3_rel = rel_curves[i];
       var xy3 = []
       for (j = 0; j < 3; j++) {
-	var xy_rel = xy3_rel[j];
-	xy3.push([x + xy_rel[0], y + xy_rel[1]])
+        var xy_rel = xy3_rel[j];
+        xy3.push([x + xy_rel[0], y + xy_rel[1]])
       }
       curves.push(xy3)
     }
@@ -550,9 +552,9 @@ init_ui = function (_o) {
     for (var i = 0; i < curves.length; i++) {
       var curve = curves[i];
       context.bezierCurveTo(
-	curve[0][0], curve[0][1],
-	curve[1][0], curve[1][1],
-	curve[2][0], curve[2][1]);
+        curve[0][0], curve[0][1],
+        curve[1][0], curve[1][1],
+        curve[2][0], curve[2][1]);
     }
     context.closePath();
   };
@@ -597,19 +599,19 @@ init_ui = function (_o) {
 
     switch (draw_mode) {
       case _o.c.DRAW_CARD_NORMAL:
-	// Draw white
-	context.fillStyle = "#fff";
-	context.fillRect(x, y, w, h);
-	break;
+        // Draw white
+        context.fillStyle = "#fff";
+        context.fillRect(x, y, w, h);
+        break;
       case _o.c.DRAW_CARD_SELECTED:
       case _o.c.DRAW_CARD_NOT_A_SET:
       case _o.c.DRAW_CARD_IS_A_SET:
-	context.fillStyle = _o.c.draw_mode_frame_rgb[draw_mode];
-	context.fillRect(x, y, w, h);
-	var bw = Math.max(h / 24, 3); // frame width
-	context.fillStyle = "#ccc";
-	context.fillRect(x + bw, y + bw, w - 2*bw, h - 2*bw);
-	break;
+        context.fillStyle = _o.c.draw_mode_frame_rgb[draw_mode];
+        context.fillRect(x, y, w, h);
+        var bw = Math.max(h / 24, 3); // frame width
+        context.fillStyle = "#ccc";
+        context.fillRect(x + bw, y + bw, w - 2*bw, h - 2*bw);
+        break;
     }
 
     draw_func = shape_draw[symbol];
@@ -625,20 +627,20 @@ init_ui = function (_o) {
     for (var r = 0; r < n; r++) {
       context.fillStyle = rgbc[color];
       for (var fpi = 0; fpi < fill_passes.length; fpi++) {
-	draw_func(
-	  context, Math.round(brect_x), Math.round(brect_y),
-	  Math.round(brect_width), Math.round(brect_height));
-	if (fill_passes[fpi]) {
-	  if (shading == _o.c.SHADING_STRIPED) {
-	    context.fillStyle = _o.c.pattern_stripes[color];
-	  } else {
-	    context.fillStyle = rgbc[color];
-	  }
-	  context.fill();
-	} else {
-	  context.fillStyle = rgbc[color];
-	  context.stroke();
-	}
+        draw_func(
+          context, Math.round(brect_x), Math.round(brect_y),
+          Math.round(brect_width), Math.round(brect_height));
+        if (fill_passes[fpi]) {
+          if (shading == _o.c.SHADING_STRIPED) {
+            context.fillStyle = _o.c.pattern_stripes[color];
+          } else {
+            context.fillStyle = rgbc[color];
+          }
+          context.fill();
+        } else {
+          context.fillStyle = rgbc[color];
+          context.stroke();
+        }
       }
       brect_x += brect_width + x_gap
     }
@@ -678,9 +680,9 @@ init_ui = function (_o) {
         // cell_ratio = cell_width / cell_height
         var cell_ratio = (width * rows) / (height * columns);
         var ratio_quality = cell_ratio / _o.golden;
-        if (ratio_quality > 1.)
+        if (ratio_quality > 1.0)
         {
-          ratio_quality = 1. / ratio_quality;
+          ratio_quality = 1.0 / ratio_quality;
         }
         // DBG3 && console.log("columns="+columns + ", quality="+ratio_quality);
         if (best_ratio_quality < ratio_quality)
@@ -1101,7 +1103,8 @@ init_server = function (_o) {
   };
 
   function onconnect(_o, f, timeout) {
-    DBG3 && console.log("readyState="+ _o.web_socket.readyState + ", timeout="+timeout);
+    DBG3 && console.log("readyState="+ _o.web_socket.readyState +
+      ", timeout="+timeout);
     if (timeout > 0) {
       if (_o.web_socket.readyState == 1) {
         f(_o);
