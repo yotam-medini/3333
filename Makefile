@@ -142,3 +142,5 @@ ${TOFZIP}: ${TOF}
 	zip ${TOFZIP} ${TOF}
 tof: ${TOFZIP}
 
+lint:
+	gjslint m3333.js | egrep -v 'E:0002.*[/\*]'
