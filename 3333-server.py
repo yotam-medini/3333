@@ -629,12 +629,7 @@ Usage:                   # [Default]
             consts.E3333_OK, tstate)
         self.log("s2c_command=%s" % s2c_command)
         # dstate =  json.dumps(table.get_state());
-        for p in table.players:
-            if p.ws is None:
-                self.log("p.name=%s ws=None" % p.name)
-            else:
-                client = self.ws2client(p.ws)
-                client.pre_send(s2c_command)
+        self.table_msg_send(table, s2c_command)
         return s2c_command
 
     def set_announce(self, table, a3i):
@@ -642,10 +637,15 @@ Usage:                   # [Default]
         tstate =  table.get_state()
         s2c_command = self.make_s2c_command(consts.E3333_S2C_SET_FOUND,
             consts.E3333_OK, a3i)
-        for p in table.players:
-            client = self.ws2client(p.ws)
-            client.pre_send(s2c_command)
+        self.table_msg_send(table, s2c_command)
 
+    def table_msg_send(self, table, msg):
+        for p in table.players:
+            if p.ws is None:
+                self.log("p.name=%s ws=None" % p.name)
+            else:
+                client = self.ws2client(p.ws)
+                client.pre_send(msg)
 
     def introduce(self, client):
         self.log("");
