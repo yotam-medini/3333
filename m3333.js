@@ -400,6 +400,8 @@ function init_ui(_o) {
   _o.join_table = function(_o, table_name) {
     DBG3 && console.log('table_name=' + table_name);
     _o.state.table_name = table_name;
+    _o.state.tstate = -1;
+    _o.state.gstate = -1;
     var cb = function(_o) {
       DBG3 && console.log('join-table');
       var name = gelem('guest-name').value;
@@ -940,8 +942,11 @@ init_server = function(_o) {
 
   _o.msgh_join = function(_o, result) {
     DBG3 && console.log('msgh_join');
+    DBG3 && console.log(result);
     hideDialog('dialog-join-table');
     show_table_name(_o);
+    _o.state.owner = false;
+    gelem('start').disabled = true;
     gelem('tabbar').setActiveTab(1); // From Club tab to Table tab
   };
 

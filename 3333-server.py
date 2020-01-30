@@ -160,6 +160,7 @@ class Table:
 
 
     def leave(self, player):
+        self.log('%s leave %s' % (player, self))
         self.players.remove(player)
         self.state_bump()
 
@@ -172,8 +173,8 @@ class Table:
 
 
     def join(self, ws, player_name, passcode, upass):
-        self.log("name=%sm passcode=%s, upass=%s" %
-                 (player_name, passcode, upass))
+        self.log("table=%s, player_name=%s, passcode=%s, upass=%s" %
+                 (self.name(), player_name, passcode, upass))
         ret = consts.E3333_OK
         player = None
         if not self.passcode in ("", passcode):
@@ -203,7 +204,7 @@ class Table:
 
 
     def owner_left_get(self):
-        return self.players[0].time_left
+        return self.players[0].time_left if len(self.players) > 0 else -1
 
 
     def player_say(self, player_name, say):
@@ -437,12 +438,22 @@ class NameTPassUPass:
 
 class Client:
 
-    def __init__(self, ws):
+    def __init__(self, server, ws):
+        self.server = server
         self.ws = ws
         self.time = time.time()
         self.alive = True
         self.future = GraceFuture()
         self.player = None
+
+    def __str__(self):
+        return '{Client@%s}' % str(self.ws.remote_address)
+
+    def set_player(self, player):
+        self.log('%s player:=%s' % (self, player))
+        if (self.player is not None) and (self.player is not player):
+            self.player.table.leave(self.player)
+        self.player = player
 
     async def produce(self):
         await self.future
@@ -461,6 +472,8 @@ class Client:
     def json_pre_send(self, message):
         self.pre_send(json.dumps(message))
 
+    def log(self, msg, tb_up=3):
+        self.server.log(msg, tb_up=tb_up)
 
 class AppBase:
 
@@ -568,7 +581,7 @@ Usage:                   # [Default]
             consts.S3333_C2S_ADD3: self.add3,
             consts.S3333_C2S_NMOR: self.no_more,
             consts.S3333_C2S_JOIN: self.table_join,
-            consts.S3333_C2S_CLOS: self.table_close,
+            consts.S3333_C2S_CLOS: self.close_table,
         }
 
         ai = 1
@@ -662,11 +675,11 @@ Usage:                   # [Default]
     async def ws_handler(self, ws, path):
         self.log("path=%s" % str(path))
         ra = ws.remote_address
-        self.ra_to_client[ra] = client = Client(ws)
+        self.ra_to_client[ra] = client = Client(self, ws)
 
         producer_task = asyncio.ensure_future(client.produce())
         listener_task = asyncio.ensure_future(self.ws_recv(ws))  # ws.recv()
-        self.log("dir(ws)=%s" % str(dir(ws)))
+        # self.log("dir(ws)=%s" % str(dir(ws)))
         self.introduce(client)
 
         loop_count = 0
@@ -852,7 +865,7 @@ Usage:                   # [Default]
         return response
 
 
-    def table_close(self, ws, cmd_args):
+    def close_table(self, ws, cmd_args):
         self.log("")
         player = ws.player
         table = player.table if player else None
@@ -889,7 +902,7 @@ Usage:                   # [Default]
                     (rc, player) = table.join(
                         ws, ntu.name, ntu.tpass, ntu.upass)
                     if rc == consts.E3333_OK:
-                        client.player = player
+                        client.set_player(player)
                         s2c_cmd = self.make_s2c_command(
                             consts.E3333_S2C_JOIN, consts.E3333_OK)
                         self.ws2client(ws).pre_send(s2c_cmd)
@@ -1017,7 +1030,7 @@ Usage:                   # [Default]
             owner = Player(ws, owner_name, table, upass)
             table.players = [owner]
             client = self.ra_to_client[ws.remote_address]
-            client.player = owner
+            client.set_player(owner)
             self.name2table[owner_name] = table
         self.log("ret=%d" % ret)
         return (ret, table)
