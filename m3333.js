@@ -352,6 +352,9 @@ function init_ui(_o) {
 
   function refresh_club(_o) {
     DBG3 && console.log('refresh_club');
+    if (_o.web_socket === null) {
+      DBG3 && console.log('Re-open web_socket ...');
+    }
     web_socket_send(_o, _o.c.S3333_C2S_TBLS);
   }
 
@@ -1027,7 +1030,7 @@ init_server = function(_o) {
 
   DBG3 && console.log(_o.message_handlers);
 
-  function tables_status(_o) {
+  _o.tables_status = function (_o) {
     DBG3 && console.log('tables_status ask server');
     _o.web_socket_send(_o, _o.c.S3333_C2S_TBLS);
   }
@@ -1108,24 +1111,28 @@ init_server = function(_o) {
     }
   }
 
+  _o.open_web_socket = function(_o) {
+    _o.web_socket = new WebSocket(_o.host);
+    DBG3 && console.log('web_socket.readyState=' + _o.web_socket.readyState);
+    _o.web_socket.onopen = function() {
+      DBG3 && console.log('websocket.onopen: readyState=' +
+        _o.web_socket.readyState);
+      onconnect(_o, _o.tables_status, 10);
+    };
+    _o.web_socket.onclose = function() {
+      DBG3 && console.log('websocket.onclose=');
+        _o.warning('Sorry - Disconnected');
+        _o.web_socket = null;
+        _o.canvas.onclick = null;
+    };
+    _o.web_socket.onmessage = function(evt) { _o.event_handler(_o, evt); };
+  }
+
   var win_hostname = window.location.hostname;
   if (win_hostname == '') { win_hostname = 'localhost'; }
-  var host = 'ws://' + win_hostname + ':' + _o.c.CS3333_PORT + '/ws';
-  DBG3 && console.log('host=' + host);
-  _o.web_socket = new WebSocket(host);
-  DBG3 && console.log('web_socket.readyState=' + _o.web_socket.readyState);
-  _o.web_socket.onopen = function() {
-    DBG3 && console.log('websocket.onopen: readyState=' +
-      _o.web_socket.readyState);
-    onconnect(_o, tables_status, 10);
-  };
-  _o.web_socket.onclose = function() {
-    DBG3 && console.log('websocket.onclose=');
-      _o.warning('Sorry - Disconnected');
-      _o.web_socket = null;
-      _o.canvas.onclick = null;
-  };
-  _o.web_socket.onmessage = function(evt) { _o.event_handler(_o, evt); };
+  _o.host = 'ws://' + win_hostname + ':' + _o.c.CS3333_PORT + '/ws';
+  DBG3 && console.log('host=' + _o.host);
+  _o.open_web_socket(_o);
 };
 
 init_cards = function() {

@@ -161,7 +161,13 @@ class Table:
 
     def leave(self, player):
         self.log('%s leave %s' % (player, self))
-        self.players.remove(player)
+        found = False
+        for p in self.players:
+            found = found or (p is player)
+        if found:
+            self.players.remove(player)
+        else:
+            self.log('%s not in %s' % (player, self))
         self.state_bump()
 
 
