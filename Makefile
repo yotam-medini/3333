@@ -11,7 +11,6 @@ endif
 now := $(shell date --utc "+%Y-%m-%d-%H%M%S")
 
 SUBDIR_INSTALL=3333
-SUBDIR_INSTALL=4
 WWWINSTDISR=${HOME}/public_html/${SUBDIR_INSTALL}
 
 default:
