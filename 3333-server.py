@@ -7,8 +7,10 @@ import datetime
 import json
 import os
 import pickle
+import pprint
 import random
 import socket
+import ssl
 import sys
 import time
 import traceback
@@ -19,6 +21,8 @@ import asyncio
 import websockets
 
 import consts
+
+HOME = os.getenv("HOME")
 
 
 def safe_int(s, defret=-1):
@@ -784,9 +788,17 @@ Usage:                   # [Default]
     def run(self):
         sys.stderr.write("Server.run\n")
         self.log("")
+
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_cert = f"{HOME}/3333/etc/fullchain.pem"
+        ssl_key = f"{HOME}/3333/etc/privkey.pem"
+        ssl_context.load_cert_chain(ssl_cert, keyfile=ssl_key)
+        
         start_server = websockets.serve(self.ws_handler, self.host,
-                                        consts.CS3333_PORT)
-        self.main_loop = asyncio.get_event_loop()
+                                        consts.CS3333_PORT, ssl=ssl_context)
+        self.log(f"start_server: {pprint.pformat(start_server)}\n")
+        self.main_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.main_loop)
         tasks = [self.periodic_clean(), start_server]
         self.log("#(tasks)=%d" % len(tasks))
         self.main_loop.run_until_complete(asyncio.wait(tasks))
