@@ -2,15 +2,19 @@
 #include <fstream>
 #include <unistd.h>
 
+#include "net.h"
+
 Server::Server(
   const std::string &host,
+  unsigned short port,
   const size_t max_tables,
   const size_t max_players,
   const unsigned expire_seconds,
-  const std::string pidfn,
+  const std::string &pidfn,
   const unsigned debug_flags
 ) :
     host_{host},
+    port_{port},
     max_tables_{max_tables},
     max_players_{max_players},
     expire_seconds_{expire_seconds},
@@ -20,6 +24,7 @@ Server::Server(
 
 Server::~Server() {
   std::ofstream(pidfn_) << getpid() << '\n';
+  auto address = net::ip::make_address(host_);
 }
 
 void Server::run() {

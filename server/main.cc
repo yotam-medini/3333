@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
     ("help", "produce help message")
     ("host", po::value<std::string>()->default_value("localhost"),
       "Host address")
+    ("port", po::value<unsigned short>()->default_value(9090), "Port")
     ("maxtables", po::value<int>()->default_value(24), "Max tables")
     ("maxplayers", po::value<int>()->default_value(4), "Max Players")
     ("expire", po::value<int>()->default_value(300),
@@ -28,6 +29,7 @@ int main(int argc, char **argv) {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
     Server server{
        vm["host"].as<std::string>(),
+       vm["port"].as<unsigned short>(),
        vm["maxtables"].as<size_t>(),
        vm["maxplayers"].as<size_t>(),
        vm["expire"].as<unsigned>(),

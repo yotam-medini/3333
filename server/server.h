@@ -14,16 +14,18 @@ class Server {
  public:
   Server(
     const std::string &host,
+    const unsigned short port,
     const size_t max_tables,
     const size_t max_players,
     const unsigned expire_seconds,
-    const std::string pidfn,
+    const std::string &pidfn,
     const unsigned debug_flags
   );
   ~Server();
   void run();
  private:
   const std::string host_;
+  const unsigned short port_;
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;
