@@ -1,6 +1,8 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
+#include "server.h"
+
 int main(int argc, char **argv) {
   namespace po = boost::program_options;
   int rc = 0;
@@ -24,6 +26,8 @@ int main(int argc, char **argv) {
     std::cout << desc << "\n";
   } else {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
+    Server server;
+    server.run();
   }
 
   return rc;
