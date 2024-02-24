@@ -26,7 +26,13 @@ int main(int argc, char **argv) {
     std::cout << desc << "\n";
   } else {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
-    Server server;
+    Server server{
+       vm["host"].as<std::string>(),
+       vm["maxtables"].as<size_t>(),
+       vm["maxplayers"].as<size_t>(),
+       vm["expire"].as<unsigned>(),
+       vm["pidfn"].as<std::string>(),
+       vm["debug"].as<unsigned>()};       
     server.run();
   }
 
