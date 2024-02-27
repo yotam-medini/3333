@@ -12,9 +12,12 @@ class HttpSession {
   HttpSession(
     tcp::socket socket,
     std::function<void(HttpSession*)> unregister);
+  ~HttpSession();
   void run();
  private:
   void on_read(error_code ec, std::size_t);
+  void on_write(error_code ec, std::size_t, bool close);
+  void respond();
   tcp::socket socket_;
   beast::flat_buffer buffer_;
   http::request<http::string_body> req_;
