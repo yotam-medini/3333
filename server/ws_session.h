@@ -12,6 +12,8 @@ class WebSocketSession {
  private:
   void on_accept(error_code ec);
   void read_next();
+  void on_read(error_code ec, std::size_t);
+  beast::flat_buffer buffer_;
   websocket::stream<tcp::socket> socket_;
 };
   

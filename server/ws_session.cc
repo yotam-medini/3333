@@ -25,4 +25,20 @@ void WebSocketSession::on_accept(error_code ec) {
 }
 
 void WebSocketSession::read_next() {
+  socket_.async_read(
+    buffer_,
+    [this](error_code ec, std::size_t bytes) {
+      this->on_read(ec, bytes);
+    });
 }
+
+void WebSocketSession::on_read(error_code ec, std::size_t) {
+    if (ec) { 
+      std::cerr << funcname() << " failed, ec=" << ec << '\n';
+    } else {
+      // state_->send(beast::buffers_to_string(buffer_.data()));
+      buffer_.consume(buffer_.size()); // clear
+      read_next();
+    }
+}
+
