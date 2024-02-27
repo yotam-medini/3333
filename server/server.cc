@@ -10,7 +10,11 @@ class WebSocketSession;
 class NetServer {
  public:
   NetServer(const std::string &host, uint16_t port) :
-    host_{host}, port_(port) {}
+    host_{host},
+    port_(port),
+    acceptor_{ioc_},
+    socket_{ioc_} {
+  }
   void run() {
     auto address = net::ip::make_address(host_);
     tcp::acceptor acceptor(ioc_);
@@ -18,6 +22,8 @@ class NetServer {
   const std::string host_;
   const uint16_t port_;
   net::io_context ioc_;
+  tcp::acceptor acceptor_;
+  tcp::socket socket_;
   std::unordered_map<WebSocketSession*, Player*> ws_player_;
 };
 
