@@ -1,9 +1,13 @@
 #include "server.h"
 #include <cstdint>
+#include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "net.h"
+#include "http_session.h"
 
 class WebSocketSession;
 
@@ -17,13 +21,65 @@ class NetServer {
   }
   void run() {
     auto address = net::ip::make_address(host_);
-    tcp::acceptor acceptor(ioc_);
+    tcp::endpoint endpoint{address, port_};
+    error_code ec;
+    acceptor_.open(endpoint.protocol(), ec);
+    if (ec) {
+      std::cerr << "acceptor.open failed, ec=" << ec << '\n';
+    } else {
+      acceptor_.set_option(net::socket_base::reuse_address(true));
+      if (ec)
+      {
+        std::cerr << "acceptor.set_option failed, ec=" << ec << '\n';
+      }
+    }
+    if (!ec) {
+      acceptor_.bind(endpoint, ec);
+      if (ec)
+      {
+        std::cerr << "acceptor.bind failed, ec=" << ec << '\n';
+      }
+    }
+    if (!ec) {
+      acceptor_.listen(net::socket_base::max_listen_connections, ec);
+      if (ec)
+      {
+        std::cerr << "acceptor.listen failed, ec=" << ec << '\n';
+      }
+    }
+    if (!ec) {
+      // Start accepting a connection
+      accept_next();
+    }
+  }
+ private:
+  void accept_next() {
+    acceptor_.async_accept(
+      socket_,
+      [this](error_code ec) {
+        this->on_accept(ec);
+      });
+  }
+  void on_accept(error_code ec) {
+    if (ec) {
+      std::cerr << "accept failedm ec=" << ec << '\n';
+    } else {
+      // Launch a new session for this connection
+      HttpSession *hs = new HttpSession(
+        std::move(socket_),
+        [this](HttpSession* dhp) {
+          this->http_sessions_.erase(dhp);
+        });
+      hs->run();
+    }
+    accept_next();
   }
   const std::string host_;
   const uint16_t port_;
   net::io_context ioc_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
+  std::unordered_set<HttpSession*> http_sessions_;
   std::unordered_map<WebSocketSession*, Player*> ws_player_;
 };
 
