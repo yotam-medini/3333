@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -12,7 +13,7 @@ int main(int argc, char **argv) {
     ("help", "produce help message")
     ("host", po::value<std::string>()->default_value("localhost"),
       "Host address")
-    ("port", po::value<unsigned short>()->default_value(9090), "Port")
+    ("port", po::value<uint16_t>()->default_value(9090), "Port")
     ("maxtables", po::value<int>()->default_value(24), "Max tables")
     ("maxplayers", po::value<int>()->default_value(4), "Max Players")
     ("expire", po::value<int>()->default_value(300),
@@ -29,7 +30,7 @@ int main(int argc, char **argv) {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
     Server server{
        vm["host"].as<std::string>(),
-       vm["port"].as<unsigned short>(),
+       vm["port"].as<uint16_t>(),
        vm["maxtables"].as<size_t>(),
        vm["maxplayers"].as<size_t>(),
        vm["expire"].as<unsigned>(),
