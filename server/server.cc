@@ -9,6 +9,7 @@
 
 #include "net.h"
 #include "http_session.h"
+#include "utils.h"
 
 class WebSocketSession;
 
@@ -68,10 +69,24 @@ class NetServer {
       // Launch a new session for this connection
       HttpSession *hs = new HttpSession(
         std::move(socket_),
-        [this](HttpSession* dhp) {
-          this->http_sessions_.erase(dhp);
+        // register_ws
+        [this](HttpSession *dhs, WebSocketSession *ws) {
+          hs_to_ws_[dhs] = ws;
+        },
+        // unregister http
+        [this](HttpSession *dhp) {
+          WebSocketSession *ws = hs_to_ws_[dhp];
+          if (ws) { // should move to upper server
+            auto iter = ws_player_.find(ws);
+            Player *player = iter->second;
+            if (player) {
+              std::cerr << funcname() << " need to delete player\n";
+            }
+            ws_player_.erase(iter);
+          }
+          this->hs_to_ws_.erase(dhp);
         });
-      http_sessions_.insert(hs);
+      hs_to_ws_[hs] = nullptr;
       hs->run();
     }
     accept_next();
@@ -81,7 +96,7 @@ class NetServer {
   net::io_context ioc_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
-  std::unordered_set<HttpSession*> http_sessions_;
+  std::unordered_map<HttpSession*, WebSocketSession*> hs_to_ws_;
   std::unordered_map<WebSocketSession*, Player*> ws_player_;
 };
 

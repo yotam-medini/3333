@@ -2,12 +2,15 @@
 #include <iostream>
 #include <utility>
 #include "net.h"
+#include "utils.h"
 #include "ws_session.h"
 
 HttpSession::HttpSession(
   tcp::socket socket,
+  std::function<void(HttpSession*, WebSocketSession*)> ws_register,
   std::function<void(HttpSession*)> unregister) :
   socket_{std::move(socket)},
+  ws_register_{ws_register},
   unregister_{unregister},
   wss_{nullptr} {
 }
@@ -28,7 +31,7 @@ void HttpSession::on_read(error_code ec, std::size_t) {
   if (ec == http::error::end_of_stream) {
     socket_.shutdown(tcp::socket::shutdown_send, ec); // client closed
   } else if (ec) {
-    std::cerr << "HttpSession::" << __func__ << " faild, ec=" << ec << '\n';
+    std::cerr << funcname() << " faild, ec=" << ec << '\n';
   } else if (websocket::is_upgrade(req_)) {
     std::cerr << "new websocket_session\n";
     wss_ = new WebSocketSession(std::move(socket_));
@@ -40,7 +43,7 @@ void HttpSession::on_read(error_code ec, std::size_t) {
 
 void HttpSession::on_write(error_code ec, std::size_t, bool close) {
   if (ec) {
-    std::cerr << "HttpSession::" << __func__ << " fail ec=" << ec << '\n';
+    std::cerr << funcname() << " fail ec=" << ec << '\n';
   } else if (close) {
     std::cerr << "HttpSession:: close\n";
   } else {
