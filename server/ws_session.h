@@ -11,6 +11,7 @@ class WebSocketSession {
   void run(http::request<http::string_body> req);
  private:
   void on_accept(error_code ec);
+  void read_next();
   websocket::stream<tcp::socket> socket_;
 };
   

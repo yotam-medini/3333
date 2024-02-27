@@ -11,7 +11,8 @@ CPPS := $(wildcard *.cc)
 OBJS = $(patsubst %.cc, obj.d/%.o, ${CPPS})
 DEPS = $(patsubst %.cc, obj.d/%.d, ${CPPS})
 DBGFLAGS = -g
-CFLAGS = ${DBGFLAGS} -Wall
+CFLAGS = ${DBGFLAGS} -Wall -std=c++20
+
 LDFLAGS =
 LIBS = -lboost_program_options
 
@@ -19,7 +20,7 @@ objs: ${OBJS}
 
 obj.d/%.o: %.cc
 	mkdir -p ${@D}
-	g++ ${DBGFLAGS} -MMD -c -o $@ $<
+	g++ ${CFLAGS} -MMD -c -o $@ $<
 
 3333-server: ${OBJS}
 	g++ ${DBGFLAGS} ${LDFLAGS} -o $@ ${OBJS} ${LIBS}
