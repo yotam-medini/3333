@@ -70,6 +70,7 @@ class NetServer {
         [this](HttpSession* dhp) {
           this->http_sessions_.erase(dhp);
         });
+      http_sessions_.insert(hs);
       hs->run();
     }
     accept_next();
