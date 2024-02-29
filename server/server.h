@@ -26,6 +26,7 @@ class Server {
   void run();
  private:
   void ws_deleted(WebSocketSession *ws);
+  void ws_received_message(WebSocketSession *ws, const std::string& msg);
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;

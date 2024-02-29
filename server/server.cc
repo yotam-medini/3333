@@ -14,18 +14,20 @@
 
 class WebSocketSession;
 
-using notify_ws_delete_t = std::function<void(WebSocketSession*)>;
+using notify_ws_t = std::function<void(WebSocketSession*)>;
 
 class NetServer {
  public:
   NetServer(
     const std::string &host,
     uint16_t port,
-    notify_ws_delete_t notify_ws_delete) :
+    notify_ws_t notify_ws_add,
+    notify_ws_t notify_ws_delete) :
     host_{host},
     port_(port),
     acceptor_{ioc_},
     socket_{ioc_},
+    notify_ws_add_{notify_ws_add},
     notify_ws_delete_{notify_ws_delete_} {
   }
   void run() {
@@ -95,7 +97,8 @@ class NetServer {
   net::io_context ioc_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
-  notify_ws_delete_t notify_ws_delete_;
+  notify_ws_t notify_ws_add_;
+  notify_ws_t notify_ws_delete_;
   std::unordered_map<HttpSession*, WebSocketSession*> hs_to_ws_;
 };
 
@@ -117,11 +120,12 @@ Server::Server(
       new NetServer{
         host,
         port,
+        [this](WebSocketSession *ws) -> void {
+          this->ws_player_[ws] = nullptr;
+        },
         [this](WebSocketSession *ws) -> void { this->ws_deleted(ws); }
       }
     } {
-  std::ofstream(pidfn_) << getpid() << '\n';
-  net_server_->run();
 }
 
 Server::~Server() {
@@ -129,6 +133,8 @@ Server::~Server() {
 }
 
 void Server::run() {
+  std::ofstream(pidfn_) << getpid() << '\n';
+  net_server_->run();
 }
 
 void Server::ws_deleted(WebSocketSession *ws) {
@@ -138,4 +144,9 @@ void Server::ws_deleted(WebSocketSession *ws) {
     std::cerr << funcname() << " need to delete player\n";
   }
   ws_player_.erase(iter);
+}
+
+void Server::ws_received_message(
+  WebSocketSession *ws,
+  const std::string &msg) {
 }
