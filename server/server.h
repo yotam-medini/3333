@@ -6,8 +6,9 @@
 #include <string>
 #include <unordered_map>
 
-class Table;
 class Player;
+class Table;
+class WebSocketSession;
 class NetServer;
 
 class Server {
@@ -24,12 +25,14 @@ class Server {
   ~Server();
   void run();
  private:
+  void ws_deleted(WebSocketSession *ws);
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;
   const std::string pidfn_;
   const unsigned debug_flags_;
   NetServer *net_server_;
+  std::unordered_map<WebSocketSession*, Player*> ws_player_;
   std::unordered_map<std::string, Table*> name_table_;
 };
 
