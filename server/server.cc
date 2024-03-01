@@ -34,16 +34,23 @@ class NetServer {
     report_message_{report_message} {
   }
   void run() {
-    auto address = net::ip::make_address(host_);
-    tcp::endpoint endpoint{address, port_};
     error_code ec;
-    acceptor_.open(endpoint.protocol(), ec);
+    tcp::endpoint endpoint;
+    auto address = net::ip::make_address(host_, ec);
     if (ec) {
-      std::cerr << "acceptor.open failed, ec=" << ec << '\n';
+      std::cerr << funcname() << " make_address failed, ec=" << ec << '\n';
     } else {
-      acceptor_.set_option(net::socket_base::reuse_address(true));
+      endpoint = tcp::endpoint{address, port_};
+    }
+    if (!ec) {
+      acceptor_.open(endpoint.protocol(), ec);
       if (ec) {
-        std::cerr << "acceptor.set_option failed, ec=" << ec << '\n';
+        std::cerr << "acceptor.open failed, ec=" << ec << '\n';
+      } else {
+        acceptor_.set_option(net::socket_base::reuse_address(true));
+        if (ec) {
+          std::cerr << "acceptor.set_option failed, ec=" << ec << '\n';
+        }
       }
     }
     if (!ec) {

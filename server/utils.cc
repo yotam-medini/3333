@@ -1,7 +1,6 @@
 #include "utils.h"
 #include <source_location>
 
-std::string funcname() {
-  std::source_location location = std::source_location::current();
+std::string funcname(const std::source_location location) {
   return location.function_name();
 }

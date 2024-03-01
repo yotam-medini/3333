@@ -3,6 +3,9 @@
 #define UTILS_H 1
 
 #include <string>
-extern std::string funcname();
+#include <source_location>
+
+extern std::string funcname(
+  const std::source_location location = std::source_location::current());
 
 #endif /* UTILS_H */
