@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   po::options_description desc("3333-server options");
   desc.add_options()
     ("help", "produce help message")
-    ("host", po::value<std::string>()->default_value("localhost"),
+    ("host", po::value<std::string>()->default_value("127.0.0.1"),
       "Host address")
     ("port", po::value<uint16_t>()->default_value(9090), "Port")
     ("maxtables", po::value<size_t>()->default_value(24), "Max tables")
