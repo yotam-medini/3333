@@ -1,5 +1,6 @@
 #include "http_session.h"
 #include <iostream>
+#include <string>
 #include <utility>
 #include "net.h"
 #include "utils.h"
@@ -8,10 +9,12 @@
 HttpSession::HttpSession(
   tcp::socket socket,
   std::function<void(HttpSession*, WebSocketSession*)> ws_register,
-  std::function<void(HttpSession*)> unregister) :
+  std::function<void(HttpSession*)> unregister,
+  WebSocketSession::report_message_t report_message) :
   socket_{std::move(socket)},
   ws_register_{ws_register},
   unregister_{unregister},
+  report_message_{report_message},
   wss_{nullptr} {
 }
 
@@ -34,7 +37,7 @@ void HttpSession::on_read(error_code ec, std::size_t) {
     std::cerr << funcname() << " faild, ec=" << ec << '\n';
   } else if (websocket::is_upgrade(req_)) {
     std::cerr << "new websocket_session\n";
-    wss_ = new WebSocketSession(std::move(socket_));
+    wss_ = new WebSocketSession(std::move(socket_), report_message_);
     wss_->run(std::move(req_));
   } else { // response
     respond();

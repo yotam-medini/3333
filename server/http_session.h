@@ -12,7 +12,8 @@ class HttpSession {
   HttpSession(
     tcp::socket socket,
     std::function<void(HttpSession*, WebSocketSession*)> ws_register,
-    std::function<void(HttpSession*)> unregister);
+    std::function<void(HttpSession*)> unregister,
+    std::function<void(WebSocketSession*, const std::string&)> report_message);
   ~HttpSession();
   void run();
   WebSocketSession *get_websocket_server() const { return wss_; }
@@ -25,6 +26,7 @@ class HttpSession {
   http::request<http::string_body> req_;
   std::function<void(HttpSession*, WebSocketSession*)> ws_register_;
   std::function<void(HttpSession*)> unregister_;
+  std::function<void(WebSocketSession*, const std::string&)> report_message_;
   WebSocketSession *wss_;
 };
 

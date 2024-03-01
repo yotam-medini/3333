@@ -5,8 +5,11 @@
 #include "beast.h"
 #include "utils.h"
 
-WebSocketSession::WebSocketSession(tcp::socket socket) :
-  socket_{std::move(socket)} {
+WebSocketSession::WebSocketSession(
+  tcp::socket socket,
+  report_message_t report_message) :
+  socket_{std::move(socket)},
+  report_message_{report_message} {
 }
 
 void WebSocketSession::run(http::request<http::string_body> req) {
@@ -44,6 +47,8 @@ void WebSocketSession::on_read(error_code ec, std::size_t) {
     std::cerr << funcname() << " failed, ec=" << ec << '\n';
   } else {
     // state_->send(beast::buffers_to_string(buffer_.data()));
+    const std::string message{beast::buffers_to_string(buffer_.data())};
+    report_message_(this, message);
     buffer_.consume(buffer_.size()); // clear
     read_next();
   }

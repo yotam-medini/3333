@@ -13,8 +13,9 @@
 #include "utils.h"
 
 class WebSocketSession;
-
 using notify_ws_t = std::function<void(WebSocketSession*)>;
+using report_message_t =
+  std::function<void(WebSocketSession*, const std::string&)>;
 
 class NetServer {
  public:
@@ -22,13 +23,15 @@ class NetServer {
     const std::string &host,
     uint16_t port,
     notify_ws_t notify_ws_add,
-    notify_ws_t notify_ws_delete) :
+    notify_ws_t notify_ws_delete,
+    report_message_t report_message) :
     host_{host},
     port_(port),
     acceptor_{ioc_},
     socket_{ioc_},
     notify_ws_add_{notify_ws_add},
-    notify_ws_delete_{notify_ws_delete_} {
+    notify_ws_delete_{notify_ws_delete_},
+    report_message_{report_message} {
   }
   void run() {
     auto address = net::ip::make_address(host_);
@@ -73,7 +76,7 @@ class NetServer {
       std::cerr << "accept failedm ec=" << ec << '\n';
     } else {
       // Launch a new session for this connection
-      HttpSession *hs = new HttpSession(
+      HttpSession *hs = new HttpSession{
         std::move(socket_),
         // register_ws
         [this](HttpSession *dhs, WebSocketSession *ws) {
@@ -86,7 +89,9 @@ class NetServer {
             notify_ws_delete_(ws);
           }
           this->hs_to_ws_.erase(dhp);
-        });
+        },
+        report_message_
+      };
       hs_to_ws_[hs] = nullptr;
       hs->run();
     }
@@ -99,6 +104,7 @@ class NetServer {
   tcp::socket socket_;
   notify_ws_t notify_ws_add_;
   notify_ws_t notify_ws_delete_;
+  report_message_t report_message_;
   std::unordered_map<HttpSession*, WebSocketSession*> hs_to_ws_;
 };
 
@@ -123,7 +129,10 @@ Server::Server(
         [this](WebSocketSession *ws) -> void {
           this->ws_player_[ws] = nullptr;
         },
-        [this](WebSocketSession *ws) -> void { this->ws_deleted(ws); }
+        [this](WebSocketSession *ws) -> void { this->ws_deleted(ws); },
+        [this](WebSocketSession *ws, const std::string& message) -> void {
+          this->ws_received_message(ws, message);
+        }
       }
     } {
 }
@@ -148,5 +157,5 @@ void Server::ws_deleted(WebSocketSession *ws) {
 
 void Server::ws_received_message(
   WebSocketSession *ws,
-  const std::string &msg) {
+  const std::string &message) {
 }
