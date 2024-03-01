@@ -14,9 +14,9 @@ int main(int argc, char **argv) {
     ("host", po::value<std::string>()->default_value("localhost"),
       "Host address")
     ("port", po::value<uint16_t>()->default_value(9090), "Port")
-    ("maxtables", po::value<int>()->default_value(24), "Max tables")
-    ("maxplayers", po::value<int>()->default_value(4), "Max Players")
-    ("expire", po::value<int>()->default_value(300),
+    ("maxtables", po::value<size_t>()->default_value(24), "Max tables")
+    ("maxplayers", po::value<size_t>()->default_value(4), "Max Players")
+    ("expire", po::value<unsigned>()->default_value(300),
       "Seconds of no action to expire")
     ("pidfn", po::value<std::string>()->default_value("/tmp/3333-server.pid"),
       "File to record PID")
