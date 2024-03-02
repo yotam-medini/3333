@@ -68,6 +68,7 @@ class NetServer {
     if (!ec) {
       // Start accepting a connection
       accept_next();
+      ioc_.run();
     }
   }
  private:
