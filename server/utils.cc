@@ -7,6 +7,17 @@ std::string funcname(const std::source_location location) {
   return location.function_name();
 }
 
+bool validate_unsigned(const std::string &s) {
+  bool valid = !s.empty();
+  if (valid) {
+    if (! std::all_of(s.begin(), s.end(), isdigit)) {
+      valid = (s.size() > 2) && (s[0] == '0') && (s[1] == 'x' || s[1] == 'X')
+        && std::all_of(s.begin() + 2, s.end(), ::isxdigit);
+    }
+  }
+  return valid;
+}
+
 std::string ymdhms() {
   auto s2 = [] (int n) -> std::string {
     std::ostringstream oss2;

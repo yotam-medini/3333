@@ -3,6 +3,7 @@
 #include <boost/program_options.hpp>
 
 #include "server.h"
+#include "utils.h"
 
 int main(int argc, char **argv) {
   namespace po = boost::program_options;
@@ -20,7 +21,7 @@ int main(int argc, char **argv) {
       "Seconds of no action to expire")
     ("pidfn", po::value<std::string>()->default_value("/tmp/3333-server.pid"),
       "File to record PID")
-    ("debug", po::value<unsigned>()->default_value(0), "Debug flags")
+    ("debug", po::value<std::string>()->default_value("0"), "Debug flags")
   ;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
@@ -28,15 +29,23 @@ int main(int argc, char **argv) {
     std::cout << desc << "\n";
   } else {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
-    Server server{
-       vm["host"].as<std::string>(),
-       vm["port"].as<uint16_t>(),
-       vm["maxtables"].as<size_t>(),
-       vm["maxplayers"].as<size_t>(),
-       vm["expire"].as<unsigned>(),
-       vm["pidfn"].as<std::string>(),
-       vm["debug"].as<unsigned>()};       
-    server.run();
+    const std::string debng_flags_raw = vm["debug"].as<std::string>();
+    if (!validate_unsigned(debng_flags_raw)) {
+      std::cerr << "Bad debug value=" << debng_flags_raw << '\n';
+      rc = 1;
+    } else {
+      unsigned debng_flags = std::stoi(debng_flags_raw, nullptr, 0);
+      std::cerr << "debng_flags=" << debng_flags << '\n';
+      Server server{
+         vm["host"].as<std::string>(),
+         vm["port"].as<uint16_t>(),
+         vm["maxtables"].as<size_t>(),
+         vm["maxplayers"].as<size_t>(),
+         vm["expire"].as<unsigned>(),
+         vm["pidfn"].as<std::string>(),
+         debng_flags};       
+      server.run();
+    }
   }
 
   return rc;
