@@ -34,35 +34,36 @@ class NetServer {
     report_message_{report_message} {
   }
   void run() {
+    const std::string fn = funcname();
     error_code ec;
     tcp::endpoint endpoint;
     auto address = net::ip::make_address(host_, ec);
     if (ec) {
-      std::cerr << funcname() << " make_address failed, ec=" << ec << '\n';
+      std::cerr << fn << " make_address failed, ec=" << ec << '\n';
     } else {
       endpoint = tcp::endpoint{address, port_};
     }
     if (!ec) {
       acceptor_.open(endpoint.protocol(), ec);
       if (ec) {
-        std::cerr << "acceptor.open failed, ec=" << ec << '\n';
+        std::cerr << fn << " acceptor.open failed, ec=" << ec << '\n';
       } else {
         acceptor_.set_option(net::socket_base::reuse_address(true));
         if (ec) {
-          std::cerr << "acceptor.set_option failed, ec=" << ec << '\n';
+          std::cerr << fn << " acceptor.set_option failed, ec=" << ec << '\n';
         }
       }
     }
     if (!ec) {
       acceptor_.bind(endpoint, ec);
       if (ec) {
-        std::cerr << "acceptor.bind failed, ec=" << ec << '\n';
+        std::cerr << fn << " acceptor.bind failed, ec=" << ec << '\n';
       }
     }
     if (!ec) {
       acceptor_.listen(net::socket_base::max_listen_connections, ec);
       if (ec) {
-        std::cerr << "acceptor.listen failed, ec=" << ec << '\n';
+        std::cerr << fn << "acceptor.listen failed, ec=" << ec << '\n';
       }
     }
     if (!ec) {
@@ -166,4 +167,8 @@ void Server::ws_deleted(WebSocketSession *ws) {
 void Server::ws_received_message(
   WebSocketSession *ws,
   const std::string &message) {
+  if (debug_flags_ & 0x1) {
+    std::cerr << ymdhms() << ' ' << funcname() <<
+      " message=" << message << '\n';
+  }
 }
