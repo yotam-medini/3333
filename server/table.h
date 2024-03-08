@@ -10,6 +10,7 @@ class Player;
 class Table {
  public:
   Table(Player* owner, const std::string& password);
+  const std::string &get_name() const;
  private:
   std::vector<Player*> players_; // first is owner
   const std::string password_;
