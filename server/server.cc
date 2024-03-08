@@ -12,6 +12,9 @@
 #include "http_session.h"
 #include "utils.h"
 
+#include "player.h"
+#include "table.h"
+
 class WebSocketSession;
 using notify_ws_t = std::function<void(WebSocketSession*)>;
 using report_message_t =
