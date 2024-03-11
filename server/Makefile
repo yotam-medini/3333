@@ -19,7 +19,7 @@ LIBS = -lboost_program_options
 objs: ${OBJS}
 
 obj.d/%.o: %.cc
-	mkdir -p ${@D}
+	@mkdir -p ${@D}
 	g++ ${CFLAGS} -MMD -c -o $@ $<
 
 3333-server: ${OBJS}
