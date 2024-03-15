@@ -14,7 +14,7 @@ DBGFLAGS = -g
 CFLAGS = ${DBGFLAGS} -Wall -std=c++20
 
 LDFLAGS =
-LIBS = -lboost_program_options
+LIBS = -lboost_program_options -lfmt
 
 objs: ${OBJS}
 

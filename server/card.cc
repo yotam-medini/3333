@@ -1,6 +1,6 @@
 #include "card.h"
 
-std::array<card_t, 81> compute_all_cards() {
+static std::array<card_t, 81> compute_all_cards() {
   std::array<card_t, 81> cards81;
   for (uint8_t i = 0; i < 81; ++i) {
     card_t &card = cards81[i];

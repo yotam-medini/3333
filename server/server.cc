@@ -3,10 +3,12 @@
 #include <iostream>
 #include <functional>
 #include <fstream>
+#include <string>
 #include <unistd.h>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <fmt/core.h>
 
 #include "net.h"
 #include "http_session.h"
@@ -14,6 +16,19 @@
 
 #include "player.h"
 #include "table.h"
+#include "ws_session.h"
+
+// TO be moved to common constants with Javascript code
+static const std::string S3333_C2S_TBLS = "tbls";
+static const std::string S3333_C2S_NTBL = "ntbl";
+static const std::string S3333_C2S_GNEW = "gnew";
+static const std::string S3333_C2S_TRY3 = "try3";
+static const unsigned E3333_S2C_TBLS = 0;
+static const unsigned E3333_S2C_NTBL = 1;
+static const unsigned E3333_S2C_GSTATE = 2;
+static const unsigned E3333_S2C_N = 3;
+
+
 
 class WebSocketSession;
 using notify_ws_t = std::function<void(WebSocketSession*)>;
@@ -173,5 +188,36 @@ void Server::ws_received_message(
   if (debug_flags_ & 0x1) {
     std::cerr << ymdhms() << ' ' << funcname() <<
       " message=" << message << '\n';
+    std::cerr << fmt::format("{} {} message='{}'\n",
+      ymdhms(), funcname(), message);
+    if (message == S3333_C2S_TBLS) {
+      ws->send(server_to_client(E3333_S2C_TBLS, 0, tables_to_json()));
+    } else {
+    std::cerr << fmt::format("{} {} Unsupported message='{}'\n",
+      ymdhms(), funcname(), message);
+    }
   }
+}
+
+std::string Server::server_to_client(
+  unsigned op,
+  unsigned error_code,
+  const std::string &result) const {
+  std::string ret = fmt::format(
+R"J({}
+  "cmd": "{}",
+  "rc": "{}",
+  "result": "{}"
+{}
+)J",
+    "{", op, error_code, result, "}");
+  ret += std::string{"}\n"};
+  std::cerr << "server_to_client: ret=" << ret << '\n';
+  return ret;
+}
+
+std::string Server::tables_to_json() const {
+  std::string ret{"{\n"};
+  ret += std::string{"}\n"};
+  return ret;
 }

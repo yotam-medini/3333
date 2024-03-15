@@ -28,6 +28,11 @@ class Server {
   void ws_deleted(WebSocketSession *ws);
   void ws_send_message(WebSocketSession *ws, const std::string& message);
   void ws_received_message(WebSocketSession *ws, const std::string& message);
+  std::string server_to_client(
+    unsigned op,
+    unsigned error_code,
+    const std::string &result) const;
+  std::string tables_to_json() const;
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;
