@@ -205,13 +205,12 @@ std::string Server::server_to_client(
   const std::string &result) const {
   std::string ret = fmt::format(
 R"J({}
-  "cmd": "{}",
-  "rc": "{}",
-  "result": "{}"
+  "cmd": {},
+  "rc": {},
+  "result": {}
 {}
 )J",
     "{", op, error_code, result, "}");
-  ret += std::string{"}\n"};
   std::cerr << "server_to_client: ret=" << ret << '\n';
   return ret;
 }
