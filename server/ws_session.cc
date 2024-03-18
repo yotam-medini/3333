@@ -68,7 +68,7 @@ void WebSocketSession::on_write(error_code ec, std::size_t)
     std::cerr << funcname() << " failed, ec=" << ec << '\n';
   } else {
     queue_.pop();
-    if (queue_.empty()) {
+    if (!queue_.empty()) {
       write_next();
     }
   }
