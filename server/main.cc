@@ -29,13 +29,13 @@ int main(int argc, char **argv) {
     std::cout << desc << "\n";
   } else {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
-    const std::string debng_flags_raw = vm["debug"].as<std::string>();
-    if (!validate_unsigned(debng_flags_raw)) {
-      std::cerr << "Bad debug value=" << debng_flags_raw << '\n';
+    const std::string debug_flags_raw = vm["debug"].as<std::string>();
+    if (!validate_unsigned(debug_flags_raw)) {
+      std::cerr << "Bad debug value=" << debug_flags_raw << '\n';
       rc = 1;
     } else {
-      unsigned debng_flags = std::stoi(debng_flags_raw, nullptr, 0);
-      std::cerr << "debng_flags=" << debng_flags << '\n';
+      unsigned debug_flags = std::stoi(debug_flags_raw, nullptr, 0);
+      std::cerr << "debug_flags=" << debug_flags << '\n';
       Server server{
          vm["host"].as<std::string>(),
          vm["port"].as<uint16_t>(),
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
          vm["maxplayers"].as<size_t>(),
          vm["expire"].as<unsigned>(),
          vm["pidfn"].as<std::string>(),
-         debng_flags};       
+         debug_flags};       
       server.run();
     }
   }
