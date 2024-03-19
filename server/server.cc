@@ -1,4 +1,5 @@
 #include "server.h"
+#include <charconv>
 #include <cstdint>
 #include <iostream>
 #include <functional>
@@ -175,24 +176,25 @@ void Server::run() {
 
 void Server::ws_deleted(WebSocketSession *ws) {
   auto iter = ws_player_.find(ws);
-  Player *player = iter->second;
-  if (player) {
-    std::cerr << funcname() << " need to delete player\n";
-  }
   ws_player_.erase(iter);
 }
 
 void Server::ws_received_message(
   WebSocketSession *ws,
   const std::string &message) {
+  std::vector<std::string> cmd = ssplit(message);
   if (debug_flags_ & 0x1) {
     std::cerr << ymdhms() << ' ' << funcname() <<
       " message=" << message << '\n';
-    std::vector<std::string> cmd = ssplit(message);
     std::cerr << fmt::format("{} {} message='{}', #(cmd)={}\n",
       ymdhms(), funcname(), message, cmd.size());
+  }
+  if (!cmd.empty()) {
+    std::string err;
     if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(server_to_client(E3333_S2C_TBLS, 0, tables_to_json()));
+    } else if (cmd[0] == S3333_C2S_NTBL) {
+      err = new_table(cmd);
     } else {
     std::cerr << fmt::format("{} {} Unsupported message='{}'\n",
       ymdhms(), funcname(), message);
@@ -220,4 +222,44 @@ std::string Server::tables_to_json() const {
   std::string ret{"{\n"};
   ret += std::string{"  }\n"};
   return ret;
+}
+
+std::string Server::new_table(const std::vector<std::string> &cmd) {
+  std::string err;
+  const size_t sz = cmd.size();
+  std::string table_name, table_password, player_password;
+  if ((sz < 3) || (5 < sz)) {
+    err = fmt::format("{}: Bad command size: {}", cmd[0], sz);
+  } else {
+    unsigned pw_flags{};
+    auto [_, ec] = std::from_chars(cmd[2].data(), cmd[2].data() + cmd[2].size(),
+      pw_flags);
+    if ((ec != std::errc()) || (pw_flags > 3)) {
+      err = fmt::format("Bad pw_flags: {}", cmd[2]);
+    } else {
+      size_t n_pw = (pw_flags == 0 ? 0 : (pw_flags == 3 ? 2 : 1));
+      if (sz != 3 + n_pw) {
+        err = fmt::format("{}: Bad command size: {}, #(pw)={}",
+          cmd[0], sz, n_pw);
+      } else {
+        table_name = cmd[1];
+        if (name_table_.find(table_name) != name_table_.end()) {
+          err = fmt::format("Table name: {} already in use", table_name);
+        } else if (name_table_.size() >= max_tables_) {
+          err = fmt::format("Club is full, #(tables)={}", name_table_.size());
+        }
+        size_t ipw = 2;
+        if (pw_flags & 1) {
+          table_password = cmd[++ipw];
+        }
+        if (pw_flags & 2) {
+          player_password = cmd[++ipw];
+        }
+      }
+    }
+  }
+  if (err.empty()) {
+    ;
+  }
+  return err;
 }

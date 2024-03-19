@@ -3,8 +3,10 @@
 #define SERVER_H 1
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class Player;
 class Table;
@@ -33,14 +35,15 @@ class Server {
     unsigned error_code,
     const std::string &result) const;
   std::string tables_to_json() const;
+  std::string new_table(const std::vector<std::string> &cmd);
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;
   const std::string pidfn_;
   const unsigned debug_flags_;
   NetServer *net_server_;
-  std::unordered_map<WebSocketSession*, Player*> ws_player_;
-  std::unordered_map<std::string, Table*> name_table_;
+  std::unordered_map<WebSocketSession*, std::unique_ptr<Player>> ws_player_;
+  std::unordered_map<std::string, std::unique_ptr<Table>> name_table_;
 };
 
 #endif /* SERVER_H */
