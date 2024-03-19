@@ -188,9 +188,10 @@ void Server::ws_received_message(
   if (debug_flags_ & 0x1) {
     std::cerr << ymdhms() << ' ' << funcname() <<
       " message=" << message << '\n';
-    std::cerr << fmt::format("{} {} message='{}'\n",
-      ymdhms(), funcname(), message);
-    if (message == S3333_C2S_TBLS) {
+    std::vector<std::string> cmd = ssplit(message);
+    std::cerr << fmt::format("{} {} message='{}', #(cmd)={}\n",
+      ymdhms(), funcname(), message, cmd.size());
+    if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(server_to_client(E3333_S2C_TBLS, 0, tables_to_json()));
     } else {
     std::cerr << fmt::format("{} {} Unsupported message='{}'\n",

@@ -3,6 +3,16 @@
 #include <source_location>
 #include <sstream>
 
+std::vector<std::string> ssplit(const std::string &s) {
+  std::vector<std::string> ret;
+  std::stringstream ss{s};
+  std::string w;
+  while (ss >> w) {
+    ret.emplace_back(w);
+  }
+  return ret;
+}
+
 std::string funcname(const std::source_location location) {
   return location.function_name();
 }
