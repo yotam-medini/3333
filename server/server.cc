@@ -194,10 +194,21 @@ void Server::ws_received_message(
     if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(server_to_client(E3333_S2C_TBLS, 0, tables_to_json()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
-      err = new_table(cmd);
+      err = new_table(cmd, ws);
+      if (err.empty()) {
+        ws->send(server_to_client(E3333_S2C_NTBL, 0, R"("")"));
+      }
+    } else if (cmd[0] == S3333_C2S_GNEW) {
+      Player *player = ws_player_[ws].get();
+      Table *table = player->GetTable();
+      const std::vector<uint8_t> &active_deck = table->NewGame();
     } else {
-    std::cerr << fmt::format("{} {} Unsupported message='{}'\n",
-      ymdhms(), funcname(), message);
+      err = fmt::format("Unsupported command='{}'", cmd[0]);
+    }
+    if (!err.empty()) {
+      std::cerr << fmt::format("{} {}: {}\n", ymdhms(), funcname(), err);
+      std::string dq_err = fmt::format(R"("{}")", err);
+      ws->send(server_to_client(13, 1, dq_err));
     }
   }
 }
@@ -224,7 +235,9 @@ std::string Server::tables_to_json() const {
   return ret;
 }
 
-std::string Server::new_table(const std::vector<std::string> &cmd) {
+std::string Server::new_table(
+  const std::vector<std::string> &cmd,
+  WebSocketSession *ws) {
   std::string err;
   const size_t sz = cmd.size();
   std::string table_name, table_password, player_password;
@@ -259,7 +272,11 @@ std::string Server::new_table(const std::vector<std::string> &cmd) {
     }
   }
   if (err.empty()) {
-    ;
+    std::shared_ptr<Player>
+      player = make_shared<Player>(table_name, player_password);
+    name_table_[table_name] =make_unique<Table>(player, table_password);
+    // need to delete old table ? !!!!!!!!!!!!!!!!
+    ws_player_[ws] = player;
   }
   return err;
 }
