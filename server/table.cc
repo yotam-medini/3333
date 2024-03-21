@@ -4,6 +4,7 @@
 #include <numeric>
 #include <fmt/core.h>
 #include "player.h"
+#include "utils.h"
 
 Table::Table(
   const std::string& player_name,
@@ -29,9 +30,17 @@ std::string Table::json() const {
   j += fmt::format(R"j(  "tstate": "{}",)j" "\n", tstate_);
   j += fmt::format(R"j(  "gstate": "{}",)j" "\n", gstate_);
   j += fmt::format(R"j(  "gactive": {},)j" "\n", int(game_active_));
+  j += fmt::format(R"j(  "players": [)j");
+  const char *sep = "\n";
+  for (auto &player: players_) {
+    j += sep;
+    j += indent(player->json(), 2);
+    sep = ",\n";
+  }
+  j += "]";
   j += fmt::format(R"j(  "deck": {},)j" "\n", GetDeckSize());
   j += fmt::format(R"j(  "active": [)j");
-  const char *sep = "";
+  sep = "";
   for (uint8_t ci: cards_active_) {
     j += fmt::format("{}{}", sep, ci); sep = ", ";
   }

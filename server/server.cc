@@ -206,7 +206,7 @@ void Server::WsReceivedMessage(
       Player *player = ws_player_[ws];
       Table *table = player->GetTable();
       table->NewGame();
-      const std::string jts = table->json();
+      const std::string jts = indent(table->json(), 2);
       for (auto &tplayer: table->GetPlayers()) {
         tplayer->GetWS()->send(ServerToClient(E3333_S2C_GSTATE, 0, jts));
       }
