@@ -4,20 +4,22 @@
 #include <numeric>
 #include "player.h"
 
-Table::Table(std::shared_ptr<Player> owner, const std::string& password) :
+Table::Table(
+  const std::string& player_name,
+  const std::string &player_password,
+  const std::string& password) :
   password_(password) {
-  players_.push_back(owner);
+  players_.push_back(make_unique<Player>(player_name, player_password));
 }
 
 const std::string &Table::GetName() const {
   return players_[0]->GetName();
 }
 
-const std::vector<uint8_t> &Table::NewGame() {
+void Table::NewGame() {
   cards_deck_ = std::vector<uint8_t>(81);
   std::iota(cards_deck_.begin(), cards_deck_.end(), 0);
   DealCards(12);
-  return GetCardsActive();
 }
 
 void Table::DealCards(size_t n) {

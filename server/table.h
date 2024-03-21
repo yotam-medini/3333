@@ -11,17 +11,30 @@ class Player;
 
 class Table {
  public:
-  Table(std::shared_ptr<Player> owner, const std::string& password);
+  Table(
+    const std::string& player_name,
+    const std::string &player_password,
+    const std::string& password);
   const std::string &GetName() const;
-  const std::vector<uint8_t> &NewGame();
+  const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
+    return players_;
+  }
+  std::vector<std::unique_ptr<Player>> &GetPlayers() { return players_; }
+  void NewGame();
+  bool GetGameActive() const { return game_active_; }
+  size_t GetDeckSize() const { return cards_deck_.size(); }
   const std::vector<uint8_t> &GetCardsActive() const { return cards_active_; }
+  int GetTState() const { return tstate_; }
+  int GetGState() const { return gstate_; }
  private:
   void DealCards(size_t n);
-  std::vector<std::shared_ptr<Player>> players_; // first is owner
+  std::vector<std::unique_ptr<Player>> players_; // first is owner
   const std::string password_;
   bool game_active_;
   std::vector<uint8_t> cards_deck_;
   std::vector<uint8_t> cards_active_;
+  int tstate_{0};
+  int gstate_{0};
 };
 
 #endif /* TABLE_H */

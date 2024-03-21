@@ -199,9 +199,13 @@ void Server::ws_received_message(
         ws->send(server_to_client(E3333_S2C_NTBL, 0, R"("")"));
       }
     } else if (cmd[0] == S3333_C2S_GNEW) {
-      Player *player = ws_player_[ws].get();
+      Player *player = ws_player_[ws];
       Table *table = player->GetTable();
-      const std::vector<uint8_t> &active_deck = table->NewGame();
+      table->NewGame();
+      const std::string jts = GetTableStatusJson(table);
+      for (auto &tplayer: table->GetPlayers()) {
+        tplayer->GetWS()->send(server_to_client(E3333_S2C_GSTATE, 0, jts));
+      }
     } else {
       err = fmt::format("Unsupported command='{}'", cmd[0]);
     }
@@ -272,11 +276,29 @@ std::string Server::new_table(
     }
   }
   if (err.empty()) {
-    std::shared_ptr<Player>
-      player = make_shared<Player>(table_name, player_password);
-    name_table_[table_name] =make_unique<Table>(player, table_password);
+    std::unique_ptr<Table> table =
+      make_unique<Table>(table_name, player_password, table_password);
+    Player *player = table->GetPlayers()[0].get();
+    // name_table_[table_name] = table.get();
+    name_table_.insert({table_name, std::move(table)});
     // need to delete old table ? !!!!!!!!!!!!!!!!
-    ws_player_[ws] = player;
+    ws_player_.insert({ws, player});
   }
   return err;
+}
+
+std::string Server::GetTableStatusJson(const Table *table) const {
+  std::string json("{\n");
+  json += fmt::format(R"j(  "tstate": "{}",\n)j", table->GetTState());
+  json += fmt::format(R"j(  "gstate": "{}",\n)j", table->GetGState());
+  json += fmt::format(R"j(  "gactive": {},\n)j", int(table->GetGameActive()));
+  json += fmt::format(R"j(  "deck": {},\n)j", table->GetDeckSize());
+  json += fmt::format(R"j(  "active": [)j");
+  const char *sep = "";
+  for (uint8_t ci: table->GetCardsActive()) {
+    json += fmt::format("{}{}", sep, ci);
+  }
+  json += "  ]\n";
+  json += "}";
+  return json;
 }
