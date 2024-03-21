@@ -239,7 +239,7 @@ R"J({}
 
 std::string Server::TablesToJson() const {
   std::string ret{"{\n"};
-  ret += std::string{"  }\n"};
+  ret += std::string{"  }"};
   return ret;
 }
 
