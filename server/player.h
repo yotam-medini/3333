@@ -16,6 +16,8 @@ class Player {
   const std::string &GetName() const { return name_; }
   const std::string &GetPassword() const { return password_; }
   const Table *GetTable() const { return table_; }
+  void SetTable(Table *table) { table_ = table; }
+  void SetWS(WebSocketSession *ws) { ws_ = ws; }
   Table *GetTable() { return table_; }
   WebSocketSession *GetWS() { return ws_; }
  private:

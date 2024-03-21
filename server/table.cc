@@ -10,6 +10,7 @@ Table::Table(
   const std::string& password) :
   password_(password) {
   players_.push_back(make_unique<Player>(player_name, player_password));
+  players_.front()->SetTable(this);
 }
 
 const std::string &Table::GetName() const {
