@@ -157,9 +157,9 @@ Server::Server(
         [this](WebSocketSession *ws) -> void {
           this->ws_player_[ws] = nullptr;
         },
-        [this](WebSocketSession *ws) -> void { this->ws_deleted(ws); },
+        [this](WebSocketSession *ws) -> void { this->WsDeleted(ws); },
         [this](WebSocketSession *ws, const std::string& message) -> void {
-          this->ws_received_message(ws, message);
+          this->WsReceivedMessage(ws, message);
         }
       }
     } {
@@ -174,12 +174,12 @@ void Server::run() {
   net_server_->run();
 }
 
-void Server::ws_deleted(WebSocketSession *ws) {
+void Server::WsDeleted(WebSocketSession *ws) {
   auto iter = ws_player_.find(ws);
   ws_player_.erase(iter);
 }
 
-void Server::ws_received_message(
+void Server::WsReceivedMessage(
   WebSocketSession *ws,
   const std::string &message) {
   std::vector<std::string> cmd = ssplit(message);
@@ -192,11 +192,11 @@ void Server::ws_received_message(
   if (!cmd.empty()) {
     std::string err;
     if (cmd[0] == S3333_C2S_TBLS) {
-      ws->send(server_to_client(E3333_S2C_TBLS, 0, tables_to_json()));
+      ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
-      err = new_table(cmd, ws);
+      err = NewTable(cmd, ws);
       if (err.empty()) {
-        ws->send(server_to_client(E3333_S2C_NTBL, 0, R"("")"));
+        ws->send(ServerToClient(E3333_S2C_NTBL, 0, R"("")"));
       }
     } else if (cmd[0] == S3333_C2S_GNEW) {
       Player *player = ws_player_[ws];
@@ -204,7 +204,7 @@ void Server::ws_received_message(
       table->NewGame();
       const std::string jts = GetTableStatusJson(table);
       for (auto &tplayer: table->GetPlayers()) {
-        tplayer->GetWS()->send(server_to_client(E3333_S2C_GSTATE, 0, jts));
+        tplayer->GetWS()->send(ServerToClient(E3333_S2C_GSTATE, 0, jts));
       }
     } else {
       err = fmt::format("Unsupported command='{}'", cmd[0]);
@@ -212,12 +212,12 @@ void Server::ws_received_message(
     if (!err.empty()) {
       std::cerr << fmt::format("{} {}: {}\n", ymdhms(), funcname(), err);
       std::string dq_err = fmt::format(R"("{}")", err);
-      ws->send(server_to_client(13, 1, dq_err));
+      ws->send(ServerToClient(13, 1, dq_err));
     }
   }
 }
 
-std::string Server::server_to_client(
+std::string Server::ServerToClient(
   unsigned op,
   unsigned error_code,
   const std::string &result) const {
@@ -229,17 +229,17 @@ R"J({}
 {}
 )J",
     "{", op, error_code, result, "}");
-  std::cerr << "server_to_client: ret=" << ret << '\n';
+  std::cerr << "ServerToClient: ret=" << ret << '\n';
   return ret;
 }
 
-std::string Server::tables_to_json() const {
+std::string Server::TablesToJson() const {
   std::string ret{"{\n"};
   ret += std::string{"  }\n"};
   return ret;
 }
 
-std::string Server::new_table(
+std::string Server::NewTable(
   const std::vector<std::string> &cmd,
   WebSocketSession *ws) {
   std::string err;
@@ -279,6 +279,7 @@ std::string Server::new_table(
     std::unique_ptr<Table> table =
       make_unique<Table>(table_name, player_password, table_password);
     Player *player = table->GetPlayers()[0].get();
+    player->SetWS(ws);
     // name_table_[table_name] = table.get();
     name_table_.insert({table_name, std::move(table)});
     // need to delete old table ? !!!!!!!!!!!!!!!!

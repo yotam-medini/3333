@@ -27,15 +27,15 @@ class Server {
   ~Server();
   void run();
  private:
-  void ws_deleted(WebSocketSession *ws);
-  void ws_send_message(WebSocketSession *ws, const std::string& message);
-  void ws_received_message(WebSocketSession *ws, const std::string& message);
-  std::string server_to_client(
+  void WsDeleted(WebSocketSession *ws);
+  void WsSendMessage(WebSocketSession *ws, const std::string& message);
+  void WsReceivedMessage(WebSocketSession *ws, const std::string& message);
+  std::string ServerToClient(
     unsigned op,
     unsigned error_code,
     const std::string &result) const;
-  std::string tables_to_json() const;
-  std::string new_table(
+  std::string TablesToJson() const;
+  std::string NewTable(
     const std::vector<std::string> &cmd,
     WebSocketSession *ws);
   std::string GetTableStatusJson(const Table *table) const;
