@@ -6,6 +6,7 @@
 #include <source_location>
 #include <vector>
 
+extern std::string indent(const std::string &text, size_t n);
 extern std::vector<std::string> ssplit(const std::string &s);
 extern std::string funcname(
   const std::source_location location = std::source_location::current());

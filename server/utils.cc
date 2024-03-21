@@ -3,6 +3,18 @@
 #include <source_location>
 #include <sstream>
 
+std::string indent(const std::string &text, size_t n) {
+  const std::string spaces(n, ' ');
+  std::string ret;
+  for (char c: text) {
+    ret.push_back(c);
+    if (c == '\n') {
+      ret += spaces;
+    }
+  }
+  return ret;
+}
+
 std::vector<std::string> ssplit(const std::string &s) {
   std::vector<std::string> ret;
   std::stringstream ss{s};

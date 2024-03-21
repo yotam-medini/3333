@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <memory>
 #include <numeric>
+#include <fmt/core.h>
 #include "player.h"
 
 Table::Table(
@@ -23,6 +24,21 @@ void Table::NewGame() {
   DealCards(12);
 }
 
+std::string Table::json() const {
+  std::string j("{\n");
+  j += fmt::format(R"j(  "tstate": "{}",)j" "\n", tstate_);
+  j += fmt::format(R"j(  "gstate": "{}",)j" "\n", gstate_);
+  j += fmt::format(R"j(  "gactive": {},)j" "\n", int(game_active_));
+  j += fmt::format(R"j(  "deck": {},)j" "\n", GetDeckSize());
+  j += fmt::format(R"j(  "active": [)j");
+  const char *sep = "";
+  for (uint8_t ci: cards_active_) {
+    j += fmt::format("{}{}", sep, ci); sep = ", ";
+  }
+  j += "]\n";
+  j += "}";
+  return j;
+}
 void Table::DealCards(size_t n) {
   for (size_t i = 0; i < n; ++i) {
     size_t ci = rand() % cards_deck_.size();

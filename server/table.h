@@ -26,6 +26,7 @@ class Table {
   const std::vector<uint8_t> &GetCardsActive() const { return cards_active_; }
   int GetTState() const { return tstate_; }
   int GetGState() const { return gstate_; }
+  std::string json() const;
  private:
   void DealCards(size_t n);
   std::vector<std::unique_ptr<Player>> players_; // first is owner

@@ -26,8 +26,12 @@ static const std::string S3333_C2S_GNEW = "gnew";
 static const std::string S3333_C2S_TRY3 = "try3";
 static const unsigned E3333_S2C_TBLS = 0;
 static const unsigned E3333_S2C_NTBL = 1;
-static const unsigned E3333_S2C_GSTATE = 2;
-static const unsigned E3333_S2C_N = 3;
+static const unsigned E3333_S2C_JOIN = 2;
+static const unsigned E3333_S2C_GSTATE = 3;
+static const unsigned E3333_S2C_SET_FOUND = 4;
+static const unsigned E3333_S2C_CONNECTION_TAKEN = 5;
+static const unsigned E3333_S2C_TABLE_CLOSED = 6;
+static const unsigned E3333_S2C_N = 7;
 
 
 
@@ -202,7 +206,7 @@ void Server::WsReceivedMessage(
       Player *player = ws_player_[ws];
       Table *table = player->GetTable();
       table->NewGame();
-      const std::string jts = GetTableStatusJson(table);
+      const std::string jts = table->json();
       for (auto &tplayer: table->GetPlayers()) {
         tplayer->GetWS()->send(ServerToClient(E3333_S2C_GSTATE, 0, jts));
       }
@@ -286,20 +290,4 @@ std::string Server::NewTable(
     ws_player_.insert({ws, player});
   }
   return err;
-}
-
-std::string Server::GetTableStatusJson(const Table *table) const {
-  std::string json("{\n");
-  json += fmt::format(R"j(  "tstate": "{}",\n)j", table->GetTState());
-  json += fmt::format(R"j(  "gstate": "{}",\n)j", table->GetGState());
-  json += fmt::format(R"j(  "gactive": {},\n)j", int(table->GetGameActive()));
-  json += fmt::format(R"j(  "deck": {},\n)j", table->GetDeckSize());
-  json += fmt::format(R"j(  "active": [)j");
-  const char *sep = "";
-  for (uint8_t ci: table->GetCardsActive()) {
-    json += fmt::format("{}{}", sep, ci);
-  }
-  json += "  ]\n";
-  json += "}";
-  return json;
 }
