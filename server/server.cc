@@ -1,5 +1,4 @@
 #include "server.h"
-#include <charconv>
 #include <cstdint>
 #include <iostream>
 #include <functional>
@@ -61,7 +60,7 @@ class NetServer {
     report_message_{report_message} {
   }
   void run() {
-    const std::string fn = funcname();
+    const std::string fn = FuncName();
     error_code ec;
     tcp::endpoint endpoint;
     auto address = net::ip::make_address(host_, ec);
@@ -192,13 +191,16 @@ void Server::WsReceivedMessage(
   const std::string &message) {
   std::vector<std::string> cmd = SSplit(message);
   if (debug_flags_ & 0x1) {
-    std::cerr << YMDHMS() << ' ' << funcname() <<
+    std::cerr << YMDHMS() << ' ' << FuncName() <<
       " message=" << message << '\n';
     std::cerr << fmt::format("{} {} message='{}', #(cmd)={}\n",
-      YMDHMS(), funcname(), message, cmd.size());
+      YMDHMS(), FuncName(), message, cmd.size());
   }
   if (!cmd.empty()) {
     std::string err;
+    auto iter = ws_player_.find(ws);
+    Player *player = (iter != ws_player_.end() ? iter->second : nullptr);
+    Table *table = (player ? player->GetTable() : nullptr);
     if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
@@ -207,21 +209,20 @@ void Server::WsReceivedMessage(
         ws->send(ServerToClient(E3333_S2C_NTBL, 0, R"("")"));
       }
     } else if (cmd[0] == S3333_C2S_GNEW) {
-      Player *player = ws_player_[ws];
-      Table *table = player->GetTable();
       table->NewGame();
       UpdateTableGstate(table);
     } else if (cmd[0] == S3333_C2S_ADD3) {
-      Player *player = ws_player_[ws];
-      Table *table = player->GetTable();
       // need to check time
       err = table->Add3();
+      UpdateTableGstate(table); // even if error
+    } else if (cmd[0] == S3333_C2S_TRY3) {
+      err = Try3(player, table, cmd);      
       UpdateTableGstate(table); // even if error
     } else {
       err = fmt::format("Unsupported command='{}'", cmd[0]);
     }
     if (!err.empty()) {
-      std::cerr << fmt::format("{} {}: {}\n", YMDHMS(), funcname(), err);
+      std::cerr << fmt::format("{} {}: {}\n", YMDHMS(), FuncName(), err);
       std::string dq_err = fmt::format(R"("{}")", err);
       ws->send(ServerToClient(13, 1, dq_err));
     }
@@ -259,10 +260,8 @@ std::string Server::NewTable(
   if ((sz < 3) || (5 < sz)) {
     err = fmt::format("{}: Bad command size: {}", cmd[0], sz);
   } else {
-    unsigned pw_flags{};
-    auto [_, ec] = std::from_chars(cmd[2].data(), cmd[2].data() + cmd[2].size(),
-      pw_flags);
-    if ((ec != std::errc()) || (pw_flags > 3)) {
+    int pw_flags = StrToInt(cmd[2], -1);
+    if ((pw_flags < 0) || (pw_flags > 3)) {
       err = fmt::format("Bad pw_flags: {}", cmd[2]);
     } else {
       size_t n_pw = (pw_flags == 0 ? 0 : (pw_flags == 3 ? 2 : 1));
@@ -304,4 +303,14 @@ void Server::UpdateTableGstate(Table *table) {
   for (auto &tplayer: table->GetPlayers()) {
     tplayer->GetWS()->send(ServerToClient(E3333_S2C_GSTATE, 0, jts));
   }
+}
+
+std::string Server::Try3(Player *player, Table *table, const cmd_t &cmd) {
+  std::string err;
+  if (cmd.size() != 5) {
+    err = fmt::format("Bad command {} size: {} != 5", cmd[0], cmd.size());
+  } else {
+    int gstate = StrToInt(cmd[1], -1);
+  }
+  return err;
 }

@@ -1,10 +1,20 @@
 #include "utils.h"
+#include <charconv>
 #include <ctime>
 #include <source_location>
 #include <sstream>
 
 int GetTime() {
   return time(nullptr);
+}
+
+int StrToInt(const std::string &s, int defval) {
+  int n;
+  auto [_, ec] = std::from_chars(s.data(), s.data() + s.size(), n);
+  if (ec != std::errc()) {
+    n = defval;
+  }
+  return n;
 }
 
 std::string Indent(const std::string &text, size_t n) {
@@ -29,11 +39,11 @@ std::vector<std::string> SSplit(const std::string &s) {
   return ret;
 }
 
-std::string funcname(const std::source_location location) {
+std::string FuncName(const std::source_location location) {
   return location.function_name();
 }
 
-bool validate_unsigned(const std::string &s) {
+bool ValidateUnsigned(const std::string &s) {
   bool valid = !s.empty();
   if (valid) {
     if (! std::all_of(s.begin(), s.end(), isdigit)) {

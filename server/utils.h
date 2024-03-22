@@ -7,11 +7,12 @@
 #include <vector>
 
 extern int GetTime();
+extern int StrToInt(const std::string &s, int defval=(-1));
 extern std::string Indent(const std::string &text, size_t n);
 extern std::vector<std::string> SSplit(const std::string &s);
-extern std::string funcname(
+extern std::string FuncName(
   const std::source_location location = std::source_location::current());
-extern bool validate_unsigned(const std::string &s);
+extern bool ValidateUnsigned(const std::string &s);
 extern std::string YMDHMS();
 
 #endif /* UTILS_H */

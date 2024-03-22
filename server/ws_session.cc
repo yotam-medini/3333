@@ -28,7 +28,7 @@ void WebSocketSession::send(const std::string &s) {
 
 void WebSocketSession::on_accept(error_code ec) {
   if (ec) {
-    std::cerr << funcname() << " failed, ec=" << ec << '\n';
+    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
   } else {
     read_next();
   }
@@ -44,7 +44,7 @@ void WebSocketSession::read_next() {
 
 void WebSocketSession::on_read(error_code ec, std::size_t) {
   if (ec) { 
-    std::cerr << funcname() << " failed, ec=" << ec << '\n';
+    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
   } else {
     // state_->send(beast::buffers_to_string(buffer_.data()));
     const std::string message{beast::buffers_to_string(buffer_.data())};
@@ -65,7 +65,7 @@ void WebSocketSession::write_next() {
 void WebSocketSession::on_write(error_code ec, std::size_t)
 {
   if (ec) {
-    std::cerr << funcname() << " failed, ec=" << ec << '\n';
+    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
   } else {
     queue_.pop();
     if (!queue_.empty()) {

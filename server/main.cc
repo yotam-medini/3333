@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   } else {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
     const std::string debug_flags_raw = vm["debug"].as<std::string>();
-    if (!validate_unsigned(debug_flags_raw)) {
+    if (!ValidateUnsigned(debug_flags_raw)) {
       std::cerr << "Bad debug value=" << debug_flags_raw << '\n';
       rc = 1;
     } else {

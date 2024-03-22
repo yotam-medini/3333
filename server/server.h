@@ -27,6 +27,7 @@ class Server {
   ~Server();
   void run();
  private:
+  using cmd_t = std::vector<std::string>;
   void WsDeleted(WebSocketSession *ws);
   void WsSendMessage(WebSocketSession *ws, const std::string& message);
   void WsReceivedMessage(WebSocketSession *ws, const std::string& message);
@@ -35,9 +36,8 @@ class Server {
     unsigned error_code,
     const std::string &result) const;
   std::string TablesToJson() const;
-  std::string NewTable(
-    const std::vector<std::string> &cmd,
-    WebSocketSession *ws);
+  std::string NewTable(const cmd_t &cmd,  WebSocketSession *ws);
+  std::string Try3(Player* player, Table *table, const cmd_t &cmd);
   void UpdateTableGstate(Table *table);
   const size_t max_tables_;
   const size_t max_players_;
