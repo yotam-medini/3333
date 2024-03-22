@@ -307,10 +307,31 @@ void Server::UpdateTableGstate(Table *table) {
 
 std::string Server::Try3(Player *player, Table *table, const cmd_t &cmd) {
   std::string err;
+  Table::a3i_t a3i;
   if (cmd.size() != 5) {
     err = fmt::format("Bad command {} size: {} != 5", cmd[0], cmd.size());
   } else {
     int gstate = StrToInt(cmd[1], -1);
+    if (gstate == -1) {
+      err = fmt::format("Bad gstate: {}", cmd[1]);
+    } else {
+      for (size_t i = 0; err.empty() && (i < 3); ++i) {
+        int ai = StrToInt(cmd[2 + i]);
+        if (ai == -1) {
+          err = fmt::format("Bad active card index: {}", cmd[2 + i]);
+        } else {
+          a3i[i] = ai;
+        }
+      }
+    }
+  }
+  if (err.empty()) {
+    err = table->Try3(a3i);
+    if (err.empty()) {
+      player->BumpSetsFound();
+    } else {
+      player->BumpBadCalls();
+    }
   }
   return err;
 }

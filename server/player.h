@@ -16,12 +16,12 @@ class Player {
   const Table *GetTable() const { return table_; }
   void SetTable(Table *table) { table_ = table; }
   void SetWS(WebSocketSession *ws) { ws_ = ws; }
-  void SetSetsFound(unsigned n) { sets_found_ = n; }
-  void SetBadCalls(unsigned n) { bad_calls_ = n; }
-  void SetAdd3Good(unsigned n) { add3s_good_ = n; }
-  void SetAdd3Bad(unsigned n) { add3s_bad_ = n; }
-  void SetNoMoreGood(unsigned n) { no_more_good_ = n; }
-  void SetNoMoreBad(unsigned n) { no_more_bad_ = n; }
+  void BumpSetsFound() { ++sets_found_; }
+  void BumpBadCalls() { ++bad_calls_; }
+  void BumpAdd3Good() { ++add3s_good_; }
+  void BumpAdd3Bad() { ++add3s_bad_; }
+  void BumpNoMoreGood() { ++no_more_good_; }
+  void BumpNoMoreBad() { ++no_more_bad_; }
   void SetTAction(unsigned n) { taction_ = n; }
   Table *GetTable() { return table_; }
   WebSocketSession *GetWS() { return ws_; }

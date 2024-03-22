@@ -75,6 +75,30 @@ std::string Table::Add3() {
   GameStateBump();
   return err;
 }
+
+std::string Table::Try3(const a3i_t& a3i) {
+  std::string err;
+  const card_t &card0 = all_cards[cards_active_[a3i[0]]];
+  const card_t &card1 = all_cards[cards_active_[a3i[1]]];
+  const card_t &card2 = all_cards[cards_active_[a3i[2]]];
+  if (IsSet(card0, card1, card2)) {
+    a3i_t dec_a3i{a3i};
+    sort(dec_a3i.begin(), dec_a3i.end(), std::greater<>());
+    for (size_t i = 0; i < 3; ++i) {
+      cards_active_[dec_a3i[i]] = cards_active_.back();
+      cards_active_.pop_back();
+    }
+    if ((cards_active_.size() < 12) && (GetDeckSize() >= 3)) {
+      DealCards(3);
+    }
+    GameStateBump();
+  } else {
+    err = "Not a Set";
+    StateBump();
+  }
+  return err;
+}
+
 bool Table::ActiveHasSet() const {
   bool has = false;
   const size_t na = cards_active_.size();
