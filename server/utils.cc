@@ -3,7 +3,11 @@
 #include <source_location>
 #include <sstream>
 
-std::string indent(const std::string &text, size_t n) {
+int GetTime() {
+  return time(nullptr);
+}
+
+std::string Indent(const std::string &text, size_t n) {
   const std::string spaces(n, ' ');
   std::string ret;
   for (char c: text) {
@@ -15,7 +19,7 @@ std::string indent(const std::string &text, size_t n) {
   return ret;
 }
 
-std::vector<std::string> ssplit(const std::string &s) {
+std::vector<std::string> SSplit(const std::string &s) {
   std::vector<std::string> ret;
   std::stringstream ss{s};
   std::string w;
@@ -40,7 +44,7 @@ bool validate_unsigned(const std::string &s) {
   return valid;
 }
 
-std::string ymdhms() {
+std::string YMDHMS() {
   auto s2 = [] (int n) -> std::string {
     std::ostringstream oss2;
     if (n < 10) { oss2 << '0'; }

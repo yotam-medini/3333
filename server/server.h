@@ -38,6 +38,7 @@ class Server {
   std::string NewTable(
     const std::vector<std::string> &cmd,
     WebSocketSession *ws);
+  void UpdateTableGstate(Table *table);
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;

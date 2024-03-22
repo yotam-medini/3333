@@ -4,13 +4,15 @@
 #include <numeric>
 #include <fmt/core.h>
 #include "player.h"
+#include "card.h"
 #include "utils.h"
 
 Table::Table(
   const std::string& player_name,
   const std::string &player_password,
   const std::string& password) :
-  password_(password) {
+  password_(password),
+  time_last_action_(GetTime()) {
   players_.push_back(make_unique<Player>(player_name, player_password));
   players_.front()->SetTable(this);
 }
@@ -23,6 +25,13 @@ void Table::NewGame() {
   cards_deck_ = std::vector<uint8_t>(81);
   std::iota(cards_deck_.begin(), cards_deck_.end(), 0);
   DealCards(12);
+  GameStateBump();
+}
+
+void Table::GameStateBump() {
+  time_last_action_ = GetTime();
+  StateBump();
+  ++gstate_;
 }
 
 std::string Table::json() const {
@@ -34,7 +43,7 @@ std::string Table::json() const {
   const char *sep = "";
   for (auto &player: players_) {
     j += sep;
-    j += indent(player->json(), 2);
+    j += Indent(player->json(), 2);
     sep = ",\n";
   }
   j += "],\n";
@@ -57,3 +66,27 @@ void Table::DealCards(size_t n) {
   }
 }
 
+std::string Table::Add3() {
+  std::string err;
+  if (ActiveHasSet()) {
+    err = "Adding cards was not necessary";
+  }
+  DealCards(3);
+  GameStateBump();
+  return err;
+}
+bool Table::ActiveHasSet() const {
+  bool has = false;
+  const size_t na = cards_active_.size();
+  for (size_t i = 0; (!has) && (i < na); ++i) {
+    const card_t card0 = all_cards[i];
+    for (size_t j = i + 1; (!has) && (j < na); ++j) {
+      const card_t card1 = all_cards[j];
+      for (size_t k = j + 1; (!has) && (k < na); ++k) {
+        const card_t card2 = all_cards[k];
+        has = IsSet(card0, card1, card2);
+      }
+    }
+  }
+  return has;
+}

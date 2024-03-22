@@ -24,6 +24,10 @@ static const std::string S3333_C2S_TBLS = "tbls";
 static const std::string S3333_C2S_NTBL = "ntbl";
 static const std::string S3333_C2S_GNEW = "gnew";
 static const std::string S3333_C2S_TRY3 = "try3";
+static const std::string S3333_C2S_ADD3 = "add3";
+static const std::string S3333_C2S_NMOR = "nmor";
+static const std::string S3333_C2S_JOIN = "join";
+static const std::string S3333_C2S_CLOS = "clos";
 static const unsigned E3333_S2C_TBLS = 0;
 static const unsigned E3333_S2C_NTBL = 1;
 static const unsigned E3333_S2C_JOIN = 2;
@@ -186,12 +190,12 @@ void Server::WsDeleted(WebSocketSession *ws) {
 void Server::WsReceivedMessage(
   WebSocketSession *ws,
   const std::string &message) {
-  std::vector<std::string> cmd = ssplit(message);
+  std::vector<std::string> cmd = SSplit(message);
   if (debug_flags_ & 0x1) {
-    std::cerr << ymdhms() << ' ' << funcname() <<
+    std::cerr << YMDHMS() << ' ' << funcname() <<
       " message=" << message << '\n';
     std::cerr << fmt::format("{} {} message='{}', #(cmd)={}\n",
-      ymdhms(), funcname(), message, cmd.size());
+      YMDHMS(), funcname(), message, cmd.size());
   }
   if (!cmd.empty()) {
     std::string err;
@@ -206,15 +210,18 @@ void Server::WsReceivedMessage(
       Player *player = ws_player_[ws];
       Table *table = player->GetTable();
       table->NewGame();
-      const std::string jts = indent(table->json(), 2);
-      for (auto &tplayer: table->GetPlayers()) {
-        tplayer->GetWS()->send(ServerToClient(E3333_S2C_GSTATE, 0, jts));
-      }
+      UpdateTableGstate(table);
+    } else if (cmd[0] == S3333_C2S_ADD3) {
+      Player *player = ws_player_[ws];
+      Table *table = player->GetTable();
+      // need to check time
+      err = table->Add3();
+      UpdateTableGstate(table); // even if error
     } else {
       err = fmt::format("Unsupported command='{}'", cmd[0]);
     }
     if (!err.empty()) {
-      std::cerr << fmt::format("{} {}: {}\n", ymdhms(), funcname(), err);
+      std::cerr << fmt::format("{} {}: {}\n", YMDHMS(), funcname(), err);
       std::string dq_err = fmt::format(R"("{}")", err);
       ws->send(ServerToClient(13, 1, dq_err));
     }
@@ -290,4 +297,11 @@ std::string Server::NewTable(
     ws_player_.insert({ws, player});
   }
   return err;
+}
+
+void Server::UpdateTableGstate(Table *table) {
+  const std::string jts = Indent(table->json(), 2);
+  for (auto &tplayer: table->GetPlayers()) {
+    tplayer->GetWS()->send(ServerToClient(E3333_S2C_GSTATE, 0, jts));
+  }
 }

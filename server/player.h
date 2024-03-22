@@ -10,14 +10,19 @@ class WebSocketSession;
 
 class Player {
  public:
-  Player(const std::string& name, const std::string &password) :
-    name_(name), password_(password) {
-  }
+  Player(const std::string& name, const std::string &password);
   const std::string &GetName() const { return name_; }
   const std::string &GetPassword() const { return password_; }
   const Table *GetTable() const { return table_; }
   void SetTable(Table *table) { table_ = table; }
   void SetWS(WebSocketSession *ws) { ws_ = ws; }
+  void SetSetsFound(unsigned n) { sets_found_ = n; }
+  void SetBadCalls(unsigned n) { bad_calls_ = n; }
+  void SetAdd3Good(unsigned n) { add3s_good_ = n; }
+  void SetAdd3Bad(unsigned n) { add3s_bad_ = n; }
+  void SetNoMoreGood(unsigned n) { no_more_good_ = n; }
+  void SetNoMoreBad(unsigned n) { no_more_bad_ = n; }
+  void SetTAction(unsigned n) { taction_ = n; }
   Table *GetTable() { return table_; }
   WebSocketSession *GetWS() { return ws_; }
   std::string json() const;

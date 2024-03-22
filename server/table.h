@@ -15,12 +15,15 @@ class Table {
     const std::string& player_name,
     const std::string &player_password,
     const std::string& password);
-  const std::string &GetName() const;
-  const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
+    const std::string &GetName() const;
+    const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
     return players_;
   }
   std::vector<std::unique_ptr<Player>> &GetPlayers() { return players_; }
   void NewGame();
+  void StateBump() { ++tstate_; }
+  void GameStateBump();
+  std::string Add3();
   bool GetGameActive() const { return game_active_; }
   size_t GetDeckSize() const { return cards_deck_.size(); }
   const std::vector<uint8_t> &GetCardsActive() const { return cards_active_; }
@@ -29,11 +32,13 @@ class Table {
   std::string json() const;
  private:
   void DealCards(size_t n);
+  bool ActiveHasSet() const;
   std::vector<std::unique_ptr<Player>> players_; // first is owner
   const std::string password_;
   bool game_active_;
   std::vector<uint8_t> cards_deck_;
   std::vector<uint8_t> cards_active_;
+  int time_last_action_;
   int tstate_{0};
   int gstate_{0};
 };

@@ -15,7 +15,7 @@ static std::array<card_t, 81> compute_all_cards() {
 
 const std::array<card_t, 81> all_cards = compute_all_cards();
 
-bool is_set(
+bool IsSet(
   const card_t& card0,
   const card_t& card1,
   const card_t& card2) {

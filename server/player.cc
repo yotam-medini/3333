@@ -1,5 +1,12 @@
 #include "player.h"
 #include <fmt/core.h>
+#include "utils.h"
+
+Player::Player(const std::string& name, const std::string &password) :
+  name_(name),
+  password_(password),
+  tcreated_(GetTime()) {
+}
 
 std::string Player::json() const {
   std::string j{"{\n"};
