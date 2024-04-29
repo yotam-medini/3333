@@ -200,7 +200,12 @@ void Server::WsReceivedMessage(
     std::string err;
     auto iter = ws_player_.find(ws);
     Player *player = (iter != ws_player_.end() ? iter->second : nullptr);
-    Table *table = (player ? player->GetTable() : nullptr);
+    Table *table = nullptr;
+    if (player) {
+      table = player->GetTable();
+      player->SetTAction();
+      table->SetTimeLastAction(player->GetTAction());
+    }
     if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {

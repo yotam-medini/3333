@@ -8,6 +8,10 @@ Player::Player(const std::string& name, const std::string &password) :
   tcreated_(GetTime()) {
 }
 
+void Player::SetTAction() {
+  taction_ = GetTime();
+}
+
 std::string Player::json() const {
   std::string j{"{\n"};
   j += fmt::format(R"j(  "name": "{}",)j" "\n", name_);

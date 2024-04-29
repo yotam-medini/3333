@@ -22,7 +22,8 @@ class Player {
   void BumpAdd3Bad() { ++add3s_bad_; }
   void BumpNoMoreGood() { ++no_more_good_; }
   void BumpNoMoreBad() { ++no_more_bad_; }
-  void SetTAction(unsigned n) { taction_ = n; }
+  void SetTAction();
+  int GetTAction() const { return taction_; }
   Table *GetTable() { return table_; }
   WebSocketSession *GetWS() { return ws_; }
   std::string json() const;

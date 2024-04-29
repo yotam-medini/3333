@@ -21,6 +21,7 @@ class Table {
     return players_;
   }
   std::vector<std::unique_ptr<Player>> &GetPlayers() { return players_; }
+  void SetTimeLastAction(int t) { time_last_action_ = t; }
   void NewGame();
   void StateBump() { ++tstate_; }
   void GameStateBump();
