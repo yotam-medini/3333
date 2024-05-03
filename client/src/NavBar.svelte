@@ -18,7 +18,9 @@
 
 <style>
   .navbar {
-    margin-bottom: 4%;
+    margin: 2px;
+    flex-grow: 0;
+    background: #bcc;
   }
   ul {
     display: flex;

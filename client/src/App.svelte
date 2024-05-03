@@ -38,18 +38,32 @@
   {:else}
     <div>Error: unexpected {tabActiveName}</div>
   {/if}
-
+  <div id="dummyFooter">dummy footer</div>
 </main>
 
 <style>
-  body {
-    width: 100%;
-    height: 100%;
-    background: yellow;  
-  }
   main {
-    width: 80%;
-    height: 80%;
-    background: #aaa;  
+    display: flex;
+    flex-direction: column;
+    width: 90%v;
+    /* height: 80%; */
+    height: 100dh;
+    max-height: 100%;
+    background: #aaa;
+    padding: 1px;
+    border: 3px solid red;
+  }
+  h1 {
+    flex-grow: 0;
+    background: #bbe;
+  }
+  NavBar {
+    flex-grow: 0;
+    background: #77e;
+  }
+  #dummyFooter {
+    min-height: 0px;
+    flex-grow: 0;
+    background: #d8a
   }
 </style>
