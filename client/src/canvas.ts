@@ -142,7 +142,7 @@ function drawSquiggle(ctx: CanvasRenderingContext2D, rect: Rect) {
     [[w/5, h/2],    [0,   5*h/8],  [0,   3*h/4]],
     [[0,   7*h/8],  [w/4, h],      [w/2, h]]
   ];
-  _o.aa_round(rel_curves_left);
+  aa_round(rel_curves_left);
   // Make the right side curves symmetric.                           }
   var rel_curves_right = []
   for (let i: number = 0; i < rel_curves_left.length; i++) {
@@ -197,7 +197,7 @@ function drawOval(ctx: CanvasRenderingContext2D, rect: Rect) {
   // Compute center
   let cx: number = rect.x + half(rect.w), cy = rect.y + half(rect.h);
   // Compute Radii
-  let rx = half(w), ry = half(h);
+  let rx = half(rect.w), ry = half(rect.h);
 
   ctx.beginPath();
   ctx.moveTo(cx + rx, cy);
@@ -208,7 +208,7 @@ function drawOval(ctx: CanvasRenderingContext2D, rect: Rect) {
   ctx.closePath();
 }
 
-function drawCard(cdi: CardDrawInfo) {
+function drawCard(cdi: CardDrawInfo, pattern_stripes: CanvasPattern[]) {
   console.log("drawCard cdi: ", cdi);
   let ctx: CanvasRenderingContext2D = cdi.cctx.ctx; // abbreviation
   ctx.fillStyle = "#fff";
@@ -238,9 +238,12 @@ function drawCard(cdi: CardDrawInfo) {
   ctx.lineWidth = Math.max(Math.round(cdi.card_width/10), 4);
 
   // symbol bounding box
-  let rect : Rect = {x: 0, y: 0, w: cdi.w/4, h: Math.round(3*cdi.h/4)};
+  let rect : Rect = {x: 0, y: 0,
+    w: Math.round(cdi.w/4), h: Math.round(3*cdi.h/4)};
   console.log("[0] rect: ", rect);
   let x_gap: number = Math.round((cdi.w - n_symbols * rect.w)/(n_symbols + 1));
+  console.log("cdi.w="+cdi.w + " rect.w="+rect.w + " n_symbols="+n_symbols +
+    " x_gap="+x_gap);
   rect.x = cdi.x + x_gap;
   rect.y = cdi.y + half(cdi.h - rect.h);
   console.log("[1] rect: ", rect);
@@ -251,15 +254,14 @@ function drawCard(cdi: CardDrawInfo) {
       console.log("r="+r + " fill_pass="+fill_pass + " ... symbol");
       draw_symbol(ctx, rect);
       if (fill_pass) {
-        ctx.fillStyle = (shading == 1 
-          ? cdi.pattern_stripes[color] : rgb);
+        ctx.fillStyle = (shading == 1 ? pattern_stripes[color] : rgb);
         ctx.fill();
       } else {
         ctx.fillStyle = rgb;
         ctx.stroke();
       }
     }
-    rect.x += x_gap;
+    rect.x += rect.w + x_gap;
   }  
 }
 
@@ -283,10 +285,8 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
     rgb_colors: ["#e21", "#382", "#a3f"], };
   cctx.ctx.fillStyle = '#2a3';
   cctx.ctx.fillRect(0, 0, cctx.width, cctx.height);
-  cctx.ctx.fillStyle = '#734';
-  cctx.ctx.fillRect(cctx.width/7, cctx.height/5, cctx.width/5, cctx.height/7);
   let n_columns = determineNumberOfColumns(cctx, cards.length);
-  let dp: Drawtable = computeDrawPlan(cctx, cards.length);
+  let dp: DrawPlan = computeDrawPlan(cctx, cards.length);
   console.log(dp);
   let xgap: number = Math.round((cctx.width - (dp.columns * dp.card_width)) / 
     (dp.columns + 1));
@@ -304,7 +304,7 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
       w: dp.card_width, h: dp.card_height};
     console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
     console.log("cdi=", cdi);
-    drawCard(cdi);
+    drawCard(cdi, dp.pattern_stripes);
     xi += 1;
     if (xi < n_columns) {
       x += dp.card_width + xgap;

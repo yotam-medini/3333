@@ -21,7 +21,7 @@
   console.log("i2tab: " + i2tab);
   console.log("i2tab[Table]=" + i2tab["Table"]);
 
-  let cards = [2, 3, 5];
+  let cards = [2, 3, 5, 43, 59, 79]; 
 </script>
 
 <main>
