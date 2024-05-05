@@ -24,11 +24,12 @@ type Rect = {
 
 type CardDrawInfo = {
   cctx: CanvasCtx;
+  draw_plan: DrawPlan;
   card: number;
   x: number;
   y: number;
-  w: number;
-  h: number;
+  // w: number;
+  // h: number;
 };
 
 type QR = {q: number, r: number; };
@@ -208,11 +209,12 @@ function drawOval(ctx: CanvasRenderingContext2D, rect: Rect) {
   ctx.closePath();
 }
 
-function drawCard(cdi: CardDrawInfo, pattern_stripes: CanvasPattern[]) {
+function drawCard(cdi: CardDrawInfo) {
   console.log("drawCard cdi: ", cdi);
   let ctx: CanvasRenderingContext2D = cdi.cctx.ctx; // abbreviation
   ctx.fillStyle = "#fff";
-  ctx.fillRect(cdi.x, cdi.y, cdi.w, cdi.h);
+  ctx.fillRect(cdi.x, cdi.y, cdi.draw_plan.card_width,
+    cdi.draw_plan.card_height);
   // let shading, color, symbol, cnumber
   let qr: QR = divmod(cdi.card, 3);
   let shading: number = qr.r;
@@ -232,10 +234,11 @@ function drawCard(cdi: CardDrawInfo, pattern_stripes: CanvasPattern[]) {
     [true, false], // stripped
     [false]        // open
   ][shading];
-  console.log("rgb="+rgb + " fill_passes="+fill_passes);
+  // console.log("rgb="+rgb + " fill_passes="+fill_passes);
   ctx.fillStyle = rgb;
   ctx.strokeStyle = rgb;
-  ctx.lineWidth = Math.max(Math.round(cdi.card_width/10), 4);
+  ctx.lineWidth = Math.max(Math.round(cdi.draw_plan.card_width/40), 4);
+  console.log("card_width="+cdi.draw_plan.card_width + " lineWidth=" + ctx.lineWidth)
 
   // symbol bounding box
   let rect : Rect = {x: 0, y: 0,
@@ -254,7 +257,7 @@ function drawCard(cdi: CardDrawInfo, pattern_stripes: CanvasPattern[]) {
       console.log("r="+r + " fill_pass="+fill_pass + " ... symbol");
       draw_symbol(ctx, rect);
       if (fill_pass) {
-        ctx.fillStyle = (shading == 1 ? pattern_stripes[color] : rgb);
+        ctx.fillStyle = (shading == 1 ? cdi.draw_plan.pattern_stripes[color] : rgb);
         ctx.fill();
       } else {
         ctx.fillStyle = rgb;
@@ -300,11 +303,11 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
   for (let ci: number = 0; ci < cards.length; ci++) {
     // draw_card(cctx, card, x, y, card_width, card_height
     const cdi: CardDrawInfo = {
-      cctx: cctx, card: cards[ci], x: x, y: y, 
+      cctx: cctx, draw_plan: dp, card: cards[ci], x: x, y: y, 
       w: dp.card_width, h: dp.card_height};
     console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
     console.log("cdi=", cdi);
-    drawCard(cdi, dp.pattern_stripes);
+    drawCard(cdi);
     xi += 1;
     if (xi < n_columns) {
       x += dp.card_width + xgap;
@@ -314,4 +317,16 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
       y += dp.card_height + ygap;
     }
   }
+}
+
+export function handleClick(e) {
+  console.log("handleClick: e=", e);
+  console.log("e.target=", e.target);
+  let brect = e.target.getBoundingClientRect()
+  // console.log("brect: ", brect);
+  let x = e.clientX - brect.left;
+  let y = e.clientY - brect.top;
+  console.log("handleClick: x="+x + " y="+y);
+  let computer_style = getComputedStyle(e.target);
+  // console.log("getComputedStyle: ", computer_style);
 }
