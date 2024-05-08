@@ -28,8 +28,7 @@ type CardDrawInfo = {
   card: number;
   x: number;
   y: number;
-  // w: number;
-  // h: number;
+  selected: bool;
 };
 
 type QR = {q: number, r: number; };
@@ -213,8 +212,18 @@ function drawCard(cdi: CardDrawInfo) {
   console.log("drawCard cdi: ", cdi);
   let ctx: CanvasRenderingContext2D = cdi.cctx.ctx; // abbreviation
   ctx.fillStyle = "#fff";
-  ctx.fillRect(cdi.x, cdi.y, cdi.draw_plan.card_width,
-    cdi.draw_plan.card_height);
+  if (cdi.selected) {
+    ctx.fillStyle = "#111";
+    ctx.fillRect(cdi.x, cdi.y,
+      cdi.draw_plan.card_width, cdi.draw_plan.card_height);
+    let bw: number = Math.max(Math.round(cdi.draw_plan.card_height/24), 3);
+    ctx.fillStyle = "#ccc";
+    ctx.fillRect(cdi.x + bw, cdi.y + bw,
+      cdi.draw_plan.card_width - 2*bw, cdi.draw_plan.card_height - 2*bw);
+  } else {
+    ctx.fillRect(cdi.x, cdi.y, 
+      cdi.draw_plan.card_width, cdi.draw_plan.card_height);
+  }
   // let shading, color, symbol, cnumber
   let qr: QR = divmod(cdi.card, 3);
   let shading: number = qr.r;
@@ -268,16 +277,24 @@ function drawCard(cdi: CardDrawInfo) {
   }  
 }
 
-export function drawTable(canvas : HTMLCanvasElement, cards) {
-  console.log("drawTable: canvas=" + canvas + " cards=" + cards);
+export function drawTable(
+    canvas : HTMLCanvasElement,
+    cards: number[],
+    cards_selected: number[],
+    click_x: number,
+    click_y: number) {
+  console.log("drawTable: canvas=" + canvas + " cards=" + cards + 
+    " cards_selected=" + cards_selected);
   // let p: HTMLCanvasElement = canvas.parentElement;
   // console.log("p="+p + " name="+p.nodeName);
   // let brect = p.getBoundingClientRect()
   // console.log(brect);
   let brect = canvas.getBoundingClientRect();
   console.log(brect);
-  canvas.width = Math.floor(brect.width);
-  canvas.height = Math.floor(brect.height);
+  if (click_x == -1) {
+    canvas.width = Math.floor(brect.width);
+    canvas.height = Math.floor(brect.height);
+  }
   let ctx = canvas.getContext("2d");
   console.log("ctx=" + ctx); console.log(ctx);
   console.log("width=" + canvas.width + " height=" + canvas.height);
@@ -286,8 +303,10 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
   const cctx: CanvasCtx = { 
     ctx: ctx, width: canvas.width, height: canvas.height, 
     rgb_colors: ["#e21", "#382", "#a3f"], };
-  cctx.ctx.fillStyle = '#2a3';
-  cctx.ctx.fillRect(0, 0, cctx.width, cctx.height);
+  if (click_x == -1) {
+    cctx.ctx.fillStyle = '#2a3';
+    cctx.ctx.fillRect(0, 0, cctx.width, cctx.height);
+  }
   let n_columns = determineNumberOfColumns(cctx, cards.length);
   let dp: DrawPlan = computeDrawPlan(cctx, cards.length);
   console.log(dp);
@@ -301,13 +320,32 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
   let x: number = xgap;
   let y: number = ygap;
   for (let ci: number = 0; ci < cards.length; ci++) {
+    let drawMe: bool = (click_x === -1);
+    console.log("click_x="+click_x + " ci="+ci + " [0]drawMe="+drawMe);
     // draw_card(cctx, card, x, y, card_width, card_height
-    const cdi: CardDrawInfo = {
-      cctx: cctx, draw_plan: dp, card: cards[ci], x: x, y: y, 
-      w: dp.card_width, h: dp.card_height};
-    console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
-    console.log("cdi=", cdi);
-    drawCard(cdi);
+    let isel: number = cards_selected.indexOf(ci);
+    // console.log("ci="+ci + " isel="+isel);
+    let selected: bool = (isel != -1);
+    if ((x <= click_x) && (click_x <= x + dp.card_width) &&
+        (y <= click_y) && (click_y <= y + dp.card_height)) {
+       drawMe = true;
+       if (selected) {
+         cards_selected.splice(isel, 1);
+       } else {
+         cards_selected.push(ci);
+       }
+       selected = !selected;
+    }
+    console.log("click_x="+click_x + " ci="+ci + " drawMe="+drawMe);
+    if (drawMe) {
+      const cdi: CardDrawInfo = {
+        cctx: cctx, draw_plan: dp, card: cards[ci], x: x, y: y, 
+        w: dp.card_width, h: dp.card_height,
+        selected: selected};
+      console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
+      console.log("cdi=", cdi);
+      drawCard(cdi);
+    }
     xi += 1;
     if (xi < n_columns) {
       x += dp.card_width + xgap;
@@ -319,7 +357,12 @@ export function drawTable(canvas : HTMLCanvasElement, cards) {
   }
 }
 
-export function handleClick(e) {
+export function handleClick(e,
+    canvas : HTMLCanvasElement,
+    cards: number[],
+    cards_selected: number[],
+    click_x: number,
+    click_y: number) {
   console.log("handleClick: e=", e);
   console.log("e.target=", e.target);
   let brect = e.target.getBoundingClientRect()
@@ -329,4 +372,5 @@ export function handleClick(e) {
   console.log("handleClick: x="+x + " y="+y);
   let computer_style = getComputedStyle(e.target);
   // console.log("getComputedStyle: ", computer_style);
+  drawTable(canvas, cards, cards_selected, x, y)
 }

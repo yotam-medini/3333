@@ -20,11 +20,11 @@
   export let cards_selected; // LUT to cards, max 3 
   export function redrawMe() {
     console.log("redrawMe");
-    drawTable(canvasElement, cards);
+    drawTable(canvasElement, cards, cards_selected, -1, -1);
   }
   const handleClickHigh = (e) => {
     console.log("handleClickHigh: e=", e);
-    handleClick(e);
+    handleClick(e, canvasElement, cards, cards_selected);
   }
 </script>
 

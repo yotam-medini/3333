@@ -6,6 +6,7 @@
     canvasComponent.redrawMe();
   }
   export let cards;
+  export let cards_selected;
   // let selected_card_indices = [];
 </script>
 
@@ -14,7 +15,7 @@
     <strong>Table</strong> <button on:click={redraw}>Redraw</button>
     <span>cards: {cards}</span>
   </div>
-  <Canvas {cards} bind:this={canvasComponent} />
+  <Canvas {cards} {cards_selected} bind:this={canvasComponent} />
 </div>
 
 <style>
