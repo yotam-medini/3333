@@ -25,6 +25,8 @@
   const handleClickHigh = (e) => {
     console.log("handleClickHigh: e=", e);
     handleClick(e, canvasElement, cards, cards_selected);
+    cards_selected = cards_selected;
+    console.log("cards_selected: " + cards_selected);
   }
 </script>
 

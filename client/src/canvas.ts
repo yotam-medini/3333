@@ -1,3 +1,5 @@
+import { gcards } from './table_data';
+import { gcards_selected } from './table_data';
 const GOLDEN: number = (Math.sqrt(5.)+1.)/2.;
 
 type CanvasCtx = {
@@ -283,8 +285,8 @@ export function drawTable(
     cards_selected: number[],
     click_x: number,
     click_y: number) {
-  console.log("drawTable: canvas=" + canvas + " cards=" + cards + 
-    " cards_selected=" + cards_selected);
+  console.log("drawTable: canvas=" + canvas + " cards=" + gcards + 
+    " gcards_selected=" + gcards_selected);
   // let p: HTMLCanvasElement = canvas.parentElement;
   // console.log("p="+p + " name="+p.nodeName);
   // let brect = p.getBoundingClientRect()
@@ -307,8 +309,8 @@ export function drawTable(
     cctx.ctx.fillStyle = '#2a3';
     cctx.ctx.fillRect(0, 0, cctx.width, cctx.height);
   }
-  let n_columns = determineNumberOfColumns(cctx, cards.length);
-  let dp: DrawPlan = computeDrawPlan(cctx, cards.length);
+  let n_columns = determineNumberOfColumns(cctx, gcards.length);
+  let dp: DrawPlan = computeDrawPlan(cctx, gcards.length);
   console.log(dp);
   let xgap: number = Math.round((cctx.width - (dp.columns * dp.card_width)) / 
     (dp.columns + 1));
@@ -319,30 +321,30 @@ export function drawTable(
   let xi: number = 0;
   let x: number = xgap;
   let y: number = ygap;
-  for (let ci: number = 0; ci < cards.length; ci++) {
+  for (let ci: number = 0; ci < gcards.length; ci++) {
     let drawMe: bool = (click_x === -1);
     console.log("click_x="+click_x + " ci="+ci + " [0]drawMe="+drawMe);
     // draw_card(cctx, card, x, y, card_width, card_height
-    let isel: number = cards_selected.indexOf(ci);
+    let isel: number = gcards_selected.indexOf(ci);
     // console.log("ci="+ci + " isel="+isel);
     let selected: bool = (isel != -1);
     if ((x <= click_x) && (click_x <= x + dp.card_width) &&
         (y <= click_y) && (click_y <= y + dp.card_height)) {
        drawMe = true;
        if (selected) {
-         cards_selected.splice(isel, 1);
+         gcards_selected.splice(isel, 1);
        } else {
-         cards_selected.push(ci);
+         gcards_selected.push(ci);
        }
        selected = !selected;
     }
     console.log("click_x="+click_x + " ci="+ci + " drawMe="+drawMe);
     if (drawMe) {
       const cdi: CardDrawInfo = {
-        cctx: cctx, draw_plan: dp, card: cards[ci], x: x, y: y, 
+        cctx: cctx, draw_plan: dp, card: gcards[ci], x: x, y: y, 
         w: dp.card_width, h: dp.card_height,
         selected: selected};
-      console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
+      console.log("draw_card: card=" + gcards[ci] + " @=("+x + ", "+y+")");
       console.log("cdi=", cdi);
       drawCard(cdi);
     }
@@ -372,5 +374,5 @@ export function handleClick(e,
   console.log("handleClick: x="+x + " y="+y);
   let computer_style = getComputedStyle(e.target);
   // console.log("getComputedStyle: ", computer_style);
-  drawTable(canvas, cards, cards_selected, x, y)
+  drawTable(canvas, cards, gcards_selected, x, y)
 }

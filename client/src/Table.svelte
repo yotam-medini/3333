@@ -1,4 +1,5 @@
 <script lang="ts">
+  // import { cards, cards_selected } from "./table_data";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
   const redraw = () => {
@@ -7,13 +8,14 @@
   }
   export let cards;
   export let cards_selected;
+  $: n_selected = cards_selected.length;
   // let selected_card_indices = [];
 </script>
 
 <div id="divTable">
   <div id=divControl>
     <strong>Table</strong> <button on:click={redraw}>Redraw</button>
-    <span>cards: {cards}</span>
+    <span>cards: {cards}</span> <span>{n_selected} selected</span>
   </div>
   <Canvas {cards} {cards_selected} bind:this={canvasComponent} />
 </div>
