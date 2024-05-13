@@ -5,6 +5,7 @@
   console.log("Canvas: not yet mounted");
   onMount(() => {
       console.log("Canvas: mounted");
+      redrawMe();
       // get canvas context
     // let ctx = canvasElement.getContext("2d");
    if (false) {

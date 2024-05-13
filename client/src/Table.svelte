@@ -14,6 +14,7 @@
     console.log("gcards_selected sub... v=" + v);
     n_selected = v.length;
   });
+  console.log("Table.svelte: end-of-script");
 </script>
 
 <div id="divTable">
