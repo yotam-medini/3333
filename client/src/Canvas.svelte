@@ -17,16 +17,14 @@
    }
   });
   export let cards;
-  export let cards_selected; // LUT to cards, max 3 
+  // export let cards_selected; // LUT to cards, max 3 
   export function redrawMe() {
     console.log("redrawMe");
-    drawTable(canvasElement, cards, cards_selected, -1, -1);
+    drawTable(canvasElement, cards, -1, -1);
   }
   const handleClickHigh = (e) => {
     console.log("handleClickHigh: e=", e);
-    handleClick(e, canvasElement, cards, cards_selected);
-    cards_selected = cards_selected;
-    console.log("cards_selected: " + cards_selected);
+    handleClick(e, canvasElement, cards);
   }
 </script>
 

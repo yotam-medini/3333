@@ -22,7 +22,7 @@
   console.log("i2tab[Table]=" + i2tab["Table"]);
 
   let cards = [2, 3, 5, 43, 59, 79];
-  let cards_selected = [1, 4];
+  // let cards_selected = [1, 4];
 </script>
 
 <main>
@@ -31,7 +31,7 @@
   {#if tabActiveName === 'Club'}
     <Club />
   {:else if tabActiveName === 'Table'}
-    <Table {cards} {cards_selected} />
+    <Table {cards} />
   {:else if tabActiveName === 'Players'}
     <Players />
   {:else if tabActiveName === 'Help'}

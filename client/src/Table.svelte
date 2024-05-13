@@ -1,5 +1,7 @@
 <script lang="ts">
-  // import { cards, cards_selected } from "./table_data";
+  import {
+    gcards_selected, gcards_selected_update, gcards_selected_subscribe
+  } from "./table_data.ts";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
   const redraw = () => {
@@ -7,9 +9,11 @@
     canvasComponent.redrawMe();
   }
   export let cards;
-  export let cards_selected;
-  $: n_selected = cards_selected.length;
-  // let selected_card_indices = [];
+  let n_selected = 0;
+  let _gcards_selected_unsubscribe = gcards_selected_subscribe((v) => {
+    console.log("gcards_selected sub... v=" + v);
+    n_selected = v.length;
+  });
 </script>
 
 <div id="divTable">
@@ -17,7 +21,7 @@
     <strong>Table</strong> <button on:click={redraw}>Redraw</button>
     <span>cards: {cards}</span> <span>{n_selected} selected</span>
   </div>
-  <Canvas {cards} {cards_selected} bind:this={canvasComponent} />
+  <Canvas {cards} bind:this={canvasComponent} />
 </div>
 
 <style>
