@@ -9,6 +9,7 @@
   import Players from "./Players.svelte";
   import Help from "./Help.svelte";
   import { ainvert } from "./utils";
+  import { web_socket } from "./wscon";
 
   const tabChange = (e) => {
     tabActiveIndex = e.detail;
@@ -57,10 +58,6 @@
   h1 {
     flex-grow: 0;
     background: #bbe;
-  }
-  NavBar {
-    flex-grow: 0;
-    background: #77e;
   }
   #dummyFooter {
     min-height: 0px;
