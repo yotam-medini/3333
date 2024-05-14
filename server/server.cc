@@ -17,26 +17,7 @@
 #include "player.h"
 #include "table.h"
 #include "ws_session.h"
-
-// TO be moved to common constants with Javascript code
-static const std::string S3333_C2S_TBLS = "tbls";
-static const std::string S3333_C2S_NTBL = "ntbl";
-static const std::string S3333_C2S_GNEW = "gnew";
-static const std::string S3333_C2S_TRY3 = "try3";
-static const std::string S3333_C2S_ADD3 = "add3";
-static const std::string S3333_C2S_NMOR = "nmor";
-static const std::string S3333_C2S_JOIN = "join";
-static const std::string S3333_C2S_CLOS = "clos";
-static const unsigned E3333_S2C_TBLS = 0;
-static const unsigned E3333_S2C_NTBL = 1;
-static const unsigned E3333_S2C_JOIN = 2;
-static const unsigned E3333_S2C_GSTATE = 3;
-static const unsigned E3333_S2C_SET_FOUND = 4;
-static const unsigned E3333_S2C_CONNECTION_TAKEN = 5;
-static const unsigned E3333_S2C_TABLE_CLOSED = 6;
-static const unsigned E3333_S2C_N = 7;
-
-
+#include "cs_consts.h"
 
 class WebSocketSession;
 using notify_ws_t = std::function<void(WebSocketSession*)>;

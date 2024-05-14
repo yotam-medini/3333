@@ -47,7 +47,7 @@
     tableComponent.redraw();
   });
 
-  let cards = [2, 3, 5, 43, 59, 79];
+  let cards = [];
   let new_game_enabled = false;
   // let cards_selected = [1, 4];
 </script>
