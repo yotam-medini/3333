@@ -36,8 +36,8 @@ void Table::GameStateBump() {
 
 std::string Table::json() const {
   std::string j("{\n");
-  j += fmt::format(R"j(  "tstate": "{}",)j" "\n", tstate_);
-  j += fmt::format(R"j(  "gstate": "{}",)j" "\n", gstate_);
+  j += fmt::format(R"j(  "tstate": {},)j" "\n", tstate_);
+  j += fmt::format(R"j(  "gstate": {},)j" "\n", gstate_);
   j += fmt::format(R"j(  "gactive": {},)j" "\n", int(game_active_));
   j += fmt::format(R"j(  "players": [)j");
   const char *sep = "";

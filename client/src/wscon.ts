@@ -51,11 +51,10 @@ web_socket.onmessage = function (event) {
         console.log("c.E3333_S2C_GSTATE");
 	let result = edata['result'];
 	let active = result['active'];
+        fn = callbacks[CallBackIdx.ISetStates];
+        fn(result['tstate'], result['gstate']);
         fn = callbacks[CallBackIdx.ISetCards];
-	console.log("active=" + active + " fn?=" + (fn !== undefined));
-        if (fn !== undefined) {
-	  fn(active);
-	}
+        fn(active);
 	break;
       default:
         console.log("Error: unsupported cmd: " + cmd);
@@ -84,8 +83,9 @@ export function sendNewGame() {
   web_socket.send(c.S3333_C2S_GNEW);
 }  
 
-export function setTry3(caards_selected: number[3]) {
-  let request = [c.S3333_C2S_TRY3, caards_selected].join(" ")
+export function sendTry3(caards_selected: number[3], gstate: number) {
+  let request = [c.S3333_C2S_TRY3 + " " + gstate + " " + 
+    caards_selected.join(" ")]
   console.log("request="+request);
   web_socket.send(request);
 }

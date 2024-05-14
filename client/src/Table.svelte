@@ -2,7 +2,7 @@
   import {
     gcards_selected, gcards_selected_update, gcards_selected_subscribe
   } from "./table_data.ts";
-  import { sendNewGame } from "./wscon";
+  import { sendNewGame, sendTry3 } from "./wscon";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
   export let new_game_enabled;
@@ -10,6 +10,13 @@
     console.log("newGame");
     gcards_selected_update([]);
     sendNewGame();
+  }
+  export let tstate = -1;
+  export let gstate = -1;
+  export const setStates = (t, g) => {
+    console.log("tstate="+t + " gstate="+g);
+    tstate = t;
+    gstate = g;
   }
   export let cards;
   export const setCards = (a) => {
@@ -22,8 +29,11 @@
   }
   let n_selected = 0;
   let _gcards_selected_unsubscribe = gcards_selected_subscribe((v) => {
-    console.log("gcards_selected sub... v=" + v);
+    console.log("gcards_selected sub... v=" + v + " g="+gstate);
     n_selected = v.length;
+    if (n_selected == 3) {
+      sendTry3(v, gstate);
+    }
   });
   console.log("Table.svelte: end-of-script");
 </script>

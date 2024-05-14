@@ -27,6 +27,7 @@
   const updateTableStatus = (table_staus: TableStatus) => {
     console.log("table_staus=" + table_staus);
     tabActiveIndex = i2tab['Table']
+    setStates(tstate, gstate);
     cards = [];
     if (table_staus == TableStatus.None) {
       new_game_enabled = false;
@@ -47,9 +48,20 @@
     tableComponent.redraw();
   });
 
+  export let tstate = -1;
+  export let gstate = -1;
+  export const setStates = (t, g) => {
+    tstate = t;
+    gstate = g;
+    console.log("tstate="+t + " gstate="+g + " tableComp="+tableComponent);
+    if (tableComponent !== undefined) {
+      tableComponent.setStates(t, g);
+    }
+  }
+  set_callback(CallBackIdx.ISetStates, setStates);
+
   let cards = [];
   let new_game_enabled = false;
-  // let cards_selected = [1, 4];
 </script>
 
 <main>

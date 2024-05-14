@@ -91,8 +91,8 @@ function determineNumberOfColumns(cctx: CanvasCtx, n_cards: number): number {
       best_ratio_quality = ratio_quality;
     }
   }
-  console.log("w="+cctx.width + " h="+cctx.height + " n_cards="+n_cards +
-    " => best_columns=" + best_columns);
+  // console.log("w="+cctx.width + " h="+cctx.height + " n_cards="+n_cards +
+  //  " => best_columns=" + best_columns);
   return best_columns
 }
 
@@ -109,8 +109,8 @@ function generatePatternStripes(card_height: interner, rgb_colors):
     ctx.fillStyle = rgb_colors[ci];
     ctx.fillRect(0, 0, 8, stripe_height);
     let pattern_stripe: CanvasPattern = ctx.createPattern(offscreen, "repeat");
-    console.log("ci="+ci + " pattern_stripe...");
-    console.log(pattern_stripe)
+    // console.log("ci="+ci + " pattern_stripe...");
+    // console.log(pattern_stripe)
     pattern_stripes[ci] = pattern_stripe;
   }
   return pattern_stripes;
@@ -119,7 +119,7 @@ function generatePatternStripes(card_height: interner, rgb_colors):
 function computeDrawPlan(cctx: CanvasCtx, n_cards: number) : DrawPlan {
   let columns: number = determineNumberOfColumns(cctx, n_cards);
   let rows = Math.floor((n_cards + columns - 1) / columns);
-  console.log("n_cards="+n_cards + " columns=" + columns + " rows="+rows);
+  // console.log("n_cards="+n_cards + " columns=" + columns + " rows="+rows);
   let q: number = 11./12.; // card-pixels per table pixles ratio
   let card_width: number = Math.round(q * cctx.width / columns);
   let card_height: number = Math.round(q * cctx.height / rows);
@@ -136,7 +136,7 @@ function computeDrawPlan(cctx: CanvasCtx, n_cards: number) : DrawPlan {
 }
 
 function drawDiamond(ctx: CanvasRenderingContext2D, rect: Rect) {
-  console.log("drawDiamond: rect=", rect); 
+  // console.log("drawDiamond: rect=", rect); 
   ctx.beginPath();
   ctx.moveTo(rect.x + half(rect.w), rect.y);
   ctx.lineTo(rect.x + rect.w, rect.y + half(rect.h));
@@ -155,8 +155,6 @@ function aa_round(aa: number[][]) {
 }
 
 function drawSquiggle(ctx: CanvasRenderingContext2D, rect: Rect) {
-  console.log("drawSquiggle: rect=", rect); 
-
   let x: number = rect.x;
   let y: number = rect.y;
   let w: number = rect.w;
@@ -219,7 +217,7 @@ function half(n: number): number {
 }
 
 function drawOval(ctx: CanvasRenderingContext2D, rect: Rect) {
-  console.log("drawOval: rect=", rect); 
+  // console.log("drawOval: rect=", rect); 
   // Draw an ellipse, within a bounding rectangle
   //   (x,y)    The left-top point of the bounding rectangle.
   //   (w,h)    The width and height of the bounding rectangle.
@@ -240,7 +238,7 @@ function drawOval(ctx: CanvasRenderingContext2D, rect: Rect) {
 }
 
 function drawCard(cdi: CardDrawInfo) {
-  console.log("drawCard cdi: ", cdi);
+  // console.log("drawCard cdi: ", cdi);
   let ctx: CanvasRenderingContext2D = cdi.cctx.ctx; // abbreviation
   ctx.fillStyle = "#fff";
   if (cdi.selected) {
@@ -263,8 +261,8 @@ function drawCard(cdi: CardDrawInfo) {
   qr = divmod(qr.q, 3);
   let symbol: number = qr.r;
   let n_symbols: number = qr.q + 1;
-  console.log("card="+cdi.card + " n_symbols="+n_symbols + " symbol="+symbol +
-    " color="+color + " shading="+shading)
+  // console.log("card="+cdi.card + " n_symbols="+n_symbols + " symbol="+symbol +
+  //  " color="+color + " shading="+shading)
 
   let draw_symbol = [drawDiamond, drawSquiggle, drawOval][symbol];
   // let rgb = ["#e21", "#382", "#a3f"][color];
@@ -278,23 +276,23 @@ function drawCard(cdi: CardDrawInfo) {
   ctx.fillStyle = rgb;
   ctx.strokeStyle = rgb;
   ctx.lineWidth = Math.max(Math.round(cdi.draw_plan.card_width/40), 4);
-  console.log("card_width="+cdi.draw_plan.card_width + " lineWidth=" + ctx.lineWidth)
+  // console.log("card_width="+cdi.draw_plan.card_width + " lineWidth=" + ctx.lineWidth)
 
   // symbol bounding box
   let rect : Rect = {x: 0, y: 0,
     w: Math.round(cdi.w/4), h: Math.round(3*cdi.h/4)};
-  console.log("[0] rect: ", rect);
+  // console.log("[0] rect: ", rect);
   let x_gap: number = Math.round((cdi.w - n_symbols * rect.w)/(n_symbols + 1));
-  console.log("cdi.w="+cdi.w + " rect.w="+rect.w + " n_symbols="+n_symbols +
-    " x_gap="+x_gap);
+  // console.log("cdi.w="+cdi.w + " rect.w="+rect.w + " n_symbols="+n_symbols +
+  //  " x_gap="+x_gap);
   rect.x = cdi.x + x_gap;
   rect.y = cdi.y + half(cdi.h - rect.h);
-  console.log("[1] rect: ", rect);
+  // console.log("[1] rect: ", rect);
   
   for (let r: int = 0; r < n_symbols; ++r) {
     for (let fill_pass: bool of fill_passes) {
       ctx.fillStyle = rgb;
-      console.log("r="+r + " fill_pass="+fill_pass + " ... symbol");
+      // console.log("r="+r + " fill_pass="+fill_pass + " ... symbol");
       draw_symbol(ctx, rect);
       if (fill_pass) {
         ctx.fillStyle = (shading == 1 ? cdi.draw_plan.pattern_stripes[color] : rgb);
@@ -313,23 +311,23 @@ export function drawTable(
     cards: number[],
     click_x: number,
     click_y: number) {
-  console.log("drawTable: canvas=" + canvas + " cards=" + cards + 
-    " gcards_selected=" + _gcards_selected);
+  // console.log("drawTable: canvas=" + canvas + " cards=" + cards + 
+  //   " gcards_selected=" + _gcards_selected);
   // let p: HTMLCanvasElement = canvas.parentElement;
   // console.log("p="+p + " name="+p.nodeName);
   // let brect = p.getBoundingClientRect()
   // console.log(brect);
   let brect = canvas.getBoundingClientRect();
-  console.log(brect);
+  // console.log(brect);
   if (click_x == -1) {
     canvas.width = Math.floor(brect.width);
     canvas.height = Math.floor(brect.height);
   }
   let ctx = canvas.getContext("2d");
-  console.log("ctx=" + ctx); console.log(ctx);
-  console.log("width=" + canvas.width + " height=" + canvas.height);
-  console.log("scroll: width=" + canvas.scrollWidth +
-	      " height=" + canvas.scrollHeight);
+  // console.log("ctx=" + ctx); console.log(ctx);
+  // console.log("width=" + canvas.width + " height=" + canvas.height);
+  // console.log("scroll: width=" + canvas.scrollWidth +
+  //   " height=" + canvas.scrollHeight);
   const cctx: CanvasCtx = { 
     ctx: ctx, width: canvas.width, height: canvas.height, 
     rgb_colors: ["#e21", "#382", "#a3f"], };
@@ -339,7 +337,7 @@ export function drawTable(
   }
   let n_columns = determineNumberOfColumns(cctx, cards.length);
   let dp: DrawPlan = computeDrawPlan(cctx, cards.length);
-  console.log(dp);
+  // console.log(dp);
   let xgap: number = Math.round((cctx.width - (dp.columns * dp.card_width)) / 
     (dp.columns + 1));
   let ygap: number = Math.round((cctx.height - (dp.rows * dp.card_height)) / 
@@ -351,7 +349,7 @@ export function drawTable(
   let y: number = ygap;
   for (let ci: number = 0; ci < cards.length; ci++) {
     let drawMe: bool = (click_x === -1);
-    console.log("click_x="+click_x + " ci="+ci + " [0]drawMe="+drawMe);
+    // console.log("click_x="+click_x + " ci="+ci + " [0]drawMe="+drawMe);
     // draw_card(cctx, card, x, y, card_width, card_height
     let isel: number = _gcards_selected.indexOf(ci);
     // console.log("ci="+ci + " isel="+isel);
@@ -368,14 +366,14 @@ export function drawTable(
        // updateSelectedCards(_gcards_selected);
        gcards_selected_update(_gcards_selected);
     }
-    console.log("click_x="+click_x + " ci="+ci + " drawMe="+drawMe);
+    // console.log("click_x="+click_x + " ci="+ci + " drawMe="+drawMe);
     if (drawMe) {
       const cdi: CardDrawInfo = {
         cctx: cctx, draw_plan: dp, card: cards[ci], x: x, y: y, 
         w: dp.card_width, h: dp.card_height,
         selected: selected};
-      console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
-      console.log("cdi=", cdi);
+      // console.log("draw_card: card=" + cards[ci] + " @=("+x + ", "+y+")");
+      // console.log("cdi=", cdi);
       drawCard(cdi);
     }
     xi += 1;
@@ -394,8 +392,8 @@ export function handleClick(e,
     cards: number[],
     click_x: number,
     click_y: number) {
-  console.log("handleClick: e=", e);
-  console.log("e.target=", e.target);
+  // console.log("handleClick: e=", e);
+  // console.log("e.target=", e.target);
   let brect = e.target.getBoundingClientRect()
   // console.log("brect: ", brect);
   let x = e.clientX - brect.left;
