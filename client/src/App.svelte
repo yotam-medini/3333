@@ -10,7 +10,8 @@
   import Help from "./Help.svelte";
   import { ainvert } from "./utils";
   import { web_socket } from "./wscon";
-
+  import { TableStatus } from "./consts";
+  
   const tabChange = (e) => {
     tabActiveIndex = e.detail;
   }
@@ -22,7 +23,22 @@
   console.log("i2tab: " + i2tab);
   console.log("i2tab[Table]=" + i2tab["Table"]);
 
+  const updateTableStatus = (table_staus: TableStatus) => {
+    console.log("table_staus=" + table_staus);
+    cards = [];
+    if (table_staus == TableStatus.None) {
+      cards = [];
+    } else if (table_staus == TableStatus.Own) {
+      cards = [];
+    } else if (table_staus == Table_staus.Join) {
+      cards = [];
+    } else {
+      console.log("Error: unexpected table_staus=" + table_staus);
+    }
+  };
+
   let cards = [2, 3, 5, 43, 59, 79];
+  let new_game_enabled = false;
   // let cards_selected = [1, 4];
 </script>
 
@@ -32,7 +48,7 @@
   {#if tabActiveName === 'Club'}
     <Club />
   {:else if tabActiveName === 'Table'}
-    <Table {cards} />
+    <Table {cards} {new_game_enabled} />
   {:else if tabActiveName === 'Players'}
     <Players />
   {:else if tabActiveName === 'Help'}

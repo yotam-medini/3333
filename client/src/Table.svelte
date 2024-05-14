@@ -4,6 +4,10 @@
   } from "./table_data.ts";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
+  export let new_game_enabled;
+  const newGame = () => {
+    console.log("newGame");
+  }
   const redraw = () => {
     console.log("redraw");
     canvasComponent.redrawMe();
@@ -19,8 +23,10 @@
 
 <div id="divTable">
   <div id=divControl>
-    <strong>Table</strong> <button on:click={redraw}>Redraw</button>
-    <span>cards: {cards}</span> <span>{n_selected} selected</span>
+    <strong>Table</strong> 
+    <button on:click={newGame} disabled={!new_game_enabled}>New Game</button>
+    <button on:click={redraw}>Redraw</button>
+    <span>{cards.length} cards:</span> <span>{n_selected} selected</span>
   </div>
   <Canvas {cards} bind:this={canvasComponent} />
 </div>

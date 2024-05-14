@@ -1,12 +1,15 @@
 <script lang="ts">
-  import Dialog from './Dialog.svelte'
-  let dialog
+  import Dialog from './Dialog.svelte';
+  import { sendNewTable } from "./wscon";
+  let dialog;
   let player_name = ''; // if owner - then also table name
   let table_password = '';
   let player_password = '';
   const createTable = () => {
     console.log("name="+player_name + " tpw="+table_password +
                 " ppw="+player_password);
+    sendNewTable(player_name, table_password, player_password);
+    dialog.close();
   };
 </script>
 
