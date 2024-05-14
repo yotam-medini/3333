@@ -8,13 +8,18 @@
   export let new_game_enabled;
   const newGame = () => {
     console.log("newGame");
+    gcards_selected_update([]);
     sendNewGame();
   }
-  const redraw = () => {
-    console.log("redraw");
+  export let cards;
+  export const setCards = (a) => {
+    cards = a;
+  };
+  export const redraw = () => {
+    console.log("redraw cards="+cards);
+    canvasComponent.setCards(cards);
     canvasComponent.redrawMe();
   }
-  export let cards;
   let n_selected = 0;
   let _gcards_selected_unsubscribe = gcards_selected_subscribe((v) => {
     console.log("gcards_selected sub... v=" + v);

@@ -22,6 +22,7 @@
   console.log("tabs: " + tabs);
   console.log("i2tab: " + i2tab);
   console.log("i2tab[Table]=" + i2tab["Table"]);
+  let tableComponent;
 
   const updateTableStatus = (table_staus: TableStatus) => {
     console.log("table_staus=" + table_staus);
@@ -42,6 +43,8 @@
   set_callback(CallBackIdx.ISetCards, (a: number[]) => {
     cards = a;
     console.log("cards=" + cards);
+    tableComponent.setCards(cards);
+    tableComponent.redraw();
   });
 
   let cards = [2, 3, 5, 43, 59, 79];
@@ -55,7 +58,7 @@
   {#if tabActiveName === 'Club'}
     <Club />
   {:else if tabActiveName === 'Table'}
-    <Table {cards} {new_game_enabled} />
+    <Table {cards} {new_game_enabled} bind:this={tableComponent} />
   {:else if tabActiveName === 'Players'}
     <Players />
   {:else if tabActiveName === 'Help'}
