@@ -3,3 +3,9 @@ export enum TableStatus {
   Own,
   Join
 };
+
+export enum CallBackIdx {
+  ITableStatus,
+  ISIZE
+};
+

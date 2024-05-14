@@ -9,8 +9,8 @@
   import Players from "./Players.svelte";
   import Help from "./Help.svelte";
   import { ainvert } from "./utils";
-  import { web_socket } from "./wscon";
-  import { TableStatus } from "./consts";
+  import { web_socket, set_callback } from "./wscon";
+  import { TableStatus, CallBackIdx } from "./consts";
   
   const tabChange = (e) => {
     tabActiveIndex = e.detail;
@@ -25,17 +25,19 @@
 
   const updateTableStatus = (table_staus: TableStatus) => {
     console.log("table_staus=" + table_staus);
+    tabActiveIndex = i2tab['Table']
     cards = [];
     if (table_staus == TableStatus.None) {
-      cards = [];
+      new_game_enabled = false;
     } else if (table_staus == TableStatus.Own) {
-      cards = [];
+      new_game_enabled = true;
     } else if (table_staus == Table_staus.Join) {
-      cards = [];
+      new_game_enabled = false;
     } else {
       console.log("Error: unexpected table_staus=" + table_staus);
     }
   };
+  set_callback(CallBackIdx.ITableStatus, updateTableStatus);
 
   let cards = [2, 3, 5, 43, 59, 79];
   let new_game_enabled = false;
