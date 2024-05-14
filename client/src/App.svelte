@@ -39,6 +39,11 @@
   };
   set_callback(CallBackIdx.ITableStatus, updateTableStatus);
 
+  set_callback(CallBackIdx.ISetCards, (a: number[]) => {
+    cards = a;
+    console.log("cards=" + cards);
+  });
+
   let cards = [2, 3, 5, 43, 59, 79];
   let new_game_enabled = false;
   // let cards_selected = [1, 4];

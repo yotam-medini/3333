@@ -2,11 +2,13 @@
   import {
     gcards_selected, gcards_selected_update, gcards_selected_subscribe
   } from "./table_data.ts";
+  import { sendNewGame } from "./wscon";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
   export let new_game_enabled;
   const newGame = () => {
     console.log("newGame");
+    sendNewGame();
   }
   const redraw = () => {
     console.log("redraw");
