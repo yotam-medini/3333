@@ -39,14 +39,16 @@ std::string Table::json() const {
   j += fmt::format(R"j(  "tstate": {},)j" "\n", tstate_);
   j += fmt::format(R"j(  "gstate": {},)j" "\n", gstate_);
   j += fmt::format(R"j(  "gactive": {},)j" "\n", int(game_active_));
-  j += fmt::format(R"j(  "players": [)j");
+  j += fmt::format("  {}: ", dq("players"));
+  j += "{\n";                   
   const char *sep = "";
   for (auto &player: players_) {
     j += sep;
-    j += Indent(player->json(), 2);
+    j += fmt::format("    {}:", dq(player->GetName()));
+    j += Indent(player->json(), 4);
     sep = ",\n";
   }
-  j += "],\n";
+  j += "\n  },\n";
   j += fmt::format(R"j(  "deck": {},)j" "\n", GetDeckSize());
   j += fmt::format(R"j(  "active": [)j");
   sep = "";
