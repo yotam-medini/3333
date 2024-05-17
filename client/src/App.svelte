@@ -48,8 +48,8 @@
   set_callback(CallBackIdx.ISetCards, (a: number[]) => {
     cards = a;
     console.log("cards=" + cards);
-    tableComponent.setCards(cards);
-    tableComponent.redraw();
+    // tableComponent.setCards(cards);
+    // tableComponent.redraw();
   });
 
   let player_name = "";

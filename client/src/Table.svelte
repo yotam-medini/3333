@@ -19,29 +19,38 @@
   //   table_name = t;
   // });
   export let game_state;
+  export let cards;
+  let numbers = [0, 0, 0, 0]
+  export let tstate = 0;
+  export let gstate = 0;
   $: {
     console.log("reactive: game_state=", game_state);
     if (gstate != game_state["gstate"]) {
       gstate = game_state["gstate"];
       console.log("new gstate=" + gstate);
       if (gstate > 0) {
+        cards = game_state["active"]
         gcards_selected_update([]);
         redraw();
+        numbers = game_state["players"][player_name]["numbers"]
+      }
+    }
+    if (tstate != game_state["tstate"]) {
+      tstate = game_state["tstate"];
+      console.log("new tstate=" + tstate);
+      if (tstate > 0) {
+        numbers = game_state["players"][player_name]["numbers"]
       }
     }
   }
-  // $: numbers = game_state["players"][player]["numbers"]
-  export let tstate = 0;
-  export let gstate = 0;
-  export const setStates = (t, g) => {
-    console.log("tstate="+t + " gstate="+g);
-    tstate = t;
-    gstate = g;
-  }
-  export let cards;
-  export const setCards = (a) => {
-    cards = a;
-  };
+  // export const setStates = (t, g) => {
+  //   // console.log("tstate="+t + " gstate="+g);
+  //   // tstate = t;
+  //   // gstate = g;
+  // }
+  // export const setCards = (a) => {
+  //   // cards = a;
+  // };
   export const add3 = () => {
     console.log("add3");
   }
@@ -73,6 +82,7 @@
     <button on:click={add3}>Add 3 Cards</button>
     <button on:click={redraw}>Redraw</button>
     <span>{cards.length} cards:</span> <span>{n_selected} selected</span>
+    <span>Stats: {numbers}</span>
   </div>
   <Canvas {cards} bind:this={canvasComponent} />
 </div>
