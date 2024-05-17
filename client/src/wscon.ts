@@ -61,6 +61,7 @@ web_socket.onmessage = function (event) {
         fn(result['tstate'], result['gstate']);
         fn = callbacks[CallBackIdx.ISetCards];
         fn(active);
+        callbacks[CallBackIdx.iSetGameState](result);
         break;
       default:
         console.log("Error: unsupported cmd: " + cmd);

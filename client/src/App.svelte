@@ -10,7 +10,11 @@
   import Help from "./Help.svelte";
   import { ainvert } from "./utils";
   import { web_socket, set_callback } from "./wscon";
-  import { TableStatus, CallBackIdx } from "./consts";
+  import { TableStatus, CallBackIdx, game_state_empty } from "./consts";
+  let game_state = game_state_empty;
+  set_callback(CallBackIdx.iSetGameState, (gs) => {
+    game_state = gs;
+  });
   
   const tabChange = (e) => {
     tabActiveIndex = e.detail;
@@ -24,19 +28,19 @@
   console.log("i2tab[Table]=" + i2tab["Table"]);
   let tableComponent = null;
 
-  const updateTableStatus = (table_staus: TableStatus) => {
-    console.log("table_staus=" + table_staus);
+  const updateTableStatus = (table_status: TableStatus) => {
+    console.log("table_status=" + table_status);
     tabActiveIndex = i2tab['Table']
     setStates(tstate, gstate);
     cards = [];
-    if (table_staus == TableStatus.None) {
+    if (table_status == TableStatus.None) {
       new_game_enabled = false;
-    } else if (table_staus == TableStatus.Own) {
+    } else if (table_status == TableStatus.Own) {
       new_game_enabled = true;
-    } else if (table_staus == Table_staus.Join) {
+    } else if (table_status == Table_status.Join) {
       new_game_enabled = false;
     } else {
-      console.log("Error: unexpected table_staus=" + table_staus);
+      console.log("Error: unexpected table_status=" + table_status);
     }
   };
   set_callback(CallBackIdx.ITableStatus, updateTableStatus);
@@ -77,7 +81,7 @@
   {#if tabActiveName === 'Club'}
     <Club />
   {:else if tabActiveName === 'Table'}
-    <Table {player_name} {table_name} {cards} {new_game_enabled}
+    <Table {player_name} {table_name} {game_state} {cards} {new_game_enabled}
            bind:this={tableComponent}
     />
   {:else if tabActiveName === 'Players'}

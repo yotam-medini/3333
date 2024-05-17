@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CallBackIdx } from "./consts";
+  import { CallBackIdx, game_state_empty } from "./consts";
   import {
     gcards_selected, gcards_selected_update, gcards_selected_subscribe
   } from "./table_data.ts";
@@ -18,8 +18,21 @@
   //   player_name = p;
   //   table_name = t;
   // });
-  export let tstate = -1;
-  export let gstate = -1;
+  export let game_state;
+  $: {
+    console.log("reactive: game_state=", game_state);
+    if (gstate != game_state["gstate"]) {
+      gstate = game_state["gstate"];
+      console.log("new gstate=" + gstate);
+      if (gstate > 0) {
+        gcards_selected_update([]);
+        redraw();
+      }
+    }
+  }
+  // $: numbers = game_state["players"][player]["numbers"]
+  export let tstate = 0;
+  export let gstate = 0;
   export const setStates = (t, g) => {
     console.log("tstate="+t + " gstate="+g);
     tstate = t;
