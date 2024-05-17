@@ -22,7 +22,7 @@
   console.log("tabs: " + tabs);
   console.log("i2tab: " + i2tab);
   console.log("i2tab[Table]=" + i2tab["Table"]);
-  let tableComponent;
+  let tableComponent = null;
 
   const updateTableStatus = (table_staus: TableStatus) => {
     console.log("table_staus=" + table_staus);
@@ -48,15 +48,22 @@
     tableComponent.redraw();
   });
 
+  let player_name = "";
+  let table_name = "";
+  set_callback(CallBackIdx.iSetNames, (p: string, t: string) => {
+    console.log("p="+p + " t="+t);
+    player_name = p;
+    table_name = t;
+  });
   export let tstate = -1;
   export let gstate = -1;
   export const setStates = (t, g) => {
     tstate = t;
     gstate = g;
     console.log("tstate="+t + " gstate="+g + " tableComp="+tableComponent);
-    if (tableComponent !== undefined) {
-      tableComponent.setStates(t, g);
-    }
+    // if (tableComponent !== null) {
+    //   tableComponent.setStates(t, g);
+    // }
   }
   set_callback(CallBackIdx.ISetStates, setStates);
 
@@ -70,7 +77,9 @@
   {#if tabActiveName === 'Club'}
     <Club />
   {:else if tabActiveName === 'Table'}
-    <Table {cards} {new_game_enabled} bind:this={tableComponent} />
+    <Table {player_name} {table_name} {cards} {new_game_enabled}
+           bind:this={tableComponent}
+    />
   {:else if tabActiveName === 'Players'}
     <Players />
   {:else if tabActiveName === 'Help'}

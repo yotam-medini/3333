@@ -6,6 +6,7 @@ export enum TableStatus {
 
 export enum CallBackIdx {
   ITableStatus,
+  iSetNames,
   ISetStates,
   ISetCards,
   ISIZE

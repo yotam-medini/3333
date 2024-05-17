@@ -190,9 +190,12 @@ void Server::WsReceivedMessage(
     if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
-      err = NewTable(cmd, ws);
+      std::string table_name;
+      err = NewTable(cmd, table_name, ws);
       if (err.empty()) {
-        ws->send(ServerToClient(E3333_S2C_NTBL, 0, R"("")"));
+        auto result = brace(fmt::format(R"j( "table_name": {})j",
+          dq(table_name)));
+        ws->send(ServerToClient(E3333_S2C_NTBL, 0, result));
       }
     } else if (cmd[0] == S3333_C2S_GNEW) {
       table->NewGame();
@@ -239,10 +242,11 @@ std::string Server::TablesToJson() const {
 
 std::string Server::NewTable(
   const std::vector<std::string> &cmd,
+  std::string &table_name,
   WebSocketSession *ws) {
   std::string err;
   const size_t sz = cmd.size();
-  std::string table_name, table_password, player_password;
+  std::string table_password, player_password;
   if ((sz < 3) || (5 < sz)) {
     err = fmt::format("{}: Bad command size: {}", cmd[0], sz);
   } else {

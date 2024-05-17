@@ -3,6 +3,7 @@
 #include <ctime>
 #include <source_location>
 #include <sstream>
+#include <fmt/core.h>
 
 int GetTime() {
   return time(nullptr);
@@ -15,6 +16,17 @@ int StrToInt(const std::string &s, int defval) {
     n = defval;
   }
   return n;
+}
+
+std::string dq(const std::string &s) {
+  return fmt::format(R"("{}")", s);
+}
+
+extern std::string brace(const std::string &s) {
+  auto ret = fmt::format(" {} ", s);
+  ret[0] = '{';
+  ret[ret.size() - 1] = '}';
+  return ret;
 }
 
 std::string Indent(const std::string &text, size_t n) {

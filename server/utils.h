@@ -8,6 +8,8 @@
 
 extern int GetTime();
 extern int StrToInt(const std::string &s, int defval=(-1));
+extern std::string dq(const std::string&);
+extern std::string brace(const std::string&);
 extern std::string Indent(const std::string &text, size_t n);
 extern std::vector<std::string> SSplit(const std::string &s);
 extern std::string FuncName(

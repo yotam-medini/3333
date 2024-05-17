@@ -39,23 +39,29 @@ web_socket.onmessage = function (event) {
     let cmd = edata['cmd'];
     console.log("cmd="+cmd);
     let fn = undefined;
+    let result = undefined;
     switch (cmd) {
       case c.E3333_S2C_NTBL:
         fn = callbacks[CallBackIdx.ITableStatus];
-	console.log("fn?=" + (fn !== undefined));
+        console.log("fn?=" + (fn !== undefined));
         if (fn !== undefined) {
-	  fn(TableStatus.Own);
-	}
+          fn(TableStatus.Own);
+        }
+        result = edata['result'];
+        let table_name = result["table_name"];
+        fn = callbacks[CallBackIdx.iSetNames];
+        console.log("table_name="+table_name + " fn?=" + (fn !== undefined));
+        fn(table_name, table_name);
         break;
       case c.E3333_S2C_GSTATE:
         console.log("c.E3333_S2C_GSTATE");
-	let result = edata['result'];
-	let active = result['active'];
+        result = edata['result'];
+        let active = result['active'];
         fn = callbacks[CallBackIdx.ISetStates];
         fn(result['tstate'], result['gstate']);
         fn = callbacks[CallBackIdx.ISetCards];
         fn(active);
-	break;
+        break;
       default:
         console.log("Error: unsupported cmd: " + cmd);
     }

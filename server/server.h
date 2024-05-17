@@ -36,7 +36,10 @@ class Server {
     unsigned error_code,
     const std::string &result) const;
   std::string TablesToJson() const;
-  std::string NewTable(const cmd_t &cmd,  WebSocketSession *ws);
+  std::string NewTable(
+    const cmd_t &cmd,
+    std::string &table_name,
+    WebSocketSession *ws);
   std::string Try3(Player* player, Table *table, const cmd_t &cmd);
   void UpdateTableGstate(Table *table);
   const size_t max_tables_;
