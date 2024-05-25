@@ -3,7 +3,7 @@
   import {
     gcards_selected, gcards_selected_update, gcards_selected_subscribe
   } from "./table_data.ts";
-  import { set_callback, sendNewGame, sendTry3 } from "./wscon";
+  import { set_callback, sendNewGame, sendTry3, sendAdd3 } from "./wscon";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
   export let new_game_enabled;
@@ -43,16 +43,9 @@
       }
     }
   }
-  // export const setStates = (t, g) => {
-  //   // console.log("tstate="+t + " gstate="+g);
-  //   // tstate = t;
-  //   // gstate = g;
-  // }
-  // export const setCards = (a) => {
-  //   // cards = a;
-  // };
   export const add3 = () => {
     console.log("add3");
+    sendAdd3(gstate);
   }
   export const redraw = () => {
     console.log("redraw cards="+cards);

@@ -96,3 +96,9 @@ export function sendTry3(caards_selected: number[3], gstate: number) {
   console.log("request="+request);
   web_socket.send(request);
 }
+
+export function sendAdd3(gstate: number) {
+  let request = [c.S3333_C2S_ADD3 + " " + gstate]
+  console.log("request="+request);
+  web_socket.send(request);
+}
