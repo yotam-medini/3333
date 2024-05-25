@@ -78,8 +78,8 @@ std::string Table::Add3() {
   return err;
 }
 
-std::string Table::Try3(const a3i_t& a3i) {
-  std::string err;
+bool Table::Try3(const a3i_t& a3i) {
+  bool found = false;
   const card_t &card0 = all_cards[cards_active_[a3i[0]]];
   const card_t &card1 = all_cards[cards_active_[a3i[1]]];
   const card_t &card2 = all_cards[cards_active_[a3i[2]]];
@@ -94,11 +94,11 @@ std::string Table::Try3(const a3i_t& a3i) {
       DealCards(3);
     }
     GameStateBump();
+    found = true;
   } else {
-    err = "Not a Set";
     StateBump();
   }
-  return err;
+  return found;
 }
 
 bool Table::ActiveHasSet() const {

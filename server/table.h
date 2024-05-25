@@ -26,7 +26,7 @@ class Table {
   void StateBump() { ++tstate_; }
   void GameStateBump();
   std::string Add3();
-  std::string Try3(const a3i_t& a3i);
+  bool Try3(const a3i_t& a3i);
   bool GetGameActive() const { return game_active_; }
   size_t GetDeckSize() const { return cards_deck_.size(); }
   const std::vector<uint8_t> &GetCardsActive() const { return cards_active_; }

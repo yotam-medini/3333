@@ -63,6 +63,9 @@ web_socket.onmessage = function (event) {
         fn(active);
         callbacks[CallBackIdx.iSetGameState](result);
         break;
+      case c.E3333_S2C_NOT_A_SET:
+        console.log("E3333_S2C_NOT_A_SET not yet supported");
+        break;
       default:
         console.log("Error: unsupported cmd: " + cmd);
     }

@@ -25,6 +25,7 @@ S2C = [
     "SET_FOUND",
     "CONNECTION_TAKEN",
     "TABLE_CLOSED",
+    "NOT_A_SET",
 ]
 
 def strnow():

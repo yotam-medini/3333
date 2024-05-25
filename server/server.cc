@@ -316,11 +316,11 @@ std::string Server::Try3(Player *player, Table *table, const cmd_t &cmd) {
     }
   }
   if (err.empty()) {
-    err = table->Try3(a3i);
-    if (err.empty()) {
+    if (table->Try3(a3i)) {
       player->BumpSetsFound();
     } else {
       player->BumpBadCalls();
+      player->GetWS()->send(ServerToClient(E3333_S2C_NOT_A_SET, 0, "{}"));
     }
   }
   return err;
