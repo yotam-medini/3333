@@ -18,6 +18,7 @@
   
   const tabChange = (e) => {
     tabActiveIndex = e.detail;
+    console.log("tabActiveIndex=" + tabActiveIndex)
   }
   let tabs = ['Club', 'Table', 'Players', 'Help'];
   let tabActiveIndex = 0;

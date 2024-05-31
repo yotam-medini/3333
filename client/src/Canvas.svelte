@@ -19,7 +19,9 @@
   });
   export let cards;
   export const setCards = (a) => {
+    console.log("setCards a=", a);
     cards = a;
+    console.log("setCards end")
   };
   // export let cards_selected; // LUT to cards, max 3 
   export function redrawMe() {

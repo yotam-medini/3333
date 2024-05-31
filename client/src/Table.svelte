@@ -48,9 +48,11 @@
     sendAdd3(gstate);
   }
   export const redraw = () => {
-    console.log("redraw cards="+cards);
-    canvasComponent.setCards(cards);
-    canvasComponent.redrawMe();
+    console.log("canvasComponent=", canvasComponent);
+    if (canvasComponent !== undefined) {
+      canvasComponent.setCards(cards);
+      canvasComponent.redrawMe();
+    }
   };
   let n_selected = 0;
   let _gcards_selected_unsubscribe = gcards_selected_subscribe((v) => {
