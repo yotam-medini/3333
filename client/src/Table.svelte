@@ -20,6 +20,7 @@
   // });
   export let game_state;
   export let cards;
+  export let deck;
   let numbers = [0, 0, 0, 0]
   export let tstate = 0;
   export let gstate = 0;
@@ -56,7 +57,7 @@
   };
   let n_selected = 0;
   let _gcards_selected_unsubscribe = gcards_selected_subscribe((v) => {
-    console.log("gcards_selected sub... v=" + v + " g="+gstate);
+    // console.log("gcards_selected sub... v=" + v + " g="+gstate);
     n_selected = v.length;
     if (n_selected == 3) {
       sendTry3(v, gstate);
@@ -77,6 +78,7 @@
     <button on:click={add3}>Add 3 Cards</button>
     <button on:click={redraw}>Redraw</button>
     <span>{cards.length} cards:</span> <span>{n_selected} selected</span>
+    <span>Deck: {deck}</span>
     <span>Stats: {numbers}</span>
   </div>
   <Canvas {cards} bind:this={canvasComponent} />

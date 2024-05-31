@@ -61,6 +61,7 @@ web_socket.onmessage = function (event) {
         fn(result['tstate'], result['gstate']);
         fn = callbacks[CallBackIdx.ISetCards];
         fn(active);
+        callbacks[CallBackIdx.iSetDeck](result['deck']);
         callbacks[CallBackIdx.iSetGameState](result);
         break;
       case c.E3333_S2C_NOT_A_SET:

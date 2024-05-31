@@ -55,6 +55,11 @@
     // tableComponent.redraw();
   });
 
+  set_callback(CallBackIdx.iSetDeck, (n: number) => {
+    deck = n;
+    console.log("deck=" + n);
+  });
+
   let player_name = "";
   let table_name = "";
   set_callback(CallBackIdx.iSetNames, (p: string, t: string) => {
@@ -75,6 +80,7 @@
   set_callback(CallBackIdx.ISetStates, setStates);
 
   let cards = [];
+  let deck = 0;
   let new_game_enabled = false;
 </script>
 
@@ -85,6 +91,7 @@
     <Club />
   {:else if tabActiveName === 'Table'}
     <Table {player_name} {table_name} {game_state} {cards} {new_game_enabled}
+	   {deck}
            bind:this={tableComponent}
     />
   {:else if tabActiveName === 'Players'}

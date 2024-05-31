@@ -10,6 +10,7 @@ export enum CallBackIdx {
   iSetGameState,
   ISetStates,
   ISetCards,
+  iSetDeck,
   INotASet,
   ISIZE
 };
