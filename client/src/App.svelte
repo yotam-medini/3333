@@ -11,6 +11,7 @@
   import { ainvert } from "./utils";
   import { web_socket, set_callback } from "./wscon";
   import { TableStatus, CallBackIdx, game_state_empty } from "./consts";
+  import { find_set } from "./hint";
   let game_state = game_state_empty;
   set_callback(CallBackIdx.iSetGameState, (gs) => {
     game_state = gs;
@@ -49,6 +50,7 @@
   set_callback(CallBackIdx.ISetCards, (a: number[]) => {
     cards = a;
     console.log("cards=" + cards);
+    find_set(a);
     // tableComponent.setCards(cards);
     // tableComponent.redraw();
   });
