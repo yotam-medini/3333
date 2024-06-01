@@ -203,6 +203,11 @@ void Server::WsReceivedMessage(
     } else if (cmd[0] == S3333_C2S_ADD3) {
       // need to check time
       err = table->Add3();
+      if (err.empty()) {
+        player->BumpAdd3Good();
+      } else {
+        player->BumpAdd3Bad();
+      }
       UpdateTableGstate(table); // even if error
     } else if (cmd[0] == S3333_C2S_TRY3) {
       err = Try3(player, table, cmd);      

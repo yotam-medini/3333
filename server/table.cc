@@ -73,8 +73,12 @@ std::string Table::Add3() {
   if (ActiveHasSet()) {
     err = "Adding cards was not necessary";
   }
-  DealCards(3);
-  GameStateBump();
+  if (cards_deck_.size() < 3) {
+    err = "Deck size < 3";
+  } else {
+    DealCards(3);
+    GameStateBump();
+  }
   return err;
 }
 

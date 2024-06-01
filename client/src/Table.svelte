@@ -48,6 +48,9 @@
     console.log("add3");
     sendAdd3(gstate);
   }
+  export const nomore = () => {
+    console.log("nomore not yet supported");
+  }
   export const redraw = () => {
     console.log("canvasComponent=", canvasComponent);
     if ((canvasComponent !== null) && (canvasComponent !== undefined)) {
@@ -77,7 +80,11 @@
   <div id=divControl>
     <strong>Table: {player_name}@{table_name}</strong> 
     <button on:click={newGame} disabled={!new_game_enabled}>New Game</button>
-    <button on:click={add3}>Add 3 Cards</button>
+    {#if deck > 0}
+      <button on:click={add3}>Add 3 Cards</button>
+    {:else}
+      <button on:click={nomore}>No More Sets</button>
+    {/if}
     <button on:click={redraw}>Redraw</button>
     <span>{cards.length} cards:</span> <span>{n_selected} selected</span>
     <span>Deck: {deck}</span>
