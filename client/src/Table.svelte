@@ -50,17 +50,19 @@
   }
   export const redraw = () => {
     console.log("canvasComponent=", canvasComponent);
-    if (canvasComponent !== undefined) {
+    if ((canvasComponent !== null) && (canvasComponent !== undefined)) {
       canvasComponent.setCards(cards);
       canvasComponent.redrawMe();
     }
   };
   let n_selected = 0;
   let _gcards_selected_unsubscribe = gcards_selected_subscribe((v) => {
-    // console.log("gcards_selected sub... v=" + v + " g="+gstate);
+    console.log("gcards_selected sub... v=" + v + " g="+gstate);
     n_selected = v.length;
     if (n_selected == 3) {
       sendTry3(v, gstate);
+    } else {
+      redraw();
     }
   });
   // stats

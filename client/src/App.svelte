@@ -11,6 +11,7 @@
   import { ainvert } from "./utils";
   import { web_socket, set_callback } from "./wscon";
   import { TableStatus, CallBackIdx, game_state_empty } from "./consts";
+  import { gcards_selected_update } from "./table_data.ts";
   import { find_set } from "./hint";
   let game_state = game_state_empty;
   set_callback(CallBackIdx.iSetGameState, (gs) => {
@@ -58,6 +59,11 @@
   set_callback(CallBackIdx.iSetDeck, (n: number) => {
     deck = n;
     console.log("deck=" + n);
+  });
+
+  set_callback(CallBackIdx.INotASet, () => {
+    console.log("gcards_selected_update([])")
+    gcards_selected_update([]);
   });
 
   let player_name = "";
