@@ -1,5 +1,6 @@
 #include "table.h"
 #include <cstdlib>
+#include <array>
 #include <memory>
 #include <numeric>
 #include <fmt/core.h>
@@ -25,6 +26,7 @@ void Table::NewGame() {
   cards_deck_ = std::vector<uint8_t>(81);
   std::iota(cards_deck_.begin(), cards_deck_.end(), 0);
   DealCards(12);
+  game_active_ = true;
   GameStateBump();
 }
 
@@ -68,20 +70,6 @@ void Table::DealCards(size_t n) {
   }
 }
 
-std::string Table::Add3() {
-  std::string err;
-  if (ActiveHasSet()) {
-    err = "Adding cards was not necessary";
-  }
-  if (cards_deck_.size() < 3) {
-    err = "Deck size < 3";
-  } else {
-    DealCards(3);
-    GameStateBump();
-  }
-  return err;
-}
-
 bool Table::Try3(const a3i_t& a3i) {
   bool found = false;
   const card_t &card0 = all_cards[cards_active_[a3i[0]]];
@@ -105,9 +93,34 @@ bool Table::Try3(const a3i_t& a3i) {
   return found;
 }
 
+std::string Table::Add3() {
+  std::string err;
+  if (ActiveHasSet()) {
+    err = "Adding cards was not necessary";
+  }
+  if (cards_deck_.size() < 3) {
+    err = "Deck size < 3";
+  } else {
+    DealCards(3);
+    GameStateBump();
+  }
+  return err;
+}
+
+bool Table::NoMore() {
+  bool good_call = !ActiveHasSet();
+  if (good_call) {
+    game_active_ = false;
+    GameStateBump();
+  } else {
+    StateBump();
+  }
+  return good_call;
+}
 bool Table::ActiveHasSet() const {
   bool has = false;
   const size_t na = cards_active_.size();
+#if 0
   for (size_t i = 0; (!has) && (i < na); ++i) {
     const card_t card0 = all_cards[i];
     for (size_t j = i + 1; (!has) && (j < na); ++j) {
@@ -118,5 +131,23 @@ bool Table::ActiveHasSet() const {
       }
     }
   }
+#else
+  std::array<bool, 81> cards_exist;
+  cards_exist.fill(false);
+  for (size_t i = 0; i < na; ++i) {
+    cards_exist[cards_active_[i]] = true;
+  }
+  for (size_t i = 0; i < na; ++i) {
+    size_t ci = cards_active_[i];
+    for (size_t j = i + 1; j < na; ++j) {
+      size_t cj = cards_active_[j];
+      const size_t ck = GetIndexToCompleteSet(ci, cj);
+      if (cards_exist[ck]) {
+        has = true;
+        i = j = na;
+      }
+    }
+  }
+#endif
   return has;
 }

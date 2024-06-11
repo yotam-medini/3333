@@ -212,6 +212,13 @@ void Server::WsReceivedMessage(
     } else if (cmd[0] == S3333_C2S_TRY3) {
       err = Try3(player, table, cmd);      
       UpdateTableGstate(table); // even if error
+    } else if (cmd[0] == S3333_C2S_NMOR) {
+      if (table->NoMore()) {
+         player->BumpNoMoreGood();
+      } else {
+         player->BumpNoMoreBad();
+      }
+      UpdateTableGstate(table);
     } else {
       err = fmt::format("Unsupported command='{}'", cmd[0]);
     }

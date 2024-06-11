@@ -13,7 +13,7 @@ function is_set(cards3) {
 }
 
 export function find_set(cards) {
-  console.log("cheat hints:")
+  console.log("============ cheat hints: ============")
   for (let i: number = 0; i < cards.length; ++i) {
     for (let j: number = i + 1; j < cards.length; ++j) {
       for (let k: number = j + 1; k < cards.length; ++k) {

@@ -107,3 +107,9 @@ export function sendAdd3(gstate: number) {
   console.log("request="+request);
   web_socket.send(request);
 }
+
+export function sendNoMore(gstate: number) {
+  let request = [c.S3333_C2S_NMOR + " " + gstate]
+  console.log("request="+request);
+  web_socket.send(request);
+}

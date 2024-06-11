@@ -26,6 +26,11 @@ obj.d/%.o: %.cc
 	g++ ${DBGFLAGS} ${LDFLAGS} -o $@ ${OBJS} ${LIBS}
 	ls -ld $@
 
+./test-card: card.cc card.h
+	g++ -DTEST_CARD=1 ${CFLAGS} card.cc -lfmt -o $@
+
+run-test-card: ./test-card
+	./test-card
 clean:
 	rm -f 3333-server
 	rm -rf obj.d

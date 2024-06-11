@@ -3,7 +3,9 @@
   import {
     gcards_selected, gcards_selected_update, gcards_selected_subscribe
   } from "./table_data.ts";
-  import { set_callback, sendNewGame, sendTry3, sendAdd3 } from "./wscon";
+  import {
+    set_callback, sendNewGame, sendTry3, sendAdd3, sendNoMore
+  } from "./wscon";
   import Canvas from "./Canvas.svelte";
   let canvasComponent;
   export let new_game_enabled;
@@ -49,7 +51,8 @@
     sendAdd3(gstate);
   }
   export const nomore = () => {
-    console.log("nomore not yet supported");
+    console.log("nomore");
+    sendNoMore(gstate);
   }
   export const redraw = () => {
     console.log("canvasComponent=", canvasComponent);
