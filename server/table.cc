@@ -18,20 +18,45 @@ Table::Table(
   players_.front()->SetTable(this);
 }
 
+#include <iostream> // DELETE ME~!!!!!!!!!!!!!!
+Table::~Table() {
+  std::cerr << __FILE__ << " Table::~Table()\n";
+}
+
 const std::string &Table::GetName() const {
   return players_[0]->GetName();
+}
+
+void Table::Close() {
+}
+
+void Table::DeletePlayer(Player *player) {
+  size_t pi = 0;
+  for (size_t i = 0; i < players_.size(); ++i) {
+    if (players_[i].get() == player) {
+      pi = i;
+    }
+  }
+  players_[pi] = std::move(players_.back());
+  players_.pop_back();
+  StateBump();
 }
 
 void Table::NewGame() {
   cards_deck_ = std::vector<uint8_t>(81);
   std::iota(cards_deck_.begin(), cards_deck_.end(), 0);
+  cards_active_.clear();
   DealCards(12);
   game_active_ = true;
   GameStateBump();
 }
 
-void Table::GameStateBump() {
+void Table::StateBump() {
   time_last_action_ = GetTime();
+  ++tstate_;
+}
+
+void Table::GameStateBump() {
   StateBump();
   ++gstate_;
 }
@@ -61,6 +86,21 @@ std::string Table::json() const {
   j += "}";
   return j;
 }
+
+std::string Table::GetJsonSummary() const {
+  std::string j("{\n");
+  j += fmt::format(R"j(  "players": {},)j" "\n", players_.size());
+  j += fmt::format(R"j(  "active": {},)j" "\n", int(game_active_));
+  j += fmt::format(R"j(  "tcreated": {},)j" "\n", GetTimeCreated());
+  j += fmt::format(R"j(  "taction": {})j" "\n", time_last_action_);
+  j += "}";
+  return j;
+}
+
+unsigned Table::GetTimeCreated() const {
+  return players_.empty() ? 0 : players_[0]->GetTimeCreated();
+}
+
 void Table::DealCards(size_t n) {
   for (size_t i = 0; i < n; ++i) {
     size_t ci = rand() % cards_deck_.size();

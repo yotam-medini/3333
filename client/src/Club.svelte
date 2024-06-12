@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import { sendNewTable } from "./wscon";
+  import { sendClubRefresh, sendNewTable } from "./wscon";
   let dialog;
   let player_name = ''; // if owner - then also table name
   let table_password = '';
@@ -11,11 +11,15 @@
     sendNewTable(player_name, table_password, player_password);
     dialog.close();
   };
+  const refresh = () => {
+    sendClubRefresh();
+  }
 </script>
 
 <div>
   <h2>Club</h2>
   <button on:click={() => dialog.showModal()}>New Table</button>
+  <button on:click={refresh}>Refresh</button>
   <Dialog bind:dialog on:close={() => console.log('closed')}>
     <table>
       <tr>

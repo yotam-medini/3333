@@ -13,17 +13,20 @@ class Table {
  public:
   using a3i_t = std::array<size_t, 3>;
   Table(
-    const std::string& player_name,
+    const std::string &player_name,
     const std::string &player_password,
-    const std::string& password);
+    const std::string &password);
     const std::string &GetName() const;
     const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
     return players_;
   }
+  ~Table();
+  void Close();
+  void DeletePlayer(Player *player);
   std::vector<std::unique_ptr<Player>> &GetPlayers() { return players_; }
   void SetTimeLastAction(int t) { time_last_action_ = t; }
   void NewGame();
-  void StateBump() { ++tstate_; }
+  void StateBump();
   void GameStateBump();
   bool Try3(const a3i_t& a3i);
   std::string Add3();
@@ -34,6 +37,8 @@ class Table {
   int GetTState() const { return tstate_; }
   int GetGState() const { return gstate_; }
   std::string json() const;
+  std::string GetJsonSummary() const;
+  unsigned GetTimeCreated() const;
  private:
   void DealCards(size_t n);
   bool ActiveHasSet() const;

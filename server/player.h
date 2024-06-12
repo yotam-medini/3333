@@ -25,6 +25,7 @@ class Player {
   void SetTAction();
   int GetTAction() const { return taction_; }
   Table *GetTable() { return table_; }
+  unsigned GetTimeCreated() const { return tcreated_; }
   WebSocketSession *GetWS() { return ws_; }
   std::string json() const;
  private:

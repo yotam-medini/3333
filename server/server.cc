@@ -167,6 +167,12 @@ void Server::WsDeleted(WebSocketSession *ws) {
   ws_player_.erase(iter);
 }
 
+Player *Server::WsGetPlayer(WebSocketSession *ws) {
+  auto iter = ws_player_.find(ws);
+  Player *player = (iter != ws_player_.end() ? iter->second : nullptr);
+  return player;
+}
+
 void Server::WsReceivedMessage(
   WebSocketSession *ws,
   const std::string &message) {
@@ -179,8 +185,7 @@ void Server::WsReceivedMessage(
   }
   if (!cmd.empty()) {
     std::string err;
-    auto iter = ws_player_.find(ws);
-    Player *player = (iter != ws_player_.end() ? iter->second : nullptr);
+    Player *player = WsGetPlayer(ws);
     Table *table = nullptr;
     if (player) {
       table = player->GetTable();
@@ -190,6 +195,9 @@ void Server::WsReceivedMessage(
     if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
+      if (player) {
+        DeletePlayer(ws, player);
+      }
       std::string table_name;
       err = NewTable(cmd, table_name, ws);
       if (err.empty()) {
@@ -248,8 +256,33 @@ R"J({}
 
 std::string Server::TablesToJson() const {
   std::string ret{"{\n"};
-  ret += std::string{"  }"};
+  const char *eot = "";
+  for (auto const& [name, table]: name_table_) {
+    ret += eot;
+    ret += fmt::format("    {}: {}",
+      dq(name), Indent(table->GetJsonSummary(), 4));
+    eot = ",\n";
+  }
+  ret += std::string{"\n  }"};
   return ret;
+}
+
+void Server::DeletePlayer(WebSocketSession *ws, Player *player) {
+  Table *table = player->GetTable();
+  auto &players = table->GetPlayers();
+  const bool owner = players[0].get() == player;
+  if (owner) {
+    table->Close();
+    for (size_t pi = 1; pi < players.size(); ++pi) {
+      players[pi]->GetWS()->send(
+        ServerToClient(E3333_S2C_TABLE_CLOSED, 0, "{}"));
+    }
+    name_table_.erase(table->GetName());
+  } else {
+    table->DeletePlayer(player);
+    UpdateTableGstate(table);
+  }
+  ws_player_.erase(ws);
 }
 
 std::string Server::NewTable(

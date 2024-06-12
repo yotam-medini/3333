@@ -80,6 +80,12 @@ export function getTablesStatus() {
   web_socket.send("tbls");
 }
 
+export function sendClubRefresh() {
+  let request = [c.S3333_C2S_TBLS];
+  console.log("request="+request);
+  web_socket.send(request);
+}
+
 export function sendNewTable(
     table_name: string,
     table_password: string,

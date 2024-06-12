@@ -26,6 +26,7 @@ class Server {
   );
   ~Server();
   void run();
+  Player *WsGetPlayer(WebSocketSession *ws);
  private:
   using cmd_t = std::vector<std::string>;
   void WsDeleted(WebSocketSession *ws);
@@ -36,6 +37,7 @@ class Server {
     unsigned error_code,
     const std::string &result) const;
   std::string TablesToJson() const;
+  void DeletePlayer(WebSocketSession* ws, Player *player);
   std::string NewTable(
     const cmd_t &cmd,
     std::string &table_name,
