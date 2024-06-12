@@ -19,8 +19,32 @@
   const join = (table_name) => {
     console.log("join: table_name=" + table_name);
   }
+  let sort_key_last = "";
+  let sort_dir_inc = true;
   const sortBy = (key) => {
     console.log("sortBy key="+key);
+    if (key == sort_key_last) {
+      sort_dir_inc = !sort_dir_inc;
+    }
+    let tables_copy = [];
+    for (let i = 0; i < tables.length; ++i) {
+      tables_copy.push(tables[i]);
+    }
+    tables_copy.sort((t0, t1) => {
+      let ret = 0;
+      if (t0[key] == t1[key]) {
+        ret = t1["scr_index"] - t0["scr_index"];
+      } else {
+        if ((t0[key] < t1[key]) == sort_dir_inc) {
+          ret = -1;
+        } else {
+          ret = 1;
+        }
+      }
+      return ret;
+    });
+    sort_key_last = key;
+    tables = tables_copy;
   }
 </script>
 
