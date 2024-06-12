@@ -41,6 +41,15 @@ web_socket.onmessage = function (event) {
     let fn = undefined;
     let result = undefined;
     switch (cmd) {
+      case c.E3333_S2C_TBLS:
+        fn = callbacks[CallBackIdx.IClubTables];
+        console.log("fn?=" + (fn !== undefined));
+        result = edata['result'];
+        console.log("result: ", result);
+        if (fn !== undefined) {
+          fn(result);
+        }
+        break;
       case c.E3333_S2C_NTBL:
         fn = callbacks[CallBackIdx.ITableStatus];
         console.log("fn?=" + (fn !== undefined));

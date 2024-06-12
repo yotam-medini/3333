@@ -88,13 +88,25 @@
   let cards = [];
   let deck = 0;
   let new_game_enabled = false;
+
+  let tables = []
+  set_callback(CallBackIdx.IClubTables, (json_tables) => {
+    let _tables = [];
+    for (let table_name in json_tables) {
+      let summary = json_tables[table_name];
+      summary["name"] = table_name;
+      _tables.push(summary);
+    }
+    console.log(_tables);
+    tables = _tables;
+  });
 </script>
 
 <main>
   <h1>Set Game / beta 4 </h1>
   <NavBar {tabs} {tabActiveIndex} on:tabChange={tabChange} />
   {#if tabActiveName === 'Club'}
-    <Club />
+    <Club {tables} />
   {:else if tabActiveName === 'Table'}
     <Table {player_name} {table_name} {game_state} {cards} {new_game_enabled}
 	   {deck}

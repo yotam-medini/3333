@@ -5,6 +5,7 @@ export enum TableStatus {
 };
 
 export enum CallBackIdx {
+  IClubTables,
   ITableStatus,
   iSetNames,
   iSetGameState,
