@@ -74,25 +74,24 @@ function determineNumberOfColumns(cctx: CanvasCtx, n_cards: number): number {
   let best_columns: number = 1;
   var best_ratio_quality: number = 0.; // Can be 1. at most.
   for (let columns: number = 1; columns <= n_cards; columns +=1) {
-    let rows: number = (n_cards + (columns - 1)) / columns;
+    let rows: number = Math.floor((n_cards + (columns - 1)) / columns);
     // cell_width = win_width / columns
     // cell_height = win_height / rows
     // cell_ratio = cell_width / cell_height
     let cell_ratio: number = (cctx.width * rows) / (cctx.height * columns);
     var ratio_quality = cell_ratio / GOLDEN;
-    if (ratio_quality > 1.)
-    {
+    if (ratio_quality > 1.) {
       ratio_quality = 1. / ratio_quality;
     }
-    // console.log("columns="+columns + ", quality="+ratio_quality);
-    if (best_ratio_quality < ratio_quality)
-    {
+    // console.log("columns="+columns + " rows="+rows +
+    //   " cell_ratio="+cell_ratio + ", quality="+ratio_quality);
+    if (best_ratio_quality < ratio_quality) {
       best_columns = columns;
       best_ratio_quality = ratio_quality;
     }
   }
   // console.log("w="+cctx.width + " h="+cctx.height + " n_cards="+n_cards +
-  //  " => best_columns=" + best_columns);
+  //   " => best_columns=" + best_columns + " # GOLDEN="+GOLDEN);
   return best_columns
 }
 
