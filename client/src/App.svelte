@@ -92,9 +92,12 @@
   let tables = []
   set_callback(CallBackIdx.IClubTables, (json_tables) => {
     let _tables = [];
+    let scr_index = 0;
     for (let table_name in json_tables) {
       let summary = json_tables[table_name];
       summary["name"] = table_name;
+      summary["scr_index"] = scr_index;
+      scr_index++;
       _tables.push(summary);
     }
     console.log(_tables);

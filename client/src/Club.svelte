@@ -1,6 +1,7 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
   import { sendClubRefresh, sendNewTable } from "./wscon";
+  import { epoch_ymdhms } from "./utils";
   let dialog;
   let player_name = ''; // if owner - then also table name
   let table_password = '';
@@ -15,6 +16,12 @@
   const refresh = () => {
     sendClubRefresh();
   }
+  const join = (table_name) => {
+    console.log("join: table_name=" + table_name);
+  }
+  const sortBy = (key) => {
+    console.log("sortBy key="+key);
+  }
 </script>
 
 <div>
@@ -26,22 +33,26 @@
     <center>{tables.length} Tables</center>
     <center>
       <table>
-	<tr>
-	  <th>Name</th>
-	  <th>Players</th>
-	  <th>Created</th>
-	  <th>Action</th>
-	  <th>Join</th>
-	</tr>
-	{#each tables as summary}
-	  <tr>
-	    <td>{summary["name"]}</td>
-	    <td>{summary["players"]}</td>
-	    <td>{summary["tcreated"]}</td>
-	    <td>{summary["taction"]}</td>
-	    <td><button>Join</button></td>
-	  </tr>
-	{/each}
+        <tr>
+          <th><button on:click={() => sortBy("name")}>Name</button></th>
+          <th><button on:click={() => sortBy("players")}>Players</button></th>
+          <th><button on:click={() => sortBy("tcreated")}>Created</button></th>
+          <th><button on:click={() => sortBy("taction")}>Action</button></th>
+          <th>Join</th>
+        </tr>
+        {#each tables as summary}
+          <tr>
+            <td>{summary["name"]}</td>
+            <td>{summary["players"]}</td>
+            <td>{epoch_ymdhms(summary["tcreated"])}</td>
+            <td>{epoch_ymdhms(summary["taction"])}</td>
+            <td>
+              <button on:click={() => join(summary["name"])}>
+		Join
+              </button>
+           </td>
+          </tr>
+        {/each}
       </table>
     </center>
   </div>
