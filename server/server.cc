@@ -14,6 +14,7 @@
 #include "http_session.h"
 #include "utils.h"
 
+#include "logger.h"
 #include "player.h"
 #include "table.h"
 #include "ws_session.h"
@@ -27,11 +28,13 @@ using report_message_t =
 class NetServer {
  public:
   NetServer(
+    Logger *pLogger,
     const std::string &host,
     uint16_t port,
     notify_ws_t notify_ws_add,
     notify_ws_t notify_ws_delete,
     report_message_t report_message) :
+    pLogger_{pLogger},
     host_{host},
     port_(port),
     acceptor_{ioc_},
@@ -113,6 +116,7 @@ class NetServer {
     }
     accept_next();
   }
+  Logger *pLogger_;
   const std::string host_;
   const uint16_t port_;
   net::io_context ioc_;
@@ -133,6 +137,8 @@ Server::Server(
   const std::string &pidfn,
   const unsigned debug_flags
 ) :
+    pLogger_{std::make_unique<Logger>(
+      "3333-server.log", "3333-server-backup.log")},
     max_tables_{max_tables},
     max_players_{max_players},
     expire_seconds_{expire_seconds},
@@ -140,6 +146,7 @@ Server::Server(
     debug_flags_{debug_flags},
     net_server_{
       new NetServer{
+        pLogger_.get(),
         host,
         port,
         [this](WebSocketSession *ws) -> void {

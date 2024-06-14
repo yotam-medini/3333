@@ -13,6 +13,7 @@ class Logger {
     size_t line_size=1000,
     size_t flush_period=10);
   void log(const std::string &line);
+  ~Logger();
  private:
   class Impl;
   std::unique_ptr<Impl> pImpl_;

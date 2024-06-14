@@ -12,6 +12,7 @@ class Player;
 class Table;
 class WebSocketSession;
 class NetServer;
+class Logger;
 
 class Server {
  public:
@@ -44,6 +45,8 @@ class Server {
     WebSocketSession *ws);
   std::string Try3(Player* player, Table *table, const cmd_t &cmd);
   void UpdateTableGstate(Table *table);
+
+  std::unique_ptr<Logger> pLogger_;
   const size_t max_tables_;
   const size_t max_players_;
   const unsigned expire_seconds_;

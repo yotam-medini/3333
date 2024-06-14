@@ -52,3 +52,6 @@ Logger::Logger(
   pImpl_{std::make_unique<Impl>(
     filename, filename_backup, line_size, flush_period)} {
 }
+
+Logger::~Logger() {
+}
