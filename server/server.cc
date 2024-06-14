@@ -163,6 +163,9 @@ void Server::run() {
 }
 
 void Server::WsDeleted(WebSocketSession *ws) {
+  if (debug_flags_ & 0x1) {
+    std::cerr << __func__ << '\n';
+  }
   auto iter = ws_player_.find(ws);
   ws_player_.erase(iter);
 }
