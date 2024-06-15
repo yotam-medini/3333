@@ -11,7 +11,7 @@ class Logger {
     const std::string &filename,
     const std::string &filename_backup,
     size_t line_size=1000,
-    size_t flush_period=10);
+    size_t flush_period=1); // use larger for relase !!!!!!!!!!!!!!!!!!!!!!!!!
   void log(const std::string &line);
   ~Logger();
  private:

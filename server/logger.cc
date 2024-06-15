@@ -55,3 +55,7 @@ Logger::Logger(
 
 Logger::~Logger() {
 }
+
+void Logger::log(const std::string& line) {
+  pImpl_->log(line);
+}

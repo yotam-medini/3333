@@ -19,6 +19,7 @@
 #include "table.h"
 #include "ws_session.h"
 #include "cs_consts.h"
+#include "net_utils.h"
 
 class WebSocketSession;
 using notify_ws_t = std::function<void(WebSocketSession*)>;
@@ -44,6 +45,7 @@ class NetServer {
     report_message_{report_message} {
   }
   void run() {
+    pLogger_->log("NetServer::run");
     const std::string fn = FuncName();
     error_code ec;
     tcp::endpoint endpoint;
@@ -52,6 +54,8 @@ class NetServer {
       std::cerr << fn << " make_address failed, ec=" << ec << '\n';
     } else {
       endpoint = tcp::endpoint{address, port_};
+      pLogger_->log(fmt::format("endpoint={}:{}",
+        endpoint.address().to_string(), endpoint.port()));
     }
     if (!ec) {
       acceptor_.open(endpoint.protocol(), ec);
@@ -95,6 +99,8 @@ class NetServer {
       std::cerr << "accept failedm ec=" << ec << '\n';
     } else {
       // Launch a new session for this connection
+      pLogger_->log(fmt::format("accept connection from {}",
+        SocketGetPeerAddress(socket_.native_handle())));
       HttpSession *hs = new HttpSession{
         std::move(socket_),
         // register_ws
@@ -166,6 +172,7 @@ Server::~Server() {
 
 void Server::run() {
   std::ofstream(pidfn_) << getpid() << '\n';
+  pLogger_->log(fmt::format("Server::run pid={}", getpid()));
   net_server_->run();
 }
 
