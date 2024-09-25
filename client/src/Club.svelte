@@ -3,7 +3,9 @@
   import { epoch_ymdhms } from "./utils";
   import Modal from './Modal.svelte';
   let show_new_table_modal = false;
+  let show_join_modal = false;
   let player_name = ''; // if owner - then also table name
+  let table_name = ''; //
   let table_password = '';
   let player_password = '';
   export let tables = [];
@@ -16,8 +18,16 @@
   const refresh = () => {
     sendClubRefresh();
   }
-  const join = (table_name) => {
+  const join = (tbl_name) => {
+    table_name = tbl_name;
     console.log("join: table_name=" + table_name);
+    show_join_modal = true;
+  }
+  const joinTable = (table_name) => {
+    console.log("join: table_name=" + table_name);
+    console.log("table"+table_name + " name="+player_name +
+                " tpw="+table_password + " ppw="+player_password);
+    show_join_modal = false;
   }
   let sort_key_last = "";
   let sort_dir_inc = true;
@@ -81,7 +91,7 @@
     </center>
   </div>
 </div>
-<Modal title="New Table Modal" bind:showModal={show_new_table_modal}>
+<Modal title="New Table" bind:showModal={show_new_table_modal}>
   <slot/>
   <table>
     <tr>
@@ -99,8 +109,26 @@
   </table>
   <button class="create" on:click={createTable}>Create Table</button>
 </Modal>
+<Modal title="Join Table {table_name}" bind:showModal={show_join_modal}>
+  <slot/>
+  <table>
+    <tr>
+      <td>Player Name</td>
+      <td><input bind:value={player_name}/></td>
+    </tr>
+    <tr>
+      <td>Table Password</td>
+      <td><input bind:value={table_password}/></td>
+    </tr>
+    <tr>
+      <td>Player Password</td>
+      <td><input bind:value={player_password}/></td>
+    </tr>
+  </table>
+  <button class="join" on:click={createTable}>Join</button>
+</Modal>
 <style>
-  .create {
+  .create, .join {
     color: #262;
     background-color: #ccc;
   }
