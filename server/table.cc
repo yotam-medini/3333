@@ -1,4 +1,5 @@
 #include "table.h"
+#include <charconv>
 #include <cstdlib>
 #include <array>
 #include <memory>
@@ -7,6 +8,30 @@
 #include "player.h"
 #include "card.h"
 #include "utils.h"
+
+void Table::set_initial_cards_deck(const std::string &comma_separated) {
+  const char *data = comma_separated.data();
+  const char *data_end = data + comma_separated.size();
+  std::vector<uint8_t> a;
+  const std::errc ec0 = std::errc();
+  std::from_chars_result fc_res{data, ec0};
+  while ((fc_res.ptr < data_end) && (fc_res.ec == ec0)) {
+    uint8_t v;
+    fc_res = std::from_chars(fc_res.ptr, data_end, v);
+    if (fc_res.ec == ec0) {
+      if (fc_res.ptr < data_end) {
+        if (*fc_res.ptr != ',') {
+          fc_res.ec = std::errc::invalid_argument;
+        }
+        ++fc_res.ptr;
+      }
+      a.push_back(v);
+    }
+  }
+  if (fc_res.ec == ec0) {
+    initial_cards_deck_ = a;
+  }
+}
 
 Table::Table(
   const std::string& player_name,
@@ -43,10 +68,9 @@ void Table::DeletePlayer(Player *player) {
 }
 
 void Table::NewGame() {
-  cards_deck_ = std::vector<uint8_t>(81);
-  std::iota(cards_deck_.begin(), cards_deck_.end(), 0);
+  cards_deck_ = initial_cards_deck_;
   cards_active_.clear();
-  DealCards(12);
+  DealCards(std::min<size_t>(12, cards_deck_.size()));
   game_active_ = true;
   GameStateBump();
 }
@@ -101,6 +125,11 @@ unsigned Table::GetTimeCreated() const {
   return players_.empty() ? 0 : players_[0]->GetTimeCreated();
 }
 
+std::vector<uint8_t> Table::initial_cards_deck_ = []() -> std::vector<uint8_t> {
+  std::vector<uint8_t> a(81);
+  std::iota(a.begin(), a.end(), 0);
+  return a;
+}();
 void Table::DealCards(size_t n) {
   for (size_t i = 0; i < n; ++i) {
     size_t ci = rand() % cards_deck_.size();

@@ -12,6 +12,7 @@ class Player;
 class Table {
  public:
   using a3i_t = std::array<size_t, 3>;
+  static void set_initial_cards_deck(const std::string &comma_separated);
   Table(
     const std::string &player_name,
     const std::string &player_password,
@@ -42,6 +43,7 @@ class Table {
  private:
   void DealCards(size_t n);
   bool ActiveHasSet() const;
+  static std::vector<uint8_t> initial_cards_deck_;
   std::vector<std::unique_ptr<Player>> players_; // first is owner
   const std::string password_;
   bool game_active_{false};

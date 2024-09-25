@@ -3,6 +3,7 @@
 #include <boost/program_options.hpp>
 
 #include "server.h"
+#include "table.h"
 #include "utils.h"
 
 int main(int argc, char **argv) {
@@ -21,6 +22,8 @@ int main(int argc, char **argv) {
       "Seconds of no action to expire")
     ("pidfn", po::value<std::string>()->default_value("/tmp/3333-server.pid"),
       "File to record PID")
+    ("initdeck", po::value<std::string>()->default_value("-"),
+      "debug: comma separated indices")
     ("debug", po::value<std::string>()->default_value("0"), "Debug flags")
   ;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -29,6 +32,10 @@ int main(int argc, char **argv) {
     std::cout << desc << "\n";
   } else {
     std::cerr << "host=" << vm["host"].as<std::string>() << '\n';
+    const std::string initdeck = vm["initdeck"].as<std::string>();
+    if (initdeck != std::string("-")) {
+      Table::set_initial_cards_deck(initdeck);
+    }
     const std::string debug_flags_raw = vm["debug"].as<std::string>();
     if (!ValidateUnsigned(debug_flags_raw)) {
       std::cerr << "Bad debug value=" << debug_flags_raw << '\n';
