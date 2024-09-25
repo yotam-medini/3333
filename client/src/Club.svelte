@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Dialog from './Dialog.svelte';
   import { sendClubRefresh, sendNewTable } from "./wscon";
   import { epoch_ymdhms } from "./utils";
-  let dialog;
+  import Modal from './Modal.svelte';
+  let show_new_table_modal = false;
   let player_name = ''; // if owner - then also table name
   let table_password = '';
   let player_password = '';
@@ -11,7 +11,7 @@
     console.log("name="+player_name + " tpw="+table_password +
                 " ppw="+player_password);
     sendNewTable(player_name, table_password, player_password);
-    dialog.close();
+    show_new_table_modal = false;
   };
   const refresh = () => {
     sendClubRefresh();
@@ -50,7 +50,7 @@
 
 <div>
   <div class="ClubControl">
-    <button on:click={() => dialog.showModal()}>New Table</button>
+    <button on:click={() => (show_new_table_modal = true)}>New Table</button>
     <button on:click={refresh}>Refresh</button>
   </div>
   <div>
@@ -80,26 +80,30 @@
       </table>
     </center>
   </div>
-  <Dialog bind:dialog on:close={() => console.log('closed')}>
-    <table>
-      <tr>
-        <td>Table Name</td>
-        <td><input bind:value={player_name}/></td>
-      </tr>
-      <tr>
-        <td>Table Password</td>
-        <td><input bind:value={table_password}/></td>
-      </tr>
-      <tr>
-        <td>Player Password</td>
-        <td><input bind:value={player_password}/></td>
-      </tr>
-    </table>
-    <button on:click={createTable}>Create Table</button>  (esc to close)
-  </Dialog>
 </div>
-
+<Modal title="New Table Modal" bind:showModal={show_new_table_modal}>
+  <slot/>
+  <table>
+    <tr>
+      <td>Table Name</td>
+      <td><input bind:value={player_name}/></td>
+    </tr>
+    <tr>
+      <td>Table Password</td>
+      <td><input bind:value={table_password}/></td>
+    </tr>
+    <tr>
+      <td>Player Password</td>
+      <td><input bind:value={player_password}/></td>
+    </tr>
+  </table>
+  <button class="create" on:click={createTable}>Create Table</button>
+</Modal>
 <style>
+  .create {
+    color: #262;
+    background-color: #ccc;
+  }
   th {
     padding-top: 10px;
     padding-bottom: 10px;
