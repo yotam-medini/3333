@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { sendPlayersRefresh } from "./wscon";
   const refresh = () => {
     console.log("refresh");
+    sendPlayersRefresh();
   }
 </script>
 
@@ -16,7 +18,9 @@
 	  <th>Name</th>
 	  <th colspan="2">&emsp;&emsp;Sets</th>
 	  <th colspan="2">&emsp;Add 3 calls</th>
-	  <th colspan="2">No More&emsp;&emsp;</th><th></th>
+	  <th colspan="2">No More&emsp;&emsp;</th>
+	  <th>Joined</th>
+	  <th>Last</th>
 	</tr>
 	<tr>
 	  <th></th>

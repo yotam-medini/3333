@@ -244,6 +244,10 @@ void Server::WsReceivedMessage(
          player->BumpNoMoreBad();
       }
       UpdateTableGstate(table);
+    } else if (cmd[0] == S3333_C2S_PLRF) {
+      if (table) {
+        ws->send(ServerToClient(E3333_S2C_PLAYERS, 0, PlayersToJson(table)));
+      }
     } else {
       err = fmt::format("Unsupported command='{}'", cmd[0]);
     }
@@ -284,6 +288,19 @@ std::string Server::TablesToJson() const {
   return ret;
 }
 
+std::string Server::PlayersToJson(const Table *table) const {
+  std::string ret{"[\n"};
+  const char *eot = "";
+  auto &players = table->GetPlayers();
+  for (size_t pi = 0; pi < players.size(); ++pi) {
+    ret += eot;
+    ret += Indent(players[pi]->json(), 2);
+    eot = ",\n";
+  }
+  ret += std::string{"\n  ]"};
+  return ret;
+}
+ 
 void Server::DeletePlayer(WebSocketSession *ws, Player *player) {
   Table *table = player->GetTable();
   auto &players = table->GetPlayers();

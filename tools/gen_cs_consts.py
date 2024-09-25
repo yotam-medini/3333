@@ -15,11 +15,13 @@ C2S = [
     "nmor",
     "join",
     "clos",
+    "plrf",
 ]
 
 S2C = [
     "TBLS",
     "NTBL",
+    "PLAYERS",
     "JOIN",
     "GSTATE",
     "SET_FOUND",

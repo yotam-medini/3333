@@ -128,3 +128,15 @@ export function sendNoMore(gstate: number) {
   console.log("request="+request);
   web_socket.send(request);
 }
+
+export function sendPlayersRefresh() {
+  let request = [c.S3333_C2S_PLRF];
+  console.log("request="+request);
+  web_socket.send(request);
+}
+
+export function joinTable(table_name: string) { // not yet
+  let request = [c.S3333_C2S_JOIN + " " + gstate]
+  console.log("request="+request);
+  web_socket.send(request);
+}

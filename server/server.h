@@ -38,6 +38,7 @@ class Server {
     unsigned error_code,
     const std::string &result) const;
   std::string TablesToJson() const;
+  std::string PlayersToJson(const Table* table) const;
   void DeletePlayer(WebSocketSession* ws, Player *player);
   std::string NewTable(
     const cmd_t &cmd,

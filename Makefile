@@ -10,6 +10,19 @@ endif
 
 now := $(shell date --utc "+%Y-%m-%d-%H%M%S")
 
+.PHONY: cs-consts
+cs-consts: client/src/cs_consts.ts server/cs_consts.h
+
+client/src/cs_consts.ts server/cs_consts.h: ./tools/gen_cs_consts.py
+	./tools/gen_cs_consts.py
+
+3333-server:
+	make -C server 3333-server
+
+
+########################################################################
+# From here to bottom it is obsolete  2024/September/25
+
 SUBDIR_INSTALL=3333
 WWWINSTDISR=${HOME}/public_html/${SUBDIR_INSTALL}
 
