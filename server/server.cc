@@ -307,7 +307,7 @@ std::string Server::PlayersToJson(const Table *table) const {
   auto &players = table->GetPlayers();
   for (size_t pi = 0; pi < players.size(); ++pi) {
     ret += eot;
-    ret += Indent(players[pi]->json(), 2);
+    ret += Indent(players[pi]->json(), 4, true);
     eot = ",\n";
   }
   ret += std::string{"\n  ]"};

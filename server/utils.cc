@@ -29,9 +29,9 @@ extern std::string brace(const std::string &s) {
   return ret;
 }
 
-std::string Indent(const std::string &text, size_t n) {
+std::string Indent(const std::string &text, size_t n, bool pre) {
   const std::string spaces(n, ' ');
-  std::string ret;
+  std::string ret{pre ? spaces : ""};
   for (char c: text) {
     ret.push_back(c);
     if (c == '\n') {
