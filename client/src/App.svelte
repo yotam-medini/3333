@@ -40,7 +40,7 @@
       new_game_enabled = false;
     } else if (table_status == TableStatus.Own) {
       new_game_enabled = true;
-    } else if (table_status == Table_status.Join) {
+    } else if (table_status == TableStatus.Join) {
       new_game_enabled = false;
     } else {
       console.log("Error: unexpected table_status=" + table_status);

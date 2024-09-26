@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { sendClubRefresh, sendNewTable } from "./wscon";
+  import { sendClubRefresh, sendNewTable, sendJoin} from "./wscon";
   import { epoch_ymdhms } from "./utils";
   import Modal from './Modal.svelte';
   let show_new_table_modal = false;
   let show_join_modal = false;
   let player_name = ''; // if owner - then also table name
-  let table_name = ''; //
+  let table_name = '';
   let table_password = '';
   let player_password = '';
   export let tables = [];
@@ -18,15 +18,15 @@
   const refresh = () => {
     sendClubRefresh();
   }
-  const join = (tbl_name) => {
+  const joinDialogOpen = (tbl_name) => {
     table_name = tbl_name;
     console.log("join: table_name=" + table_name);
     show_join_modal = true;
   }
-  const joinTable = (table_name) => {
-    console.log("join: table_name=" + table_name);
+  const joinTable = () => {
     console.log("table"+table_name + " name="+player_name +
                 " tpw="+table_password + " ppw="+player_password);
+    sendJoin(table_name, player_name, table_password, player_password);
     show_join_modal = false;
   }
   let sort_key_last = "";
@@ -81,7 +81,7 @@
             <td>{epoch_ymdhms(summary["tcreated"])}</td>
             <td>{epoch_ymdhms(summary["taction"])}</td>
             <td>
-              <button on:click={() => join(summary["name"])}>
+              <button on:click={() => joinDialogOpen(summary["name"])}>
 		Join
               </button>
            </td>
@@ -125,7 +125,7 @@
       <td><input bind:value={player_password}/></td>
     </tr>
   </table>
-  <button class="join" on:click={createTable}>Join</button>
+  <button class="join" on:click={joinTable}>Join</button>
 </Modal>
 <style>
   .create, .join {

@@ -44,6 +44,16 @@ class Server {
     const cmd_t &cmd,
     std::string &table_name,
     WebSocketSession *ws);
+  std::string Join(
+    const cmd_t &cmd,
+    std::string &table_name,
+    std::string &player_name,
+    WebSocketSession *ws);
+  std::string GetCommandPasswords(
+    const cmd_t &cmd,
+    size_t i,
+    std::string &table_password,
+    std::string &player_password) const;
   std::string Try3(Player* player, Table *table, const cmd_t &cmd);
   void UpdateTableGstate(Table *table);
 

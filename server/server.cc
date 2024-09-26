@@ -222,6 +222,19 @@ void Server::WsReceivedMessage(
           dq(table_name)));
         ws->send(ServerToClient(E3333_S2C_NTBL, 0, result));
       }
+    } else if (cmd[0] == S3333_C2S_JOIN) {
+      if (player) {
+        DeletePlayer(ws, player);
+      }
+      std::string table_name;
+      std::string player_name;
+      err = Join(cmd, table_name, player_name, ws);
+      if (err.empty()) {
+        auto result = brace(
+          fmt::format(R"j( "table_name": {}, "player_name": {})j",
+          dq(table_name), dq(player_name)));
+        ws->send(ServerToClient(E3333_S2C_JOIN, 0, result));
+      }
     } else if (cmd[0] == S3333_C2S_GNEW) {
       table->NewGame();
       UpdateTableGstate(table);
@@ -320,7 +333,7 @@ void Server::DeletePlayer(WebSocketSession *ws, Player *player) {
 }
 
 std::string Server::NewTable(
-  const std::vector<std::string> &cmd,
+  const cmd_t &cmd,
   std::string &table_name,
   WebSocketSession *ws) {
   std::string err;
@@ -329,30 +342,15 @@ std::string Server::NewTable(
   if ((sz < 3) || (5 < sz)) {
     err = fmt::format("{}: Bad command size: {}", cmd[0], sz);
   } else {
-    int pw_flags = StrToInt(cmd[2], -1);
-    if ((pw_flags < 0) || (pw_flags > 3)) {
-      err = fmt::format("Bad pw_flags: {}", cmd[2]);
-    } else {
-      size_t n_pw = (pw_flags == 0 ? 0 : (pw_flags == 3 ? 2 : 1));
-      if (sz != 3 + n_pw) {
-        err = fmt::format("{}: Bad command size: {}, #(pw)={}",
-          cmd[0], sz, n_pw);
-      } else {
-        table_name = cmd[1];
-        if (name_table_.find(table_name) != name_table_.end()) {
-          err = fmt::format("Table name: {} already in use", table_name);
-        } else if (name_table_.size() >= max_tables_) {
-          err = fmt::format("Club is full, #(tables)={}", name_table_.size());
-        }
-        size_t ipw = 2;
-        if (pw_flags & 1) {
-          table_password = cmd[++ipw];
-        }
-        if (pw_flags & 2) {
-          player_password = cmd[++ipw];
-        }
-      }
+    table_name = cmd[1];
+    if (name_table_.find(table_name) != name_table_.end()) {
+      err = fmt::format("Table name: {} already in use", table_name);
+    } else if (name_table_.size() >= max_tables_) {
+      err = fmt::format("Club is full, #(tables)={}", name_table_.size());
     }
+  }
+  if (err.empty()) {
+    err = GetCommandPasswords(cmd, 2, table_password, player_password);
   }
   if (err.empty()) {
     std::unique_ptr<Table> table =
@@ -363,6 +361,75 @@ std::string Server::NewTable(
     name_table_.insert({table_name, std::move(table)});
     // need to delete old table ? !!!!!!!!!!!!!!!!
     ws_player_.insert({ws, player});
+  }
+  return err;
+}
+
+std::string Server::Join(
+  const cmd_t &cmd,
+  std::string &table_name,
+  std::string &player_name,
+  WebSocketSession *ws) {
+  std::string err;
+  const size_t sz = cmd.size();
+  std::string table_password, player_password;
+  Table *table = nullptr;
+  if ((sz < 4) || (6 < sz)) {
+    err = fmt::format("{}: Bad command size: {}", cmd[0], sz);
+  } else {
+    table_name = cmd[1];
+    player_name = cmd[2];
+    err = GetCommandPasswords(cmd, 3, table_password, player_password);
+    if (err.empty()) {
+      auto iter = name_table_.find(table_name);
+      if (iter == name_table_.end()) {
+        err = fmt::format("Table name: {} not found", table_name);
+      } else {
+        table = iter->second.get();
+        if (table_password != table->GetPassword()) {
+          err = fmt::format("Table Password not matched");
+        } else {
+          // Need to check for duplicate player_name or rejoining
+          size_t np = iter->second->GetPlayers().size();
+          if (np >= max_players_) {
+            err = fmt::format("table {} is full, #(players)={}",
+              table_name, np);
+          }
+        }
+      }
+    }
+  }
+  if (err.empty()) {
+    Player *player = table->AddPlayer(player_name, player_password);
+    player->SetWS(ws);
+    ws_player_.insert({ws, player});
+  }
+  return err;
+}
+
+std::string Server::GetCommandPasswords(
+  const cmd_t &cmd,
+  size_t i,
+  std::string &table_password,
+  std::string &player_password) const {
+  std::string err;
+  int pw_flags = StrToInt(cmd[i], -1);
+  if ((pw_flags < 0) || (pw_flags > 3)) {
+    err = fmt::format("Bad pw_flags: {}", cmd[2]);
+  } else {
+    const size_t sz = cmd.size();
+    const size_t n_pw = (pw_flags == 0 ? 0 : (pw_flags == 3 ? 2 : 1));
+    if (sz != i + 1 + n_pw) {
+      err = fmt::format("{}: Bad command size: {}, #(pw)={}",
+        cmd[0], sz, n_pw);
+    } else {
+      if (pw_flags & 1) {
+        table_password = cmd[++i];
+      }
+      if (pw_flags & 2) {
+        player_password = cmd[++i];
+      }
+    }
   }
   return err;
 }

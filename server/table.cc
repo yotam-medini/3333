@@ -55,6 +55,15 @@ const std::string &Table::GetName() const {
 void Table::Close() {
 }
 
+Player *Table::AddPlayer(
+  const std::string& player_name,
+  const std::string& player_password) {
+  players_.push_back(make_unique<Player>(player_name, player_password));
+  Player *player = players_.back().get();
+  player->SetTable(this);
+  return player;
+}
+
 void Table::DeletePlayer(Player *player) {
   size_t pi = 0;
   for (size_t i = 0; i < players_.size(); ++i) {

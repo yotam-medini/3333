@@ -17,14 +17,18 @@ class Table {
     const std::string &player_name,
     const std::string &player_password,
     const std::string &password);
-    const std::string &GetName() const;
-    const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
-    return players_;
-  }
   ~Table();
   void Close();
-  void DeletePlayer(Player *player);
+  const std::string &GetName() const;
+  const std::string &GetPassword() const { return password_; }
+  const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
+    return players_;
+  }
   std::vector<std::unique_ptr<Player>> &GetPlayers() { return players_; }
+  Player *AddPlayer(
+    const std::string& player_name,
+    const std::string& player_password);
+  void DeletePlayer(Player *player);
   void SetTimeLastAction(int t) { time_last_action_ = t; }
   void NewGame();
   void StateBump();

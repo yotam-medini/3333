@@ -50,6 +50,21 @@ web_socket.onmessage = function (event) {
           fn(result);
         }
         break;
+      case c.E3333_S2C_JOIN:
+        fn = callbacks[CallBackIdx.ITableStatus];
+        if (fn !== undefined) {
+          fn(TableStatus.Join);
+        }
+        result = edata['result'];
+	{
+	  let player_name = result["player_name"];
+	  let table_name = result["table_name"];
+	  fn = callbacks[CallBackIdx.iSetNames];
+	  console.log("player_name=" + player_name +
+	    " table_name="+table_name + " fn?=" + (fn !== undefined));
+	  fn(player_name, table_name);
+	}
+	break;
       case c.E3333_S2C_NTBL:
         fn = callbacks[CallBackIdx.ITableStatus];
         console.log("fn?=" + (fn !== undefined));
@@ -102,6 +117,21 @@ export function sendNewTable(
   console.log("sendNewTable");
   let request = [
     c.S3333_C2S_NTBL, table_name, 3, table_password, player_password].join(" ")
+  console.log("request="+request);
+  web_socket.send(request);
+}
+
+export function sendJoin(
+    table_name: string,
+    player_name: string,
+    table_password: string,
+    player_password: string ) {
+  console.log("sendJoinTable table_name="+table_name + 
+    " player_name="+player_name +
+    " #(PWs): " + table_password.length + " " + player_password.length);
+  let request = [
+    c.S3333_C2S_JOIN,
+    table_name, player_name, 3, table_password, player_password].join(" ")
   console.log("request="+request);
   web_socket.send(request);
 }
