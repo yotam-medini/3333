@@ -2,6 +2,7 @@
   import { sendClubRefresh, sendNewTable, sendJoin} from "./wscon";
   import { epoch_ymdhms } from "./utils";
   import Modal from './Modal.svelte';
+  import IdInput from './IdInput.svelte';
   let show_new_table_modal = false;
   let show_join_modal = false;
   let player_name = ''; // if owner - then also table name
@@ -96,15 +97,15 @@
   <table>
     <tr>
       <td>Table Name</td>
-      <td><input bind:value={player_name}/></td>
+      <td><IdInput bind:value={player_name}/></td>
     </tr>
     <tr>
       <td>Table Password</td>
-      <td><input bind:value={table_password}/></td>
+      <td><IdInput bind:value={table_password}/></td>
     </tr>
     <tr>
       <td>Player Password</td>
-      <td><input bind:value={player_password}/></td>
+      <td><IdInput bind:value={player_password}/></td>
     </tr>
   </table>
   <button class="create" on:click={createTable}>Create Table</button>
@@ -114,15 +115,15 @@
   <table>
     <tr>
       <td>Player Name</td>
-      <td><input bind:value={player_name}/></td>
+      <td><IdInput bind:value={player_name}/></td>
     </tr>
     <tr>
       <td>Table Password</td>
-      <td><input bind:value={table_password}/></td>
+      <td><IdInput bind:value={table_password}/></td>
     </tr>
     <tr>
       <td>Player Password</td>
-      <td><input bind:value={player_password}/></td>
+      <td><IdInput bind:value={player_password}/></td>
     </tr>
   </table>
   <button class="join" on:click={joinTable}>Join</button>
