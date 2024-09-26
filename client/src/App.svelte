@@ -103,6 +103,12 @@
     console.log(_tables);
     tables = _tables;
   });
+
+  let players_data = []
+  set_callback(CallBackIdx.IPlayersRefresh, (json_players) => {
+    console.log(json_players);
+    players_data = json_players;
+  });
 </script>
 
 <main>
@@ -116,7 +122,7 @@
            bind:this={tableComponent}
     />
   {:else if tabActiveName === 'Players'}
-    <Players />
+    <Players {players_data} />
   {:else if tabActiveName === 'Help'}
     <Help />
   {:else}

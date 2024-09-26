@@ -13,6 +13,7 @@ export enum CallBackIdx {
   ISetCards,
   iSetDeck,
   INotASet,
+  IPlayersRefresh,
   ISIZE
 };
 

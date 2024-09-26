@@ -14,7 +14,7 @@ void Player::SetTAction() {
 
 std::string Player::json() const {
   std::string j{"{\n"};
-  // j += fmt::format(R"j(  "name": "{}",)j" "\n", name_);
+  j += fmt::format(R"j(  "name": "{}",)j" "\n", name_);
   j += fmt::format(R"j(  "say": "{}",)j" "\n", say_);
   j += fmt::format(R"j(  "numbers": [{}, {}, {}, {}, {}, {}],)j" "\n",
     sets_found_,

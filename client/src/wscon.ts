@@ -88,6 +88,11 @@ web_socket.onmessage = function (event) {
         callbacks[CallBackIdx.iSetDeck](result['deck']);
         callbacks[CallBackIdx.iSetGameState](result);
         break;
+      case c.E3333_S2C_PLAYERS:
+        console.log("E3333_S2C_PLAYERS");
+        result = edata['result'];
+        callbacks[CallBackIdx.IPlayersRefresh](result);
+        break;
       case c.E3333_S2C_NOT_A_SET:
         console.log("E3333_S2C_NOT_A_SET");
         callbacks[CallBackIdx.INotASet]();
