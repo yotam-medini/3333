@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { drawTable, handleClick } from "./canvas.ts";
+  import { DrawWaitingForGame, drawTable, handleClick } from "./canvas.ts";
   let canvasElement: HTMLCanvasElement;
   console.log("Canvas: not yet mounted");
   onMount(() => {
       console.log("Canvas: mounted");
-      redrawMe();
+      // redrawMe();
+      WriteWaitingForGame();
       // get canvas context
     // let ctx = canvasElement.getContext("2d");
    if (false) {
@@ -24,6 +25,10 @@
     // console.log("setCards end")
   };
   // export let cards_selected; // LUT to cards, max 3 
+  export function WriteWaitingForGame() {
+    // console.log("redrawMe");
+    DrawWaitingForGame(canvasElement);
+  }
   export function redrawMe() {
     // console.log("redrawMe");
     drawTable(canvasElement, cards, -1, -1);

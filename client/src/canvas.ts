@@ -402,3 +402,15 @@ export function handleClick(e,
   // console.log("getComputedStyle: ", computer_style);
   drawTable(canvas, cards, x, y)
 }
+
+export function DrawWaitingForGame(canvas: HTMLCanvasElement) {
+  let ctx = canvas.getContext("2d");
+  ctx.font = "12px serif";
+  let w = canvas.width;
+  let h = canvas.height;
+  let left = w/8;
+  let h3 = h/3;
+  console.log("w="+w + " h="+h);
+  ctx.fillText("Wait for Table owner", left, h3);
+  ctx.fillText("To start a New Game", left, 2*h3);
+}

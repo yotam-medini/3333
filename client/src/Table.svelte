@@ -28,7 +28,13 @@
   export let gstate = 0;
   $: {
     console.log("reactive: game_state=", game_state);
-    if (gstate != game_state["gstate"]) {
+    if (game_state["gstate"] == -1) {
+      if ((canvasComponent !== null) && (canvasComponent !== undefined)) {
+        canvasComponent.WriteWaitingForGame();
+      } else {
+        console.log("canvasComponent not yet set");
+      }
+    } else if (gstate != game_state["gstate"]) {
       gstate = game_state["gstate"];
       console.log("new gstate=" + gstate);
       if (gstate > 0) {
