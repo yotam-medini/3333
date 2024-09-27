@@ -40,6 +40,7 @@ class Server {
   std::string TablesToJson() const;
   std::string PlayersToJson(const Table* table) const;
   void DeletePlayer(WebSocketSession* ws, Player *player);
+  bool CheckCommandGStateOK(const cmd_t &cmd, const Table *table) const;
   std::string NewTable(
     const cmd_t &cmd,
     std::string &table_name,

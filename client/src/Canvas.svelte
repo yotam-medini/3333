@@ -21,11 +21,11 @@
   export const setCards = (a) => {
     console.log("setCards a=", a);
     cards = a;
-    console.log("setCards end")
+    // console.log("setCards end")
   };
   // export let cards_selected; // LUT to cards, max 3 
   export function redrawMe() {
-    console.log("redrawMe");
+    // console.log("redrawMe");
     drawTable(canvasElement, cards, -1, -1);
   }
   const handleClickHigh = (e) => {

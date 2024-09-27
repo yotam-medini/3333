@@ -209,7 +209,9 @@ void Server::WsReceivedMessage(
       player->SetTAction();
       table->SetTimeLastAction(player->GetTAction());
     }
-    if (cmd[0] == S3333_C2S_TBLS) {
+    if (!CheckCommandGStateOK(cmd, table)) {
+      std::cerr << "Unsynced Game State for command: " << cmd[0] << '\n';
+    } else if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
       if (player) {
@@ -248,7 +250,7 @@ void Server::WsReceivedMessage(
       }
       UpdateTableGstate(table); // even if error
     } else if (cmd[0] == S3333_C2S_TRY3) {
-      err = Try3(player, table, cmd);      
+      err = Try3(player, table, cmd);
       UpdateTableGstate(table); // even if error
     } else if (cmd[0] == S3333_C2S_NMOR) {
       if (table->NoMore()) {
@@ -313,7 +315,7 @@ std::string Server::PlayersToJson(const Table *table) const {
   ret += std::string{"\n  ]"};
   return ret;
 }
- 
+
 void Server::DeletePlayer(WebSocketSession *ws, Player *player) {
   Table *table = player->GetTable();
   auto &players = table->GetPlayers();
@@ -331,6 +333,18 @@ void Server::DeletePlayer(WebSocketSession *ws, Player *player) {
   }
   ws_player_.erase(ws);
 }
+
+bool Server::CheckCommandGStateOK(const cmd_t &cmd, const Table *table) const {
+  bool ok = true;
+  if ((cmd[0] == S3333_C2S_ADD3) ||
+      (cmd[0] == S3333_C2S_NMOR) ||
+      (cmd[0] == S3333_C2S_TRY3)) {
+    const int gstate = (cmd.size() > 1 ? StrToInt(cmd[1], -1) : -1);
+    ok = table && (gstate == table->GetGState());
+  }
+  return ok;
+}
+
 
 std::string Server::NewTable(
   const cmd_t &cmd,
