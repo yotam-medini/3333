@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
 #include <QtCore/QString>
 
@@ -8,7 +9,7 @@ class Client : public QObject {
  public:
   explicit Client(const QUrl &url, QObject *parent=nullptr);
  Q_SIGNALS:
-  void closed();
+  void Closed();
  private Q_SLOTS:
   void OnConnected();
   void OnTextMessageReceived(QString message);

@@ -4,7 +4,7 @@
 Client::Client(const QUrl &url, QObject *parent) :
     QObject(parent) {
   connect(&ws_, &QWebSocket::connected, this, &Client::OnConnected);
-  connect(&ws_, &QWebSocket::disconnected, this, &Client::closed);
+  connect(&ws_, &QWebSocket::disconnected, this, &Client::Closed);
   ws_.open(url);
 }
 
