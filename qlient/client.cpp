@@ -13,10 +13,13 @@ Client::Client(const QUrl &url, QObject *parent) :
 
 void Client::OnConnected() {
   std::cout << "OnConnected\n";
+  connect(&ws_, &QWebSocket::textMessageReceived, this, &Client::OnReceived);
 }
 
-void Client::OnTextMessageReceived(QString message) {
+void Client::OnReceived(QString message) {
   std::cout << "OnTextMessageReceived: " << message.toStdString() << '\n';
+  qDebug() << fmt::format("OnTextMessageReceived: {}\n",
+    message.toStdString());
 }
 
 int Client::ClubRefresh() {

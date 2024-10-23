@@ -13,7 +13,7 @@ class Client : public QObject {
   void Closed();
  private Q_SLOTS:
   void OnConnected();
-  void OnTextMessageReceived(QString message);
+  void OnReceived(QString message);
  private :
   QWebSocket ws_;
 };
