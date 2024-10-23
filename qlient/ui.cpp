@@ -2,21 +2,21 @@
 #include <memory>
 #include <QDebug>
 #include <QPushButton>
-// #include <QQuickWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <QWidget>
+#include "club.h"
 
 class UIImpl {
  public:
   UIImpl() {
     window_ = std::make_unique<QWidget>();
     window_->setWindowTitle("Set-Game");
-    window_->setStyleSheet("background-color:#1e2;");
+    window_->setStyleSheet("background-color:#1b2;");
     QVBoxLayout *layout = new QVBoxLayout(window_.get());
 
     tab_ = std::make_unique<QTabWidget>();
-    club_ = std::make_unique<QWidget>();
+    club_ = std::make_unique<Club>();
     club_idx_ = tab_->addTab(club_.get(), "Club");
     layout->addWidget(tab_.get());
     table_ = std::make_unique<QWidget>();
@@ -38,7 +38,8 @@ class UIImpl {
  private:
   std::unique_ptr<QWidget> window_;
   std::unique_ptr<QTabWidget> tab_;
-  std::unique_ptr<QWidget> club_, table_, players_;
+  std::unique_ptr<Club> club_;
+  std::unique_ptr<QWidget> table_, players_;
   int club_idx_, table_idx_, players_idx_;
 };
 

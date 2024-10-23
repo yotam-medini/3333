@@ -15,6 +15,7 @@ find_package(fmt REQUIRED)
 
 qt_add_executable(qclient
     client.cpp client.h
+    club.cpp club.h
     ui.cpp ui.h
     main.cpp
 )
