@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   Client client(url);
   QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
   UI ui;
-  ui.run();
+  ui.SetClubRefresh([&client]() { client.ClubRefresh(); });
   rc = a.exec();
   return rc;
 }

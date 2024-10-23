@@ -35,6 +35,9 @@ class UIImpl {
     window_->resize(400, 300);
     window_->show();
   }
+  void SetClubRefresh(std::function<void(void)> f) {
+    club_->SetRefresh(f);
+  }
  private:
   std::unique_ptr<QWidget> window_;
   std::unique_ptr<QTabWidget> tab_;
@@ -49,6 +52,10 @@ UI::UI() {
 
 UI::~UI() {
   qDebug("UI::~UI");
+}
+
+void UI::SetClubRefresh(std::function<void(void)> f) {
+  impl_->SetClubRefresh(f);
 }
 
 int UI::run() {

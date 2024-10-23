@@ -1,5 +1,8 @@
 #include "client.h"
 #include <iostream>
+#include <fmt/core.h>
+#include <QDebug>
+#include "../server/cs_consts.h"
 
 Client::Client(const QUrl &url, QObject *parent) :
     QObject(parent) {
@@ -14,4 +17,10 @@ void Client::OnConnected() {
 
 void Client::OnTextMessageReceived(QString message) {
   std::cout << "OnTextMessageReceived: " << message.toStdString() << '\n';
+}
+
+int Client::ClubRefresh() {
+  qDebug() << "Client::ClubRefresh\n";
+  ws_.sendTextMessage(QString::fromStdString(S3333_C2S_TBLS));
+  return 0;
 }

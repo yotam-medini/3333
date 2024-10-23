@@ -21,3 +21,7 @@ Club::~Club() {
   qDebug("Club::~Club");
 }
 
+void Club::SetRefresh(std::function<void(void)> f) {
+  QObject::connect(butt_referesh_.get(), &QPushButton::clicked, f);
+}
+
