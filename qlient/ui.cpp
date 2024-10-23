@@ -10,6 +10,7 @@ class UIImpl {
   UIImpl() {
     window_ = std::make_unique<QWidget>();
     window_->setWindowTitle("Set-Game");
+    window_->setStyleSheet("background-color:#1e2;");
     QVBoxLayout *layout = new QVBoxLayout(window_.get());
     QPushButton *button1 = new QPushButton("Button 1");
     layout->addWidget(button1);

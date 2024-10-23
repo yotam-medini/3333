@@ -4,10 +4,6 @@ project(qclient LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    message(STATUS "Building for WebAssembly")
-endif()
-
 find_package(Qt6
     REQUIRED COMPONENTS
       Core
@@ -28,3 +24,7 @@ target_link_libraries(qclient PUBLIC
     Qt::Widgets
     Qt::WebSockets
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    message(STATUS "Building for WebAssembly")
+endif()

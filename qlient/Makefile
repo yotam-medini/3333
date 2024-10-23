@@ -26,4 +26,4 @@ wasm-cmake:
 	(. ${EMSDK_ENV}; mkdir -p build-wasm; cd build-wasm; \
 	  ${QT_WASM}/bin/qt-cmake -DCMAKE_BUILD_TYPE=Debug ..)
 wasm-make:
-	(source ${EMSDK_ENV}; cd build-wasm; make)
+	(source ${EMSDK_ENV}; cd build-wasm; emmake make -s LOGLEVEL=4)
