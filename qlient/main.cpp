@@ -3,6 +3,7 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtCore/QString>
 #include "client.h"
+#include "ui.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,6 +19,8 @@ int main(int argc, char *argv[])
   url.setPort(port);
   Client client(url);
   QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
+  UI ui;
+  ui.run();
   rc = a.exec();
   return rc;
 }

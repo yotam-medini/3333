@@ -8,6 +8,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core WebSockets)
 
 qt_add_executable(qclient
     client.cpp client.h
+    ui.cpp ui.h
     main.cpp
 )
 
