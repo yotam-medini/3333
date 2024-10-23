@@ -4,7 +4,13 @@ project(qclient LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core WebSockets)
+find_package(Qt6
+    REQUIRED COMPONENTS
+      Core
+      Gui
+      Widgets
+      WebSockets
+)
 
 qt_add_executable(qclient
     client.cpp client.h
@@ -14,7 +20,7 @@ qt_add_executable(qclient
 
 target_link_libraries(qclient PUBLIC
     Qt::Core
+    Qt::Gui
+    Qt::Widgets
     Qt::WebSockets
 )
-
-
