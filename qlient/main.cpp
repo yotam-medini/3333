@@ -3,6 +3,7 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtCore/QString>
 #include <QDebug>
+#include <fmt/core.h>
 #include "client.h"
 #include "ui.h"
 
@@ -10,7 +11,7 @@ int main(int argc, char *argv[])
 {
   using namespace Qt::Literals::StringLiterals;
   int rc =  0;
-  std::cout << "argc="<<argc << " argv[0]="<<argv[0] << '\n';
+  std::cout << fmt::format("argc={} argv[0]={}\n", argc, argv[0]);
   QApplication a(argc, argv);
   qDebug() << "Main stream-shift to qDebug\n";
   int port = 9090;

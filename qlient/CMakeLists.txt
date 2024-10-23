@@ -11,6 +11,7 @@ find_package(Qt6
       Widgets
       WebSockets
 )
+find_package(fmt REQUIRED)
 
 qt_add_executable(qclient
     client.cpp client.h
@@ -23,6 +24,7 @@ target_link_libraries(qclient PUBLIC
     Qt::Gui
     Qt::Widgets
     Qt::WebSockets
+    fmt::fmt
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
