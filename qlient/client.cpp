@@ -52,5 +52,12 @@ int Client::NewTable(
   qDebug() << fmt::format("Client::NewTable table_name={} "
     " table_password={} owner_password={}",
     table_name, table_password, owner_password);
+  const unsigned flags =
+    (table_password.empty() ? 0 : 1) +
+    (owner_password.empty() ? 0 : 2);
+  std::string command = fmt::format("{} {} {} {} {}",
+    S3333_C2S_NTBL, table_name, flags, table_password, owner_password);
+  qDebug() << fmt::format("command= {}", command);
+  ws_.sendTextMessage(QString::fromStdString(command));
   return rc;
 }
