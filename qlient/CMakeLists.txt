@@ -17,6 +17,7 @@ qt_add_executable(qclient
     common.h
     client.cpp client.h
     club.cpp club.h
+    table.cpp table.h
     newtbl.cpp newtbl.h
     ui.cpp ui.h
     main.cpp

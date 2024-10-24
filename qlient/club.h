@@ -1,10 +1,10 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include <QPushButton>
 #include <QWidget>
 #include "common.h"
 
+class QPushButton;
 class NewTable;
 
 class Club : public QWidget {

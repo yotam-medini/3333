@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include "club.h"
+#include "table.h"
 
 class UIImpl {
  public:
@@ -19,7 +20,7 @@ class UIImpl {
     club_ = std::make_unique<Club>();
     club_idx_ = tab_->addTab(club_.get(), "Club");
     layout->addWidget(tab_.get());
-    table_ = std::make_unique<QWidget>();
+    table_ = std::make_unique<Table>(window_.get());
     table_idx_ = tab_->addTab(table_.get(), "Table");
     layout->addWidget(tab_.get());
     players_ = std::make_unique<QWidget>();
