@@ -15,9 +15,13 @@ Club::Club() {
   QObject::connect(butt_new_table_.get(), &QPushButton::clicked,
     [this]() {
       qDebug("new NewTable");
-      NewTable *dlg = new NewTable(this, this->new_table_func_);
-      auto ret = dlg->exec();
-      qDebug() << fmt::format("NewTable sizeof(ret)={}", sizeof(ret));
+      if (!new_table_dialog_) {
+        qDebug() << fmt::format("curr sizes: {}x{}", width(), height());
+        new_table_dialog_ = std::make_unique<NewTable>(
+          this, this->new_table_func_);
+      }
+      auto ret = new_table_dialog_->exec();
+      qDebug() << fmt::format("NewTable ret={}", ret);
     });
   hlayout->addWidget(butt_referesh_.get());
   hlayout->addWidget(butt_new_table_.get());

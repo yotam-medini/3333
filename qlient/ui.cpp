@@ -32,7 +32,7 @@ class UIImpl {
         qDebug("Button 1 clicked!");
     });
     window_->setLayout(layout);
-    window_->resize(400, 300);
+    window_->resize(800, 600);
     window_->show();
   }
   void SetClubRefresh(std::function<void(void)> f) {

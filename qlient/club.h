@@ -5,6 +5,8 @@
 #include <QWidget>
 #include "common.h"
 
+class NewTable;
+
 class Club : public QWidget {
  public:
   Club();
@@ -14,5 +16,6 @@ class Club : public QWidget {
  private:
   std::unique_ptr<QPushButton> butt_referesh_;
   std::unique_ptr<QPushButton> butt_new_table_;
+  std::unique_ptr<NewTable> new_table_dialog_;
   new_table_func_t new_table_func_;
 };
