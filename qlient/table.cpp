@@ -1,4 +1,6 @@
 #include "table.h"
+#include <fmt/core.h>
+#include <QDebug>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -22,4 +24,12 @@ Table::Table(QWidget *parent) :
 }
 
 Table::~Table() {
+}
+
+void Table::NewTable(const QVariantMap &result_map) {
+  qDebug() << "Table::NewTable";
+  std::string name = result_map["table_name"].toString().toStdString();
+  qDebug() << fmt::format("name={}", name);
+  std::string t = fmt::format("<b>{}@{}</b>", name, name);
+  name_at_name_->setText(QString::fromStdString(t));
 }

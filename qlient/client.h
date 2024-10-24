@@ -4,10 +4,12 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtCore/QString>
 
+class UI;
+
 class Client : public QObject {
   Q_OBJECT
  public:
-  explicit Client(const QUrl &url, QObject *parent=nullptr);
+  explicit Client(UI& ui, const QUrl &url, QObject *parent=nullptr);
   int ClubRefresh();
   int NewTable(
     const std::string &table_name,
@@ -20,6 +22,7 @@ class Client : public QObject {
   void OnConnected();
   void OnReceived(QString message);
  private :
+  UI &ui_;
   QWebSocket ws_;
 };
 

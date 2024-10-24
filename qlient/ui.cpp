@@ -42,11 +42,16 @@ class UIImpl {
   void setNewTableFunc(new_table_func_t f) {
     club_->setNewTableFunc(f);
   }
+  void NewTable(const QVariantMap &result_map) {
+    tab_->setCurrentIndex(table_idx_);
+    table_->NewTable(result_map);
+  }
  private:
   std::unique_ptr<QWidget> window_;
   std::unique_ptr<QTabWidget> tab_;
   std::unique_ptr<Club> club_;
-  std::unique_ptr<QWidget> table_, players_;
+  std::unique_ptr<Table> table_;
+  std::unique_ptr<QWidget> players_;
   int club_idx_, table_idx_, players_idx_;
 };
 
@@ -62,6 +67,10 @@ void UI::SetClubRefresh(std::function<void(void)> f) {
   impl_->SetClubRefresh(f);
 }
 
-void UI::setNewTableFunc(new_table_func_t f) {
+void UI::SetNewTableFunc(new_table_func_t f) {
   impl_->setNewTableFunc(f);
+}
+
+void UI::NewTable(const QVariantMap &result_map) {
+  impl_->NewTable(result_map);
 }

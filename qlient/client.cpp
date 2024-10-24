@@ -3,10 +3,12 @@
 #include <fmt/core.h>
 #include <QDebug>
 #include <QtCore/qjsondocument.h>
+#include "ui.h"
 #include "../server/cs_consts.h"
 
-Client::Client(const QUrl &url, QObject *parent) :
-    QObject(parent) {
+Client::Client(UI& ui, const QUrl &url, QObject *parent) :
+    QObject(parent),
+    ui_(ui) {
   connect(&ws_, &QWebSocket::connected, this, &Client::OnConnected);
   connect(&ws_, &QWebSocket::disconnected, this, &Client::Closed);
   ws_.open(url);
@@ -33,6 +35,18 @@ void Client::OnReceived(QString message) {
     if (result.typeId() == QMetaType::QVariantMap) {
       auto result_map = result.toMap();
       qDebug() << fmt::format("#(result)={}", result_map.size());
+      switch (cmd) {
+       case E3333_S2C_TBLS:
+        qDebug() << "E3333_S2C_TBLS not yet supported";
+        break;
+       case E3333_S2C_NTBL:
+        ui_.NewTable(result_map);
+        break;
+       default:
+         qDebug() << fmt::format("Unsupported E3333_S2C_xxx {} command", cmd);
+      };
+    } else {
+      qDebug() << "result not a QVariantMap";
     }
   }    
   

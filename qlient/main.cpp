@@ -20,11 +20,11 @@ int main(int argc, char *argv[])
   url.setScheme(scheme);
   url.setHost("localhost");
   url.setPort(port);
-  Client client(url);
-  QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
   UI ui;
+  Client client(ui, url);
+  QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
   ui.SetClubRefresh([&client]() { client.ClubRefresh(); });
-  ui.setNewTableFunc(
+  ui.SetNewTableFunc(
     [&client](
         const std::string &table_name,
         const std::string &table_password,
