@@ -14,8 +14,10 @@ find_package(Qt6
 find_package(fmt REQUIRED)
 
 qt_add_executable(qclient
+    common.h
     client.cpp client.h
     club.cpp club.h
+    newtbl.cpp newtbl.h
     ui.cpp ui.h
     main.cpp
 )
