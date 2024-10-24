@@ -14,4 +14,6 @@ class NewTable : public QDialog {
  private:
   const new_table_func_t new_table_func_;
   QLineEdit *table_name_{nullptr};
+  QLineEdit *table_password_{nullptr};
+  QLineEdit *owner_password_{nullptr};
 };

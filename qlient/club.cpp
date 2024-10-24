@@ -20,8 +20,11 @@ Club::Club() {
         new_table_dialog_ = std::make_unique<NewTable>(
           this, this->new_table_func_);
       }
-      auto ret = new_table_dialog_->exec();
+      int ret = new_table_dialog_->exec();
       qDebug() << fmt::format("NewTable ret={}", ret);
+      if (ret == QDialog::Accepted) {
+        
+      }
     });
   hlayout->addWidget(butt_referesh_.get());
   hlayout->addWidget(butt_new_table_.get());
