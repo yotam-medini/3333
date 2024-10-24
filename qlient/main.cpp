@@ -24,6 +24,13 @@ int main(int argc, char *argv[])
   QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
   UI ui;
   ui.SetClubRefresh([&client]() { client.ClubRefresh(); });
+  ui.setNewTableFunc(
+    [&client](
+        const std::string &table_name,
+        const std::string &table_password,
+        const std::string &owner_password) -> int {
+      return client.NewTable(table_name, table_password, owner_password);
+    });
   rc = a.exec();
   return rc;
 }

@@ -38,6 +38,9 @@ class UIImpl {
   void SetClubRefresh(std::function<void(void)> f) {
     club_->SetRefresh(f);
   }
+  void setNewTableFunc(new_table_func_t f) {
+    club_->setNewTableFunc(f);
+  }
  private:
   std::unique_ptr<QWidget> window_;
   std::unique_ptr<QTabWidget> tab_;
@@ -58,7 +61,6 @@ void UI::SetClubRefresh(std::function<void(void)> f) {
   impl_->SetClubRefresh(f);
 }
 
-int UI::run() {
-  int rc = 0;
-  return rc;
+void UI::setNewTableFunc(new_table_func_t f) {
+  impl_->setNewTableFunc(f);
 }

@@ -43,3 +43,14 @@ int Client::ClubRefresh() {
   ws_.sendTextMessage(QString::fromStdString(S3333_C2S_TBLS));
   return 0;
 }
+
+int Client::NewTable(
+    const std::string &table_name,
+    const std::string &table_password,
+    const std::string &owner_password) {
+  int rc = 0;
+  qDebug() << fmt::format("Client::NewTable table_name={} "
+    " table_password={} owner_password={}",
+    table_name, table_password, owner_password);
+  return rc;
+}

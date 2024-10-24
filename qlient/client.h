@@ -9,6 +9,11 @@ class Client : public QObject {
  public:
   explicit Client(const QUrl &url, QObject *parent=nullptr);
   int ClubRefresh();
+  int NewTable(
+    const std::string &table_name,
+    const std::string &table_password,
+    const std::string &owner_password);
+
  Q_SIGNALS:
   void Closed();
  private Q_SLOTS:

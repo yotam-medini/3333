@@ -9,7 +9,6 @@ class UI {
  public:
   UI();
   ~UI();
-  int run();
   void SetClubRefresh(std::function<void(void)> f);
   void setNewTableFunc(new_table_func_t f);
  private:
