@@ -23,6 +23,7 @@ class Client : public QObject {
   void OnConnected();
   void OnReceived(QString message);
  private :
+  void SetGameState(const QVariantMap &result_map);
   UI &ui_;
   Game &game_;
   QWebSocket ws_;

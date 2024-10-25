@@ -17,6 +17,7 @@ class UI {
   void SetNewTableFunc(new_table_func_t f);
   void NewTable(const QVariantMap &result_map);
   void SetNewGameFunc(std::function<int(void)> f);
+  void DrawGame();
  private:
   std::unique_ptr<UIImpl> impl_{nullptr};
 };

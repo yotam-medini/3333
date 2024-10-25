@@ -3,8 +3,11 @@
 #include <fmt/core.h>
 #include <QDebug>
 #include <QtCore/qjsondocument.h>
-#include "ui.h"
+#include <QJsonArray>
 #include "../server/cs_consts.h"
+
+#include "ui.h"
+#include "game.h"
 
 Client::Client(UI& ui, Game &game, const QUrl &url, QObject *parent) :
     QObject(parent),
@@ -43,6 +46,9 @@ void Client::OnReceived(QString message) {
        case E3333_S2C_NTBL:
         ui_.NewTable(result_map);
         break;
+       case E3333_S2C_GSTATE:
+        SetGameState(result_map);
+        ui_.DrawGame();
        default:
          qDebug() << fmt::format("Unsupported E3333_S2C_xxx {} command", cmd);
       };
@@ -83,3 +89,19 @@ int Client::NewGame() {
   ws_.sendTextMessage(QString::fromStdString(S3333_C2S_GNEW));
   return rc;
 }
+
+void Client::SetGameState(const QVariantMap &result_map) {
+  game_.active_ = (result_map["gactive"].toInt() == 1);
+  game_.tstate_ = result_map["tstate"].toInt();
+  game_.gstate_ = result_map["gstate"].toInt();
+
+  const QJsonArray a =  result_map["active"].toJsonArray();
+  game_.cards_active_.clear();
+  game_.cards_active_.reserve(a.size());
+  for (auto iter = a.cbegin(); iter != a.cend(); ++iter) {
+    game_.cards_active_.push_back(iter->toInt());
+  }
+  qDebug() << fmt::format("cards_ative_={}",
+    fmt::join(game_.cards_active_, ", "));
+}
+

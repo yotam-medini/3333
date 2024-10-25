@@ -34,3 +34,6 @@ void Table::NewTable(const QVariantMap &result_map) {
   std::string t = fmt::format("<b>{}@{}</b>", name, name);
   name_at_name_->setText(QString::fromStdString(t));
 }
+
+void Table::DrawGame(const Game& game) {
+}

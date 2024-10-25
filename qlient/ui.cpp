@@ -50,6 +50,9 @@ class UIImpl {
   void SetNewGameFunc(std::function<int(void)> f) {
     table_->SetNewGameFunc(f);
   }
+  void DrawGame() {
+    table_->DrawGame(game_);
+  }
  private:
   Game &game_; 
   std::unique_ptr<QWidget> window_;
@@ -82,4 +85,8 @@ void UI::NewTable(const QVariantMap &result_map) {
 
 void UI::SetNewGameFunc(std::function<int(void)> f) {
   impl_->SetNewGameFunc(f);
+}
+
+void UI::DrawGame() {
+  impl_->DrawGame();
 }

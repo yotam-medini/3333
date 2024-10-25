@@ -34,6 +34,7 @@ class Player {
   Table *table_{nullptr};
   WebSocketSession *ws_{nullptr};
   std::string say_;
+  // TODO: enum! 6 counters
   unsigned sets_found_{0};
   unsigned bad_calls_{0};
   unsigned add3s_good_{0};
@@ -41,7 +42,10 @@ class Player {
   unsigned no_more_good_{0};
   unsigned no_more_bad_{0};
   unsigned tcreated_{0};  
-  unsigned taction_{0};  
+  unsigned taction_{0};
+
+  unsigned tcreated_{0};
+  unsigned taction_{0};
 };
 
 #endif /* PLAYER_H */
