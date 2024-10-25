@@ -10,7 +10,8 @@
 
 class UIImpl {
  public:
-  UIImpl() {
+  UIImpl(Game &game) :
+      game_{game} {
     window_ = std::make_unique<QWidget>();
     window_->setWindowTitle("Set-Game");
     window_->setStyleSheet("background-color:#1b2;");
@@ -50,6 +51,7 @@ class UIImpl {
     table_->SetNewGameFunc(f);
   }
  private:
+  Game &game_; 
   std::unique_ptr<QWidget> window_;
   std::unique_ptr<QTabWidget> tab_;
   std::unique_ptr<Club> club_;
@@ -58,8 +60,8 @@ class UIImpl {
   int club_idx_, table_idx_, players_idx_;
 };
 
-UI::UI() {
-  impl_ = std::make_unique<UIImpl>();
+UI::UI(Game &game) {
+  impl_ = std::make_unique<UIImpl>(game);
 }
 
 UI::~UI() {

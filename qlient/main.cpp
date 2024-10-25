@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <fmt/core.h>
 #include "client.h"
+#include "game.h"
 #include "ui.h"
 
 void SetFunctions(Client &client, UI& ui) {
@@ -32,8 +33,9 @@ int main(int argc, char *argv[])
   url.setScheme(scheme);
   url.setHost("localhost");
   url.setPort(port);
-  UI ui;
-  Client client(ui, url);
+  Game game;
+  UI ui(game);
+  Client client(ui, game, url);
   QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
   SetFunctions(client, ui);
   rc = a.exec();

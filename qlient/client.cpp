@@ -6,9 +6,10 @@
 #include "ui.h"
 #include "../server/cs_consts.h"
 
-Client::Client(UI& ui, const QUrl &url, QObject *parent) :
+Client::Client(UI& ui, Game &game, const QUrl &url, QObject *parent) :
     QObject(parent),
-    ui_(ui) {
+    ui_{ui},
+    game_{game} {
   connect(&ws_, &QWebSocket::connected, this, &Client::OnConnected);
   connect(&ws_, &QWebSocket::disconnected, this, &Client::Closed);
   ws_.open(url);

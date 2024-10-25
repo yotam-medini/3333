@@ -34,6 +34,8 @@ qt_add_executable(qclient
     table.cpp table.h
     newtbl.cpp newtbl.h
     ui.cpp ui.h
+    player.cpp player.h
+    game.cpp game.h
     main.cpp
 )
 

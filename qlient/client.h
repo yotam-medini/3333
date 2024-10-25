@@ -5,11 +5,12 @@
 #include <QtCore/QString>
 
 class UI;
+class Game;
 
 class Client : public QObject {
   Q_OBJECT
  public:
-  explicit Client(UI& ui, const QUrl &url, QObject *parent=nullptr);
+  explicit Client(UI& ui, Game& game, const QUrl &url, QObject *parent=nullptr);
   int ClubRefresh();
   int NewTable(
     const std::string &table_name,
@@ -23,6 +24,7 @@ class Client : public QObject {
   void OnReceived(QString message);
  private :
   UI &ui_;
+  Game &game_;
   QWebSocket ws_;
 };
 
