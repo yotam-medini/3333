@@ -11,7 +11,21 @@ find_package(Qt6
       Widgets
       WebSockets
 )
-find_package(fmt REQUIRED)
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -I.")
+else()
+    message(STATUS "Compiling for Desktop")
+endif()
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -DFMT_HEADER_ONLY=1")
+
+# Add fmt as a header-only library
+include(FetchContent)
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 8.1.1
+)
+FetchContent_MakeAvailable(fmt)
 
 qt_add_executable(qclient
     common.h
@@ -28,9 +42,5 @@ target_link_libraries(qclient PUBLIC
     Qt::Gui
     Qt::Widgets
     Qt::WebSockets
-    fmt::fmt
+    fmt::fmt-header-only
 )
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    message(STATUS "Building for WebAssembly")
-endif()
