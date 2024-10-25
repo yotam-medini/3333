@@ -15,7 +15,7 @@ class Client : public QObject {
     const std::string &table_name,
     const std::string &table_password,
     const std::string &owner_password);
-
+  int NewGame();
  Q_SIGNALS:
   void Closed();
  private Q_SLOTS:

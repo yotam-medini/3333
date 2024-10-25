@@ -15,6 +15,7 @@ Table::Table(QWidget *parent) :
   name_at_name_ = std::make_unique<QLabel>("<b>?@?</b>", this);
   hlayout->addWidget(name_at_name_.get());
   butt_new_game = std::make_unique<QPushButton>("New Game", this);
+  connect(butt_new_game.get(), &QPushButton::clicked, [this]() { this->new_game_func_(); });
   hlayout->addWidget(butt_new_game.get());
   vlayout->addLayout(hlayout);
   draw_area_ = std::make_unique<QWidget>(this);

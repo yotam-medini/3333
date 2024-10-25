@@ -75,3 +75,10 @@ int Client::NewTable(
   ws_.sendTextMessage(QString::fromStdString(command));
   return rc;
 }
+
+int Client::NewGame() {
+  int rc = 0;
+  qDebug() << "Client::NewGame";
+  ws_.sendTextMessage(QString::fromStdString(S3333_C2S_GNEW));
+  return rc;
+}

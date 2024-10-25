@@ -46,6 +46,9 @@ class UIImpl {
     tab_->setCurrentIndex(table_idx_);
     table_->NewTable(result_map);
   }
+  void SetNewGameFunc(std::function<int(void)> f) {
+    table_->SetNewGameFunc(f);
+  }
  private:
   std::unique_ptr<QWidget> window_;
   std::unique_ptr<QTabWidget> tab_;
@@ -73,4 +76,8 @@ void UI::SetNewTableFunc(new_table_func_t f) {
 
 void UI::NewTable(const QVariantMap &result_map) {
   impl_->NewTable(result_map);
+}
+
+void UI::SetNewGameFunc(std::function<int(void)> f) {
+  impl_->SetNewGameFunc(f);
 }
