@@ -34,13 +34,19 @@ void Club::OpenNewTableDialog() {
     qDebug() << fmt::format("curr sizes: {}x{}", width(), height());
     new_table_dialog_ = std::make_unique<NewTable>(
       this, this->new_table_func_);
+    connect(new_table_dialog_.get(), &QDialog::finished,
+      [this](int result) {
+        qDebug() << fmt::format("NewTable resultt={}", result);
+        if (result == QDialog::Accepted) {
+           NewTable *dlg = this->new_table_dialog_.get();
+           this->new_table_func_(
+             dlg->GetTableName(),
+             dlg->GetTablePassword(),
+             dlg->GetOwnerPassword());
+        }
+      });
   }
-  int ret = new_table_dialog_->exec();
-  qDebug() << fmt::format("NewTable ret={}", ret);
-  if (ret == QDialog::Accepted) { 
-     new_table_func_(
-       new_table_dialog_->GetTableName(),
-       new_table_dialog_->GetTablePassword(),
-       new_table_dialog_->GetOwnerPassword());
-  }
+  new_table_dialog_->open();
 }
+
+
