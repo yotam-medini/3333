@@ -73,6 +73,15 @@ void Golden::recalculate() {
 
 unsigned Golden::pick(unsigned x, unsigned y) const {
   unsigned card_idx{unsigned(-1)};
+  unsigned col = (x - gap_[0]) / (card_size_[0] + gap_[0]);
+  unsigned row = (y - gap_[1]) / (card_size_[1] + gap_[1]);
+  unsigned candid = row * num_columns_ + col;
+  if (candid < num_cards_) {
+    au2_t pos = GetCardPosition(candid);
+    if ((x - pos[0] < card_size_[0]) && (y - pos[1] < card_size_[1])) {
+      card_idx = candid;
+    }
+  }
   return card_idx;
 }
 
