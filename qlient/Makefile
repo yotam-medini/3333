@@ -30,7 +30,10 @@ wasm-make:
 
 # Golden-test
 golden-test: ./bin.d/golden-test
-	./bin.d/golden-test
+	./bin.d/golden-test 60 80 3
+	./bin.d/golden-test 80 60 3
+	./bin.d/golden-test 60 80 12
+	./bin.d/golden-test 80 60 12
 
 ./bin.d/golden-test: golden.cpp golden.h
 	@mkdir -p ${@D}
