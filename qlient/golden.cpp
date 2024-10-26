@@ -1,5 +1,18 @@
 #include "golden.h"
+#include <algorithm>
+#include <fmt/core.h>
 
+static bool ratio_less_than_golden(unsigned numer, unsigned denom) {
+  // Without floating point !
+  // Consider ratio numer / denom
+  // numer / denom < (1+sqrt(5))/2
+  // <=> (2*numer + denom / denom)^2 < 5
+  // <=> (2*numer + denom)^2 < 5*denom^2
+  unsigned left = 2*numer + denom;
+  bool lt = (left*left < 5*denom*denom);
+  return lt;
+}
+  
 void Golden::set(unsigned width, unsigned height, unsigned num_cards) {
   if ((window_size_[0] != width) ||
       (window_size_[1] != height) ||
@@ -13,14 +26,48 @@ void Golden::set(unsigned width, unsigned height, unsigned num_cards) {
 Golden::au2_t Golden::GetCardPosition(unsigned card_idx) const {
   au2_t pos{0, 0};
   if (card_idx < num_cards_) {
+    unsigned col = card_idx % num_cards_;
+    unsigned row = card_idx / num_cards_;
     pos = {
-      column_offsets_[card_idx % num_cards_],
-      row_offsets_[card_idx / num_cards_]};
+      col * (card_size_[0] + gap_[0]) + gap_[0],
+      row * (card_size_[1] + gap_[1]) + gap_[1]};
   }
   return pos;
 }
 
 void Golden::recalculate() {
+  unsigned best_cols = ComputeBestColumns();
+  if (best_cols == unsigned(-1)) {
+    error_ = "Failed to compute number of columns";
+  } else {
+    num_columns_ = best_cols;
+    const unsigned num_rows = GetNumRows();
+    unsigned xgap = MinGap(window_size_[0]);
+    unsigned ygap = MinGap(window_size_[1]);
+    unsigned x_avail = window_size_[0] - (num_columns_ + 1)*xgap;
+    unsigned y_avail = window_size_[1] - (num_rows + 1)*ygap;
+    unsigned xspace = x_avail / num_columns_;
+    unsigned yspace = y_avail / num_rows;
+    if ((xspace > 6) && (yspace > 6)) {
+      if (ratio_less_than_golden(xspace, yspace)) {
+        for (--yspace ; (yspace > 6) && ratio_less_than_golden(xspace, yspace);
+             --yspace) {}
+      } else {
+        for (--xspace; (xspace > 6) && !ratio_less_than_golden(xspace, yspace);
+             --xspace) {}
+      }
+    }
+    if ((xspace < 6) || (yspace < 6)) {
+      error_ = fmt::format("Card Size {}x{} to small", xspace, yspace);
+    } else {
+      card_size_ = au2_t{xspace, yspace};
+      unsigned gap_avail;
+      gap_avail = window_size_[0] - num_columns_*card_size_[0];
+      gap_[0] = gap_avail/(num_columns_ + 1);
+      gap_avail = window_size_[1] - num_rows*card_size_[1];
+      gap_[1] = gap_avail/(num_rows + 1);
+    }
+  }
 }
 
 unsigned Golden::pick(unsigned x, unsigned y) const {
@@ -29,14 +76,43 @@ unsigned Golden::pick(unsigned x, unsigned y) const {
 }
 
 unsigned Golden::GetNumRows() const {
-  return (num_cards_ + n_columns_ - 1) / n_columns_;
+  return (num_cards_ + num_columns_ - 1) / num_columns_;
+}
+
+unsigned Golden::ComputeBestColumns() const {
+  // Find the closest rectangle ratio to Golden Ratio g = (1+sqrt(5))/2
+  // If we have ratio < g, we convert: ratio := 1/ratio
+  unsigned best_numerator = 0, best_denominator = 0;
+  unsigned best{unsigned(-1)}; // undefined
+  for (int ncols = 1; ncols <= int(num_cards_); ++ncols) {
+    const unsigned nrows = (num_cards_ + ncols - 1) / ncols;
+    int xgap = MinGap(window_size_[0]);
+    int ygap = MinGap(window_size_[1]);
+    int numer = (int(window_size_[0]) - (ncols * 1)*xgap) / ncols;
+    int denom = (int(window_size_[1]) - (nrows * 1)*ygap) / nrows;
+    if ((numer > 0) && (denom > 0)) {
+      if (ratio_less_than_golden(numer, denom)) {
+        std::swap(numer, denom);
+      }
+      if ((best == unsigned(-1)) ||
+        (numer * best_denominator < best_numerator * denom)) {
+        best = ncols;
+        best_numerator = numer;
+        best_denominator = denom;
+      }
+    }
+  }
+  return best;
+}        
+
+unsigned Golden::MinGap(unsigned space_size) {
+  return std::max<int>(4, space_size/24);
 }
 
 #if defined(GOLDEN_TEST)
 
 #include <iostream>
 #include <string>
-#include <fmt/core.h>
 
 using au2_t = std::array<unsigned, 2>;
 

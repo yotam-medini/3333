@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include <vector>
+#include <string>
 
 class Golden {
  public:
@@ -16,14 +16,17 @@ class Golden {
   const au2_t &GetCardSize() const { return card_size_; }
   unsigned pick(unsigned x, unsigned y) const;
   unsigned pick(const au2_t &pt) const { return pick(pt[0], pt[1]); }
-  unsigned GetNumColumns() const { return n_columns_; }
+  unsigned GetNumColumns() const { return num_columns_; }
   unsigned GetNumRows() const;
+  const std::string &GetError() const { return error_; }
  private:
+  static unsigned MinGap(unsigned space_size);
+  unsigned ComputeBestColumns() const;
+  std::string error_;
   void recalculate();
   au2_t window_size_;
   unsigned num_cards_;
   au2_t card_size_;
-  unsigned n_columns_{1};
-  std::vector<unsigned> row_offsets_;
-  std::vector<unsigned> column_offsets_;
+  unsigned num_columns_{1};
+  au2_t gap_;
 };
