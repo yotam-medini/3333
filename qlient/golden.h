@@ -14,8 +14,8 @@ class Golden {
   au2_t GetCardPosition(unsigned card_idx) const;
   const au2_t &GetWindowSize() const { return window_size_; }
   const au2_t &GetCardSize() const { return card_size_; }
-  unsigned pick(unsigned x, unsigned y) const;
-  unsigned pick(const au2_t &pt) const { return pick(pt[0], pt[1]); }
+  unsigned Pick(unsigned x, unsigned y) const;
+  unsigned Pick(const au2_t &pt) const { return Pick(pt[0], pt[1]); }
   unsigned GetNumColumns() const { return num_columns_; }
   unsigned GetNumRows() const;
   const std::string &GetError() const { return error_; }

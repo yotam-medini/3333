@@ -71,7 +71,7 @@ void Golden::recalculate() {
   }
 }
 
-unsigned Golden::pick(unsigned x, unsigned y) const {
+unsigned Golden::Pick(unsigned x, unsigned y) const {
   unsigned card_idx{unsigned(-1)};
   unsigned col = (x - gap_[0]) / (card_size_[0] + gap_[0]);
   unsigned row = (y - gap_[1]) / (card_size_[1] + gap_[1]);
@@ -163,6 +163,34 @@ static int check_disjoint(const Golden& golden) {
 
 static int check_pick(const Golden &golden) {
   int rc = 0;
+  const au2_t window_size = golden.GetWindowSize();
+  const au2_t card_size = golden.GetCardSize();
+  for (unsigned x = 0; (rc == 0) && (x < window_size[0]); ++x) {
+    for (unsigned y = 0; (rc == 0) && (y < window_size[1]); ++y) {
+      unsigned expected{unsigned(-1)};
+      for (unsigned ci = 0; (rc == 0) && (ci < golden.GetNumCards()); ++ci) {
+        au2_t pos = golden.GetCardPosition(ci);
+        if ((pos[0] <= x) && (x < pos[0] + card_size[0]) && 
+          (pos[1] <= y) && (y < pos[1] + card_size[1])) {
+          if (expected != unsigned(-1)) {
+            std::cerr << fmt::format("At {}x{} multi expected {} & {}\n",
+              x, y, expected, ci);
+            rc = 1;
+          } else {
+            expected = ci;
+          }
+        }
+      }
+      if (rc == 0) {
+        unsigned picked = golden.Pick(x, y);
+        if (picked != expected) {
+          std::cerr << fmt::format("At {}x{} picked = {} != {} = expected\n",
+            x, y, picked, expected);                                   
+          rc = 1;
+        }
+      }                   
+    }
+  }
   return rc;
 }
 
@@ -170,6 +198,14 @@ static int test_golden(unsigned w, unsigned h, unsigned num_cards) {
   Golden golden(w, h, num_cards);
   int rc = check_disjoint(golden);
   rc = rc ? : check_pick(golden);
+  if (rc == 0) {
+    const au2_t card_size = golden.GetCardSize();
+    std::cout << fmt::format("Card size: {}x{}\n", card_size[0], card_size[1]);
+    for (unsigned ci = 0; ci < num_cards; ++ci) {
+      const au2_t pos = golden.GetCardPosition(ci);
+      std::cout << fmt::format("card[{:2d}] @ {}x{}\n", ci, pos[0], pos[1]);
+    }
+  }
   return rc;
 }
 
