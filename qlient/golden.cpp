@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <fmt/core.h>
 
-static bool ratio_less_than_golden(unsigned numer, unsigned denom) {
+static bool ratio_less_than_golden(long numer, long denom) {
   // Without floating point !
   // Consider ratio numer / denom
   // numer / denom < (1+sqrt(5))/2
-  // <=> (2*numer + denom / denom)^2 < 5
-  // <=> (2*numer + denom)^2 < 5*denom^2
-  unsigned left = 2*numer + denom;
+  // <=> (2*numer - denom / denom)^2 < 5
+  // <=> (2*numer - denom)^2 < 5*denom^2
+  long left = 2*numer - denom;
   bool lt = (left*left < 5*denom*denom);
   return lt;
 }
@@ -26,8 +26,8 @@ void Golden::set(unsigned width, unsigned height, unsigned num_cards) {
 Golden::au2_t Golden::GetCardPosition(unsigned card_idx) const {
   au2_t pos{0, 0};
   if (card_idx < num_cards_) {
-    unsigned col = card_idx % num_cards_;
-    unsigned row = card_idx / num_cards_;
+    unsigned col = card_idx % num_columns_;
+    unsigned row = card_idx / num_columns_;
     pos = {
       col * (card_size_[0] + gap_[0]) + gap_[0],
       row * (card_size_[1] + gap_[1]) + gap_[1]};
@@ -49,6 +49,7 @@ void Golden::recalculate() {
     unsigned xspace = x_avail / num_columns_;
     unsigned yspace = y_avail / num_rows;
     if ((xspace > 6) && (yspace > 6)) {
+      // TODO: binary search
       if (ratio_less_than_golden(xspace, yspace)) {
         for (--yspace ; (yspace > 6) && ratio_less_than_golden(xspace, yspace);
              --yspace) {}
