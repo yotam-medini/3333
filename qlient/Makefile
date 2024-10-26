@@ -27,3 +27,11 @@ wasm-cmake:
 	  ${QT_WASM}/bin/qt-cmake -DCMAKE_BUILD_TYPE=Debug ..)
 wasm-make:
 	(source ${EMSDK_ENV}; cd build-wasm; emmake make -s LOGLEVEL=4)
+
+# Golden-test
+golden-test: ./bin.d/golden-test
+	./bin.d/golden-test
+
+./bin.d/golden-test: golden.cpp golden.h
+	@mkdir -p ${@D}
+	g++ -DGOLDEN_TEST=1 -Wall -g -o $@ golden.cpp -lfmt

@@ -49,6 +49,7 @@ void Client::OnReceived(QString message) {
        case E3333_S2C_GSTATE:
         SetGameState(result_map);
         ui_.DrawGame();
+        break;
        default:
          qDebug() << fmt::format("Unsupported E3333_S2C_xxx {} command", cmd);
       };

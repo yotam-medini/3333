@@ -10,6 +10,7 @@ class QPushButton;
 class QWidget;
 
 class Game;
+class DrawArea;
 
 class Table : public QWidget {
  public:
@@ -22,6 +23,6 @@ class Table : public QWidget {
  private:
   std::unique_ptr<QLabel> name_at_name_;
   std::unique_ptr<QPushButton> butt_new_game;
-  std::unique_ptr<QWidget> draw_area_;
+  std::unique_ptr<DrawArea> draw_area_;
   std::function<int(void)> new_game_func_;
 };
