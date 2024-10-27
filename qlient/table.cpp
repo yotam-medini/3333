@@ -31,10 +31,10 @@ class DrawArea : public QWidget {
       auto const &cards = game->cards_active_;
       golden_.set(w, h, cards.size());
       const au2_t card_size = golden_.GetCardSize();
+      QColor white(0xff, 0xff, 0xff);
       for (size_t ai = 0; ai < cards.size(); ++ai) {
         const au2_t pos = golden_.GetCardPosition(ai);
-        ell.setPen(QColor(0xff, 0xff, 0xff));
-        ell.drawRect(pos[0], pos[1], card_size[0], card_size[1]);
+        ell.fillRect(pos[0], pos[1], card_size[0], card_size[1], white);
         size_t ci = cards[ai];
       }
     }

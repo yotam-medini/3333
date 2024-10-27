@@ -117,7 +117,7 @@ unsigned Golden::ComputeBestColumns() const {
 }        
 
 unsigned Golden::MinGap(unsigned space_size) {
-  return std::max<int>(4, space_size/24);
+  return std::max<int>(4, space_size/0x20);
 }
 
 #if defined(GOLDEN_TEST)
