@@ -85,11 +85,13 @@ void DrawArea::DrawCard(
     for (bool fill_pass: shading_fill_passes_[shading]) {
       QPainter painter(this);
       if (fill_pass) {
-        painter.fillPath(path, QBrush(card_colors_[color]));
+        painter.fillPath(path,
+          shading == 1 ? color_brushes_[color] : QBrush(card_colors_[color]));
       } else {
         QPen pen;
         pen.setColor(card_colors_[color]);
         pen.setWidth(std::max<int>(4, sym_size.width()/12));
+        pen.setJoinStyle(Qt::MiterJoin);
         painter.setPen(pen);
         painter.drawPath(path);
       }
