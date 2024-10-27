@@ -15,10 +15,19 @@ class DrawArea : public QWidget {
  protected:
   void paintEvent(QPaintEvent *event) override;
  private:
-  void DrawCard(QPainter &painter, unsigned card, const QRect &card_rect);
-  void DrawDiamond(const QRect& symbol_rect, unsigned shading, unsigned color);
-  void DrawSquiggle(const QRect& symbol_rect, unsigned shading, unsigned color);
-  void DrawOval(const QRect& symbol_rect, unsigned shading, unsigned color);
+  void DrawCard(unsigned card, const QRect &card_rect);
+  void DrawDiamond(    const QRect& symbol_rect,
+    unsigned shading,
+    unsigned color,
+    bool fill_pass);
+  void DrawSquiggle(    const QRect& symbol_rect,
+    unsigned shading,
+    unsigned color,
+    bool fill_pass);
+  void DrawOval(    const QRect& symbol_rect,
+    unsigned shading,
+    unsigned color,
+    bool fill_pass);
   void SetBrushes(unsigned card_height);
   void SetBrush(unsigned ci);
   static const std::vector<bool> shading_fill_passes_[3];

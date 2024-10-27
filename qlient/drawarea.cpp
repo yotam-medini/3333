@@ -2,6 +2,7 @@
 #include <fmt/core.h>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPainterPath>
 #include "game.h"
 #include "table.h"
 
@@ -40,16 +41,16 @@ void DrawArea::paintEvent(QPaintEvent *event) {
     for (size_t ai = 0; ai < cards.size(); ++ai) {
       const au2_t pos = golden_.GetCardPosition(ai);
       QRect card_rect(pos[0], pos[1], card_size[0], card_size[1]);
-      DrawCard(painter, game->cards_active_[ai], card_rect);
+      DrawCard(game->cards_active_[ai], card_rect);
     }
   }
 }
 
 void DrawArea::DrawCard(
-    QPainter &painter,
     unsigned card,
     const QRect &card_rect) {
   static const QColor white(0xff, 0xff, 0xff);
+  QPainter painter(this);
   painter.fillRect(card_rect, white);
   auto qr = std::div(card, 3);
   unsigned shading = qr.rem;
@@ -57,15 +58,27 @@ void DrawArea::DrawCard(
   unsigned color = qr.rem;
   qr = std::div(qr.quot, 3);
   unsigned symbol = qr.rem;
-  unsigned n_symbols = qr.quot + 1;
+  unsigned num_symbols = qr.quot + 1;
   qDebug() << fmt::format(
-    "card={}, shading={} color={} symbol={}, n_symbols={}\n",
-    card, shading, color, symbol, n_symbols);
-  static std::array<void (DrawArea::*)(const QRect&, unsigned, unsigned), 3> 
+    "card={}, shading={} color={} symbol={}, num_symbols={}\n",
+    card, shading, color, symbol, num_symbols);
+  static std::array<void (DrawArea::*)(
+      const QRect&, unsigned, unsigned, bool), 3> 
     draw_sym_funcs =
       {&DrawArea::DrawDiamond, &DrawArea::DrawSquiggle, &DrawArea::DrawOval};
   auto draw_symbol = draw_sym_funcs[symbol];
-  ((*this).*draw_symbol)(QRect(), shading, color);
+
+  unsigned sym_w = (3*card_rect.width())/4;
+  unsigned sym_h = (3*card_rect.height())/4;
+  unsigned x_gap = (card_rect.width() - num_symbols*sym_w) / (num_symbols + 1);
+  unsigned y_gap = (card_rect.height() - sym_h)/2;
+  QRect symbol_rect(card_rect.x() + x_gap, card_rect.y() + y_gap, sym_w, sym_h);
+  for (unsigned r = 0; r < num_symbols; ++r) {
+    for (bool fill_pass: shading_fill_passes_[shading]) {
+      ((*this).*draw_symbol)(symbol_rect, shading, color, fill_pass);
+    }
+    symbol_rect.setX(symbol_rect.x() + sym_w + x_gap);
+  }
 }
 
 void DrawArea::SetBrushes(unsigned card_height) {
@@ -85,3 +98,36 @@ void DrawArea::SetBrush(unsigned ci) {
   color_brushes_[ci] = QBrush(8, pattern);
 }
 
+void DrawArea::DrawDiamond(
+    const QRect& rect,
+    unsigned shading,
+    unsigned color,
+    bool fill_pass) {
+  QPainter painter(this);
+  QPainterPath diamond;
+  diamond.moveTo(rect.x() + rect.width()/2, rect.y());
+  diamond.lineTo(rect.x() + rect.width(), rect.y() + rect.height()/2);
+  diamond.lineTo(rect.x() + rect.width()/2, rect.y() + rect.height());
+  diamond.lineTo(rect.x(), rect.y() + rect.height()/2);
+  diamond.closeSubpath();
+  if (fill_pass) {
+    painter.fillPath(diamond, QBrush(card_colors_[color]));
+  } else {
+    painter.setPen(card_colors_[color]);
+    painter.drawPath(diamond);
+  }
+}
+
+void DrawArea::DrawSquiggle(
+    const QRect& symbol_rect,
+    unsigned shading,
+    unsigned color,
+    bool fill_pass) {
+}
+
+void DrawArea::DrawOval(
+    const QRect& symbol_rect,
+    unsigned shading,
+    unsigned color,
+    bool fill_pass) {
+}
