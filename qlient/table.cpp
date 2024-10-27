@@ -8,19 +8,40 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QWidget>
+#include "game.h"
+#include "golden.h"
 
 class DrawArea : public QWidget {
  public:
-  DrawArea(QWidget *parent) : QWidget(parent) {}
+  DrawArea(Table *table) :
+    QWidget(table),
+    table_{*table} {
+  }
  protected:
   void paintEvent(QPaintEvent *event) override {
+    using au2_t = Golden::au2_t;
     int w = width();
     int h = height();
     qDebug() << fmt::format("DrawArea::paintEvent w={}, h={}", w, h);
     QPainter ell(this);
-    ell.setPen(Qt::darkGreen);
-    ell.drawEllipse(QRect(w/8, h/8, w/2, h/2)); 
+    ell.setPen(QColor(0x22, 0xaa, 0x33));
+    ell.drawRect(0, 0, w, h);
+    const Game *game = table_.GetGame();
+    if (game) {
+      auto const &cards = game->cards_active_;
+      golden_.set(w, h, cards.size());
+      const au2_t card_size = golden_.GetCardSize();
+      for (size_t ai = 0; ai < cards.size(); ++ai) {
+        const au2_t pos = golden_.GetCardPosition(ai);
+        ell.setPen(QColor(0xff, 0xff, 0xff));
+        ell.drawRect(pos[0], pos[1], card_size[0], card_size[1]);
+        size_t ci = cards[ai];
+      }
+    }
   }
+ private:
+  const Table &table_;
+  Golden golden_;
 };
 
 Table::Table(QWidget *parent) :
@@ -51,24 +72,7 @@ void Table::NewTable(const QVariantMap &result_map) {
   name_at_name_->setText(QString::fromStdString(t));
 }
 
-void Table::DrawGame(const Game& game) {
-   //  setBackgroundRole(QPalette::Base);
-   // setAutoFillBackground(true);
-  
-  int w = draw_area_->width();
-  int h = draw_area_->width();
+void Table::SetGame(const Game& game) {
+  game_ = &game;
   draw_area_->update();
-  qDebug() << fmt::format("Table::DrawGame w={}, h={}", w, h);
-#if 0
-    QPainterPath rectPath;
-    rectPath.moveTo(w/4, h/4.0);
-    rectPath.lineTo(3*w/4, h/4);
-    rectPath.lineTo(3*w/4, 3*h/4);
-    rectPath.lineTo(w/4, h/2);
-    rectPath.closeSubpath();
-  QPainter ell(this);
-  ell.setPen(Qt::darkGreen);
-  ell.drawEllipse(QRect(w/8, h/8, w/2, h/2)); 
-#endif
-
 }

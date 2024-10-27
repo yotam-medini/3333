@@ -17,6 +17,7 @@ void Golden::set(unsigned width, unsigned height, unsigned num_cards) {
   if ((window_size_[0] != width) ||
       (window_size_[1] != height) ||
       (num_cards_ != num_cards)) {
+    error_.clear();
     window_size_ = {width, height};
     num_cards_ = num_cards;
     recalculate();

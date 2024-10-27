@@ -51,7 +51,7 @@ class UIImpl {
     table_->SetNewGameFunc(f);
   }
   void DrawGame() {
-    table_->DrawGame(game_);
+    table_->SetGame(game_);
   }
  private:
   Game &game_; 
