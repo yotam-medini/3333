@@ -9,7 +9,7 @@ class Golden {
     window_size_{width, height}, num_cards_{num_cards} {
     recalculate();
   }
-  void set(unsigned width, unsigned height, unsigned num_cards);
+  void Set(unsigned width, unsigned height, unsigned num_cards);
   unsigned GetNumCards() const { return num_cards_; }
   au2_t GetCardPosition(unsigned card_idx) const;
   const au2_t &GetWindowSize() const { return window_size_; }

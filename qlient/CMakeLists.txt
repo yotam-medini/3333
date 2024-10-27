@@ -37,6 +37,7 @@ qt_add_executable(qclient
     player.cpp player.h
     game.cpp game.h
     golden.cpp golden.h
+    drawarea.cpp drawarea.h
     main.cpp
 )
 

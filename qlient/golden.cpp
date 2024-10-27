@@ -13,7 +13,7 @@ static bool ratio_less_than_golden(long numer, long denom) {
   return lt;
 }
   
-void Golden::set(unsigned width, unsigned height, unsigned num_cards) {
+void Golden::Set(unsigned width, unsigned height, unsigned num_cards) {
   if ((window_size_[0] != width) ||
       (window_size_[1] != height) ||
       (num_cards_ != num_cards)) {
