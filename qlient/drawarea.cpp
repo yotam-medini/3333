@@ -70,7 +70,7 @@ void DrawArea::DrawCard(
       {&DrawArea::DrawDiamond, &DrawArea::DrawSquiggle, &DrawArea::DrawOval};
   auto draw_symbol = draw_sym_funcs[symbol];
 #endif
-  static std::array<QPainterPath (DrawArea::*)(const QRect&), 3> 
+  static std::array<QPainterPath (DrawArea::*)(const QRect&) const, 3> 
     get_sym_path_funcs = {
       &DrawArea::GetDiamondPath, 
       &DrawArea::GetSquigglePath,
@@ -120,7 +120,7 @@ void DrawArea::SetBrush(unsigned ci) {
   color_brushes_[ci] = QBrush(8, pattern);
 }
 
-QPainterPath DrawArea::GetDiamondPath(const QRect& rect) {
+QPainterPath DrawArea::GetDiamondPath(const QRect& rect) const {
   qDebug() << "GetDiamondPath";
   QPainterPath diamond;
   diamond.moveTo(rect.x() + rect.width()/2, rect.y());
@@ -131,53 +131,14 @@ QPainterPath DrawArea::GetDiamondPath(const QRect& rect) {
   return diamond;
 }
 
-QPainterPath DrawArea::GetSquigglePath(const QRect& symbol_rect) {
+QPainterPath DrawArea::GetSquigglePath(const QRect& symbol_rect) const {
   qDebug() << "GetSquigglePath";
   QPainterPath path;
   return path;
 }
 
-QPainterPath DrawArea::GetOvalPath(const QRect& symbol_rect) {
+QPainterPath DrawArea::GetOvalPath(const QRect& symbol_rect) const {
   qDebug() << "GetOvalPath";
   QPainterPath path;
   return path;
 }
-
-#if 0
-void DrawArea::DrawDiamond(
-    const QRect& rect,
-    unsigned shading,
-    unsigned color,
-    bool fill_pass) {
-  qDebug() << fmt::format("Diamond scp: {} {} {}", shading, color, fill_pass);
-  QPainter painter(this);
-  QPainterPath diamond;
-  diamond.moveTo(rect.x() + rect.width()/2, rect.y());
-  diamond.lineTo(rect.x() + rect.width(), rect.y() + rect.height()/2);
-  diamond.lineTo(rect.x() + rect.width()/2, rect.y() + rect.height());
-  diamond.lineTo(rect.x(), rect.y() + rect.height()/2);
-  diamond.closeSubpath();
-  if (fill_pass) {
-    painter.fillPath(diamond, QBrush(card_colors_[color]));
-  } else {
-    painter.setPen(card_colors_[color]);
-    painter.drawPath(diamond);
-  }
-}
-
-void DrawArea::DrawSquiggle(
-    const QRect& symbol_rect,
-    unsigned shading,
-    unsigned color,
-    bool fill_pass) {
-  qDebug() << fmt::format("Squiggle scp: {} {} {}", shading, color, fill_pass);
-}
-
-void DrawArea::DrawOval(
-    const QRect& symbol_rect,
-    unsigned shading,
-    unsigned color,
-    bool fill_pass) {
-  qDebug() << fmt::format("Oval scp: {} {} {}", shading, color, fill_pass);
-}
-#endif
