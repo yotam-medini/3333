@@ -63,11 +63,19 @@ void DrawArea::DrawCard(
   qDebug() << fmt::format(
     "card={}, shading={} color={} symbol={}, num_symbols={}\n",
     card, shading, color, symbol, num_symbols);
+#if 0
   static std::array<void (DrawArea::*)(
       const QRect&, unsigned, unsigned, bool), 3> 
     draw_sym_funcs =
       {&DrawArea::DrawDiamond, &DrawArea::DrawSquiggle, &DrawArea::DrawOval};
   auto draw_symbol = draw_sym_funcs[symbol];
+#endif
+  static std::array<QPainterPath (DrawArea::*)(const QRect&), 3> 
+    get_sym_path_funcs = {
+      &DrawArea::GetDiamondPath, 
+      &DrawArea::GetSquigglePath,
+      &DrawArea::GetOvalPath};
+  auto get_symbol_path = get_sym_path_funcs[symbol];
 
   int sym_w = card_rect.width()/4;
   int sym_h = (3*card_rect.height())/4;
@@ -80,8 +88,15 @@ void DrawArea::DrawCard(
     QRect symbol_rect;
     symbol_rect.setTopLeft(left_top);
     symbol_rect.setSize(sym_size);
+    QPainterPath path = ((*this).*get_symbol_path)(symbol_rect);
     for (bool fill_pass: shading_fill_passes_[shading]) {
-      ((*this).*draw_symbol)(symbol_rect, shading, color, fill_pass);
+      QPainter painter(this);
+      if (fill_pass) {
+        painter.fillPath(path, QBrush(card_colors_[color]));
+      } else {
+        painter.setPen(card_colors_[color]);
+        painter.drawPath(path);
+      }
     }
     symbol_rect.setX(symbol_rect.x() + sym_w + x_gap);
     left_top.setX(left_top.x() + sym_w + x_gap);
@@ -105,6 +120,30 @@ void DrawArea::SetBrush(unsigned ci) {
   color_brushes_[ci] = QBrush(8, pattern);
 }
 
+QPainterPath DrawArea::GetDiamondPath(const QRect& rect) {
+  qDebug() << "GetDiamondPath";
+  QPainterPath diamond;
+  diamond.moveTo(rect.x() + rect.width()/2, rect.y());
+  diamond.lineTo(rect.x() + rect.width(), rect.y() + rect.height()/2);
+  diamond.lineTo(rect.x() + rect.width()/2, rect.y() + rect.height());
+  diamond.lineTo(rect.x(), rect.y() + rect.height()/2);
+  diamond.closeSubpath();
+  return diamond;
+}
+
+QPainterPath DrawArea::GetSquigglePath(const QRect& symbol_rect) {
+  qDebug() << "GetSquigglePath";
+  QPainterPath path;
+  return path;
+}
+
+QPainterPath DrawArea::GetOvalPath(const QRect& symbol_rect) {
+  qDebug() << "GetOvalPath";
+  QPainterPath path;
+  return path;
+}
+
+#if 0
 void DrawArea::DrawDiamond(
     const QRect& rect,
     unsigned shading,
@@ -141,3 +180,4 @@ void DrawArea::DrawOval(
     bool fill_pass) {
   qDebug() << fmt::format("Oval scp: {} {} {}", shading, color, fill_pass);
 }
+#endif

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <QWidget>
+#include <QPainterPath>
 #include "golden.h"
 
 class QPaintEvent;
@@ -16,6 +17,10 @@ class DrawArea : public QWidget {
   void paintEvent(QPaintEvent *event) override;
  private:
   void DrawCard(unsigned card, const QRect &card_rect);
+  QPainterPath GetDiamondPath(const QRect& symbol_rect);
+  QPainterPath GetSquigglePath(const QRect& symbol_rect);
+  QPainterPath GetOvalPath(const QRect& symbol_rect);
+#if 0
   void DrawDiamond(    const QRect& symbol_rect,
     unsigned shading,
     unsigned color,
@@ -28,6 +33,7 @@ class DrawArea : public QWidget {
     unsigned shading,
     unsigned color,
     bool fill_pass);
+#endif
   void SetBrushes(unsigned card_height);
   void SetBrush(unsigned ci);
   static const std::vector<bool> shading_fill_passes_[3];
