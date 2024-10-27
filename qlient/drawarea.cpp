@@ -1,5 +1,6 @@
 #include "drawarea.h"
 #include <fmt/core.h>
+#include <QDebug>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPainterPath>
@@ -68,16 +69,22 @@ void DrawArea::DrawCard(
       {&DrawArea::DrawDiamond, &DrawArea::DrawSquiggle, &DrawArea::DrawOval};
   auto draw_symbol = draw_sym_funcs[symbol];
 
-  unsigned sym_w = (3*card_rect.width())/4;
-  unsigned sym_h = (3*card_rect.height())/4;
-  unsigned x_gap = (card_rect.width() - num_symbols*sym_w) / (num_symbols + 1);
-  unsigned y_gap = (card_rect.height() - sym_h)/2;
-  QRect symbol_rect(card_rect.x() + x_gap, card_rect.y() + y_gap, sym_w, sym_h);
+  int sym_w = card_rect.width()/4;
+  int sym_h = (3*card_rect.height())/4;
+  const QSize sym_size{sym_w, sym_h};
+  int x_gap = (card_rect.width() - num_symbols*sym_w) / (num_symbols + 1);
+  int y_gap = (card_rect.height() - sym_h)/2;
+  QPoint left_top{card_rect.x() + x_gap, card_rect.y() + y_gap};
+  // QRect symbol_rect(card_rect.x() + x_gap, card_rect.y() + y_gap, sym_w, sym_h);
   for (unsigned r = 0; r < num_symbols; ++r) {
+    QRect symbol_rect;
+    symbol_rect.setTopLeft(left_top);
+    symbol_rect.setSize(sym_size);
     for (bool fill_pass: shading_fill_passes_[shading]) {
       ((*this).*draw_symbol)(symbol_rect, shading, color, fill_pass);
     }
     symbol_rect.setX(symbol_rect.x() + sym_w + x_gap);
+    left_top.setX(left_top.x() + sym_w + x_gap);
   }
 }
 
@@ -103,6 +110,7 @@ void DrawArea::DrawDiamond(
     unsigned shading,
     unsigned color,
     bool fill_pass) {
+  qDebug() << fmt::format("Diamond scp: {} {} {}", shading, color, fill_pass);
   QPainter painter(this);
   QPainterPath diamond;
   diamond.moveTo(rect.x() + rect.width()/2, rect.y());
@@ -123,6 +131,7 @@ void DrawArea::DrawSquiggle(
     unsigned shading,
     unsigned color,
     bool fill_pass) {
+  qDebug() << fmt::format("Squiggle scp: {} {} {}", shading, color, fill_pass);
 }
 
 void DrawArea::DrawOval(
@@ -130,4 +139,5 @@ void DrawArea::DrawOval(
     unsigned shading,
     unsigned color,
     bool fill_pass) {
+  qDebug() << fmt::format("Oval scp: {} {} {}", shading, color, fill_pass);
 }
