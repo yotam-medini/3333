@@ -85,8 +85,8 @@ void DrawArea::DrawCard(
     for (bool fill_pass: shading_fill_passes_[shading]) {
       QPainter painter(this);
       if (fill_pass) {
-        painter.fillPath(path,
-          shading == 1 ? color_brushes_[color] : QBrush(card_colors_[color]));
+        painter.fillPath(path, shading == 1
+          ? color_stripes_brushes_[color] : QBrush(card_colors_[color]));
       } else {
         QPen pen;
         pen.setColor(card_colors_[color]);
@@ -115,7 +115,7 @@ void DrawArea::SetBrush(unsigned ci) {
   pattern.fill(QColor(0xff, 0xff, 0xff));
   QPainter painter(&pattern);
   painter.fillRect(0, 0, 8, stripe_height_, card_colors_[ci]);
-  color_brushes_[ci] = QBrush(8, pattern);
+  color_stripes_brushes_[ci] = QBrush(8, pattern);
 }
 
 QPainterPath DrawArea::GetDiamondPath(const QRect& rect) const {

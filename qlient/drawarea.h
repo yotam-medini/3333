@@ -24,7 +24,7 @@ class DrawArea : public QWidget {
   void SetBrush(unsigned ci);
   static const std::vector<bool> shading_fill_passes_[3];
   static const QColor card_colors_[3]; // red, green, purple
-  QBrush color_brushes_[3];
+  QBrush color_stripes_brushes_[3];
   unsigned stripe_height_{0};
   const Table &table_;
   Golden golden_;
