@@ -63,13 +63,6 @@ void DrawArea::DrawCard(
   qDebug() << fmt::format(
     "card={}, shading={} color={} symbol={}, num_symbols={}\n",
     card, shading, color, symbol, num_symbols);
-#if 0
-  static std::array<void (DrawArea::*)(
-      const QRect&, unsigned, unsigned, bool), 3> 
-    draw_sym_funcs =
-      {&DrawArea::DrawDiamond, &DrawArea::DrawSquiggle, &DrawArea::DrawOval};
-  auto draw_symbol = draw_sym_funcs[symbol];
-#endif
   static std::array<QPainterPath (DrawArea::*)(const QRect&) const, 3> 
     get_sym_path_funcs = {
       &DrawArea::GetDiamondPath, 
@@ -94,7 +87,10 @@ void DrawArea::DrawCard(
       if (fill_pass) {
         painter.fillPath(path, QBrush(card_colors_[color]));
       } else {
-        painter.setPen(card_colors_[color]);
+        QPen pen;
+        pen.setColor(card_colors_[color]);
+        pen.setWidth(std::max<int>(4, sym_size.width()/12));
+        painter.setPen(pen);
         painter.drawPath(path);
       }
     }
@@ -131,14 +127,53 @@ QPainterPath DrawArea::GetDiamondPath(const QRect& rect) const {
   return diamond;
 }
 
-QPainterPath DrawArea::GetSquigglePath(const QRect& symbol_rect) const {
+QPainterPath DrawArea::GetSquigglePath(const QRect& rect) const {
   qDebug() << "GetSquigglePath";
+  const int w = rect.width();
+  const int h = rect.height();
+  int rel_curves_left[4][3][2] = {
+    {{w/8, 0},      {0,   h/16},   {0,   h/14}},
+    {{w/3, h/8},    {w/4, h/4},    {w/5, 3*h/8}},
+    {{w/5, h/2},    {0,   5*h/8},  {0,   3*h/4}},
+    {{0,   7*h/8},  {w/4, h},      {w/2, h}}
+  };
+  int rel_curves_right[4][3][2];
+  for (size_t i = 0; i < 4; ++i) {
+    for (size_t j = 0; j < 3; ++j) {
+      // center symmetry
+      rel_curves_right[i][j][0] = w - rel_curves_left[i][j][0];
+      rel_curves_right[i][j][1] = h - rel_curves_left[i][j][1];
+    }
+  }
+  const int x = rect.x();
+  const int y = rect.y();
+  int curves[8][3][2];
+  int ci = 0;
+  for (const auto &prel: {rel_curves_left, rel_curves_right}) {
+    for (size_t i = 0; i < 4; ++i, ++ci) {
+      for (size_t j = 0; j < 3; ++j) {
+        curves[ci][j][0] = x + prel[i][j][0];
+        curves[ci][j][1] = y + prel[i][j][1];
+      }
+    }
+  }
   QPainterPath path;
+  // The last point is also the first!
+  path.moveTo(curves[7][2][0], curves[7][2][1]);
+  for (size_t i = 0; i < 8; ++i) {
+    auto const &p = curves[i];
+    path.cubicTo(
+      p[0][0], p[0][1], 
+      p[1][0], p[1][1], 
+      p[2][0], p[2][1]);
+  }
   return path;
 }
 
-QPainterPath DrawArea::GetOvalPath(const QRect& symbol_rect) const {
+QPainterPath DrawArea::GetOvalPath(const QRect& rect) const {
   qDebug() << "GetOvalPath";
   QPainterPath path;
+  path.addEllipse(rect);
+  // path.addEllipse(rect.x(), rect.y(), rect.width(), rect.height());
   return path;
 }
