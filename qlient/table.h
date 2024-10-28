@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 #include <QWidget>
 #include "common.h"
 
@@ -24,7 +25,10 @@ class Table : public QWidget {
   QLabel *name_at_name_{nullptr};
   QPushButton *butt_new_game_{nullptr};
   QPushButton *butt_add3_nomore_{nullptr};
+  QLabel *picked_{nullptr};
+  QLabel *status_summary_{nullptr};
   DrawArea *draw_area_{nullptr};
   std::function<int(void)> new_game_func_;
   const Game *game_{nullptr};
+  std::vector<unsigned> selected_;
 };

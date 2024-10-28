@@ -13,19 +13,25 @@
 Table::Table(QWidget *parent) :
     QWidget(parent) {
   setStyleSheet("background-color:#392;");
-  QVBoxLayout *vlayout = new QVBoxLayout(parent);
-  QHBoxLayout *hlayout = new QHBoxLayout(parent);
+  QVBoxLayout *vlayout = new QVBoxLayout(this);
+  QHBoxLayout *hlayout = new QHBoxLayout(this);
   name_at_name_ = new QLabel("<b>?@?</b>", this);
   hlayout->addWidget(name_at_name_);
   butt_new_game_ = new QPushButton("New Game", this);
   connect(butt_new_game_, &QPushButton::clicked, [this]() {
     this->new_game_func_(); });
-  ///butt_add3_nomore_ = std::make_unique<QPushButton>("Add 3", this);
   hlayout->addWidget(butt_new_game_);
+  butt_add3_nomore_ = new QPushButton("Add 3", this);
+  hlayout->addWidget(butt_add3_nomore_);
+  picked_ = new QLabel("0 picked", this);
+  hlayout->addWidget(picked_);
+  status_summary_ = new QLabel(
+    "# players, 69 @deck <font  color='red'>13</font>", this);
+  hlayout->addWidget(status_summary_);
   vlayout->addLayout(hlayout);
   draw_area_ = new DrawArea(this);
   draw_area_->setStyleSheet("background-color:#9ab;");
-  vlayout->addWidget(draw_area_);
+  vlayout->addWidget(draw_area_, 1);
   setLayout(vlayout);
 }
 

@@ -28,11 +28,6 @@ class UIImpl {
     players_idx_ = tab_->addTab(players_, "Players");
     layout->addWidget(tab_);
 
-    QPushButton *button1 = new QPushButton("Button 1");
-    layout->addWidget(button1);
-    QObject::connect(button1, &QPushButton::clicked, [](){
-        qDebug("Button 1 clicked!");
-    });
     window_->setLayout(layout);
     window_->resize(800, 600);
     window_->show();
