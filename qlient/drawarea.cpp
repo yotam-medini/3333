@@ -65,7 +65,8 @@ void DrawArea::DrawCard(
     QPainter painter(this);
     QPen pen;
     pen.setColor(gold);
-    pen.setWidth(std::max<int>(8, card_rect.width()/24));
+    pen.setWidth(std::max<int>(4, card_rect.width()/24));
+    painter.setPen(pen);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.drawRect(card_rect);
   }
