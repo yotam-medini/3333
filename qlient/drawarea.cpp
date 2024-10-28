@@ -84,6 +84,7 @@ void DrawArea::DrawCard(
     QPainterPath path = ((*this).*get_symbol_path)(symbol_rect);
     for (bool fill_pass: shading_fill_passes_[shading]) {
       QPainter painter(this);
+      painter.setRenderHint(QPainter::Antialiasing);
       if (fill_pass) {
         painter.fillPath(path, shading == 1
           ? color_stripes_brushes_[color] : QBrush(card_colors_[color]));
