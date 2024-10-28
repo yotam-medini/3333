@@ -17,16 +17,16 @@ class UIImpl {
     window_->setStyleSheet("background-color:#1b2;");
     QVBoxLayout *layout = new QVBoxLayout(window_.get());
 
-    tab_ = std::make_unique<QTabWidget>();
-    club_ = std::make_unique<Club>();
-    club_idx_ = tab_->addTab(club_.get(), "Club");
-    layout->addWidget(tab_.get());
-    table_ = std::make_unique<Table>(window_.get());
-    table_idx_ = tab_->addTab(table_.get(), "Table");
-    layout->addWidget(tab_.get());
-    players_ = std::make_unique<QWidget>();
-    players_idx_ = tab_->addTab(players_.get(), "Players");
-    layout->addWidget(tab_.get());
+    tab_ = new QTabWidget(window_.get());
+    club_ = new Club(tab_);
+    club_idx_ = tab_->addTab(club_, "Club");
+    layout->addWidget(tab_);
+    table_ = new Table(tab_);
+    table_idx_ = tab_->addTab(table_, "Table");
+    layout->addWidget(tab_);
+    players_ = new QWidget(tab_);
+    players_idx_ = tab_->addTab(players_, "Players");
+    layout->addWidget(tab_);
 
     QPushButton *button1 = new QPushButton("Button 1");
     layout->addWidget(button1);
@@ -56,10 +56,10 @@ class UIImpl {
  private:
   Game &game_; 
   std::unique_ptr<QWidget> window_;
-  std::unique_ptr<QTabWidget> tab_;
-  std::unique_ptr<Club> club_;
-  std::unique_ptr<Table> table_;
-  std::unique_ptr<QWidget> players_;
+  QTabWidget *tab_{nullptr};
+  Club *club_{nullptr};
+  Table *table_{nullptr};
+  QWidget *players_{nullptr};
   int club_idx_, table_idx_, players_idx_;
 };
 
