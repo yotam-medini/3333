@@ -1,15 +1,18 @@
 #include "drawarea.h"
+#include <algorithm>
 #include <fmt/core.h>
 #include <QDebug>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPainterPath>
 #include "game.h"
 #include "table.h"
 
-DrawArea::DrawArea(Table *table) :
+DrawArea::DrawArea(Table *table, std::vector<unsigned> &selected) :
   QWidget(table),
-  table_{*table} {
+  table_{*table},
+  selected_{selected} {
 }
 
 const std::vector<bool>  DrawArea::shading_fill_passes_[3] = {
@@ -42,17 +45,30 @@ void DrawArea::paintEvent(QPaintEvent *event) {
     for (size_t ai = 0; ai < cards.size(); ++ai) {
       const au2_t pos = golden_.GetCardPosition(ai);
       QRect card_rect(pos[0], pos[1], card_size[0], card_size[1]);
-      DrawCard(game->cards_active_[ai], card_rect);
+      DrawCard(game->cards_active_[ai], card_rect,
+        std::find(selected_.begin(), selected_.end(), ai) != selected_.end());
     }
   }
 }
 
 void DrawArea::DrawCard(
     unsigned card,
-    const QRect &card_rect) {
+    const QRect &card_rect,
+    bool picked) {
   static const QColor white(0xff, 0xff, 0xff);
-  QPainter painter(this);
-  painter.fillRect(card_rect, white);
+  static const QColor gold(0xff, 0xd7, 0x00);
+  {
+    QPainter painter(this);
+    painter.fillRect(card_rect, white);
+  }
+  if (picked) {
+    QPainter painter(this);
+    QPen pen;
+    pen.setColor(gold);
+    pen.setWidth(std::max<int>(8, card_rect.width()/24));
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.drawRect(card_rect);
+  }
   auto qr = std::div(card, 3);
   unsigned shading = qr.rem;
   qr = std::div(qr.quot, 3);
@@ -99,6 +115,29 @@ void DrawArea::DrawCard(
     }
     symbol_rect.setX(symbol_rect.x() + sym_w + x_gap);
     left_top.setX(left_top.x() + sym_w + x_gap);
+  }
+}
+
+void DrawArea::mouseReleaseEvent(QMouseEvent *event) {
+  auto position = event->position();
+  qDebug() << fmt::format("DrawArea::mouseReleaseEvent: {},{}",
+    position.x(), position.y());
+  const Game *game = table_.GetGame();
+  if (game && !game->cards_active_.empty()) {
+    unsigned who = golden_.Pick(position.x(), position.y());
+    qDebug() << fmt::format("DrawArea:: who={}", who);
+    if (who != unsigned(-1)) {
+      auto iter = std::find(selected_.begin(), selected_.end(), who);
+      if (iter == selected_.end()) {
+        if (selected_.size() < 3) {
+          selected_.push_back(who);
+        }
+      } else { // unselect
+        *iter = selected_.back();
+        selected_.pop_back();
+      }
+      update();
+    }
   }
 }
 

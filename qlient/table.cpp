@@ -26,10 +26,10 @@ Table::Table(QWidget *parent) :
   picked_ = new QLabel("0 picked", this);
   hlayout->addWidget(picked_);
   status_summary_ = new QLabel(
-    "# players, 69 @deck <font  color='red'>13</font>", this);
+    "# players, 69 @deck <font color='red'><a href='redTip'>13</a></font>", this);
   hlayout->addWidget(status_summary_);
   vlayout->addLayout(hlayout);
-  draw_area_ = new DrawArea(this);
+  draw_area_ = new DrawArea(this, selected_);
   draw_area_->setStyleSheet("background-color:#9ab;");
   vlayout->addWidget(draw_area_, 1);
   setLayout(vlayout);
