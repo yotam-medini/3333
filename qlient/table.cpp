@@ -56,7 +56,10 @@ void Table::SetGame(const Game& game) {
 
 
 void Table::UpdateSelected() {
+  qDebug() << "Table::UpdateSelected";
   std::string text = fmt::format("{} picked", selected_.size());
   picked_->setText(QString::fromStdString(text));
-  qDebug() << "Table::UpdateSelected";
+  if (selected_.size() == 3) {
+    try3_func_(selected_);
+  }
 }
