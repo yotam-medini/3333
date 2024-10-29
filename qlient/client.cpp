@@ -1,5 +1,6 @@
 #include "client.h"
 #include <iostream>
+#include <unordered_set>
 #include <fmt/core.h>
 #include <QDebug>
 #include <QtCore/qjsondocument.h>
@@ -91,6 +92,29 @@ int Client::NewGame() {
   return rc;
 }
 
+int Client::Try3(const std::vector<unsigned> &active_3cards) {
+  int rc = 0;
+  std::string command = fmt::format("{} {} {}",
+    S3333_C2S_TRY3, game_.gstate_, fmt::join(active_3cards, " "));
+  ws_.sendTextMessage(QString::fromStdString(command));
+  return rc;
+}
+
+static bool IsSet(unsigned c0, unsigned c1, unsigned c2) {
+  bool good = true;
+  std::vector<unsigned> cards3{c0, c1, c2};
+  for (size_t d = 0; good && (d < 4); ++d) {
+    std::unordered_set<unsigned> dset;
+    for (size_t ci = 0; ci < 3; ++ci) {
+      unsigned m = cards3[ci] % 3;
+      cards3[ci] = cards3[ci]/3;
+      dset.insert(m);
+    }
+    good = (dset.size() != 2);
+  }
+  return good;
+}
+
 void Client::SetGameState(const QVariantMap &result_map) {
   game_.active_ = (result_map["gactive"].toInt() == 1);
   game_.tstate_ = result_map["tstate"].toInt();
@@ -104,5 +128,20 @@ void Client::SetGameState(const QVariantMap &result_map) {
   }
   qDebug() << fmt::format("cards_ative_={}",
     fmt::join(game_.cards_active_, ", "));
+  static constexpr bool cheat = true;
+  if (cheat) {
+    qDebug() << "== Cheat ==";
+    const std::vector<unsigned> &ca = game_.cards_active_;
+    const size_t na = ca.size();
+    for (size_t i = 0; i < na; ++i) {
+      for (size_t j = i + 1; j < na; ++j) {
+        for (size_t k = j + 1; k < na; ++k) {
+          if (IsSet(ca[i], ca[j], ca[k])) {
+            qDebug() << fmt::format("cheat: {} {} {}", i, j, k);
+          }
+        }
+      }
+    }
+  }
 }
 

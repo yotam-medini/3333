@@ -31,7 +31,7 @@ void DrawArea::paintEvent(QPaintEvent *event) {
   using au2_t = Golden::au2_t;
   int w = width();
   int h = height();
-  qDebug() << fmt::format("DrawArea::paintEvent w={}, h={}", w, h);
+  // qDebug() << fmt::format("DrawArea::paintEvent w={}, h={}", w, h);
   QPainter painter(this);
   painter.setPen(QColor(0x22, 0xaa, 0x33));
   painter.drawRect(0, 0, w, h);
@@ -77,9 +77,9 @@ void DrawArea::DrawCard(
   qr = std::div(qr.quot, 3);
   unsigned symbol = qr.rem;
   unsigned num_symbols = qr.quot + 1;
-  qDebug() << fmt::format(
-    "card={}, shading={} color={} symbol={}, num_symbols={}\n",
-    card, shading, color, symbol, num_symbols);
+  // qDebug() << fmt::format(
+  //   "card={}, shading={} color={} symbol={}, num_symbols={}\n",
+  //  card, shading, color, symbol, num_symbols);
   static std::array<QPainterPath (DrawArea::*)(const QRect&) const, 3> 
     get_sym_path_funcs = {
       &DrawArea::GetDiamondPath, 
@@ -121,8 +121,8 @@ void DrawArea::DrawCard(
 
 void DrawArea::mouseReleaseEvent(QMouseEvent *event) {
   auto position = event->position();
-  qDebug() << fmt::format("DrawArea::mouseReleaseEvent: {},{}",
-    position.x(), position.y());
+  // qDebug() << fmt::format("DrawArea::mouseReleaseEvent: {},{}",
+  //  position.x(), position.y());
   const Game *game = table_.GetGame();
   if (game && !game->cards_active_.empty()) {
     unsigned who = golden_.Pick(position.x(), position.y());
@@ -160,7 +160,6 @@ void DrawArea::SetBrush(unsigned ci) {
 }
 
 QPainterPath DrawArea::GetDiamondPath(const QRect& rect) const {
-  qDebug() << "GetDiamondPath";
   QPainterPath diamond;
   diamond.moveTo(rect.x() + rect.width()/2, rect.y());
   diamond.lineTo(rect.x() + rect.width(), rect.y() + rect.height()/2);
@@ -171,7 +170,6 @@ QPainterPath DrawArea::GetDiamondPath(const QRect& rect) const {
 }
 
 QPainterPath DrawArea::GetSquigglePath(const QRect& rect) const {
-  qDebug() << "GetSquigglePath";
   const int w = rect.width();
   const int h = rect.height();
   int rel_curves_left[4][3][2] = {
@@ -214,9 +212,7 @@ QPainterPath DrawArea::GetSquigglePath(const QRect& rect) const {
 }
 
 QPainterPath DrawArea::GetOvalPath(const QRect& rect) const {
-  qDebug() << "GetOvalPath";
   QPainterPath path;
   path.addEllipse(rect);
-  // path.addEllipse(rect.x(), rect.y(), rect.width(), rect.height());
   return path;
 }

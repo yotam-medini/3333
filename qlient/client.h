@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
 #include <QtCore/QString>
@@ -17,6 +18,7 @@ class Client : public QObject {
     const std::string &table_password,
     const std::string &owner_password);
   int NewGame();
+  int Try3(const std::vector<unsigned> &active_3cards);
  Q_SIGNALS:
   void Closed();
  private Q_SLOTS:
