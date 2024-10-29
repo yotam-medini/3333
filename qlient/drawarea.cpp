@@ -9,9 +9,13 @@
 #include "game.h"
 #include "table.h"
 
-DrawArea::DrawArea(Table *table, std::vector<unsigned> &selected) :
+DrawArea::DrawArea(
+    Table *table,
+    std::function<void(void)> update_selected_func,
+    std::vector<unsigned> &selected) :
   QWidget(table),
   table_{*table},
+  update_selected_func_{update_selected_func},
   selected_{selected} {
 }
 
@@ -138,6 +142,7 @@ void DrawArea::mouseReleaseEvent(QMouseEvent *event) {
         selected_.pop_back();
       }
       update();
+      update_selected_func_();
     }
   }
 }

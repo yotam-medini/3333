@@ -29,7 +29,10 @@ Table::Table(QWidget *parent) :
     "# players, 69 @deck <font color='red'><a href='redTip'>13</a></font>", this);
   hlayout->addWidget(status_summary_);
   vlayout->addLayout(hlayout);
-  draw_area_ = new DrawArea(this, selected_);
+  draw_area_ = new DrawArea(
+    this, 
+    [this]() { this->UpdateSelected(); },
+    selected_);
   draw_area_->setStyleSheet("background-color:#9ab;");
   vlayout->addWidget(draw_area_, 1);
   setLayout(vlayout);
@@ -49,4 +52,11 @@ void Table::NewTable(const QVariantMap &result_map) {
 void Table::SetGame(const Game& game) {
   game_ = &game;
   draw_area_->update();
+}
+
+
+void Table::UpdateSelected() {
+  std::string text = fmt::format("{} picked", selected_.size());
+  picked_->setText(QString::fromStdString(text));
+  qDebug() << "Table::UpdateSelected";
 }

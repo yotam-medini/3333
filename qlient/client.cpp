@@ -144,4 +144,3 @@ void Client::SetGameState(const QVariantMap &result_map) {
     }
   }
 }
-

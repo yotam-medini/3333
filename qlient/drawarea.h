@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 #include <QWidget>
 #include <QPainterPath>
 #include "golden.h"
@@ -12,7 +13,10 @@ class Table;
 
 class DrawArea : public QWidget {
  public:
-  DrawArea(Table *table, std::vector<unsigned> &selected);
+  DrawArea(
+    Table *table,
+    std::function<void(void)> update_selected_func,
+    std::vector<unsigned> &selected);
  protected:
   void paintEvent(QPaintEvent *event) override;
   void mouseReleaseEvent(QMouseEvent *event);
@@ -29,5 +33,6 @@ class DrawArea : public QWidget {
   unsigned stripe_height_{0};
   const Table &table_;
   Golden golden_;
+  std::function<void(void)> update_selected_func_;
   std::vector<unsigned> &selected_;
 };

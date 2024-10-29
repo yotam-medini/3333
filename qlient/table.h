@@ -22,6 +22,7 @@ class Table : public QWidget {
   void SetGame(const Game& game);
   const Game *GetGame() const { return game_; }
  private:
+  void UpdateSelected();
   QLabel *name_at_name_{nullptr};
   QPushButton *butt_new_game_{nullptr};
   QPushButton *butt_add3_nomore_{nullptr};
