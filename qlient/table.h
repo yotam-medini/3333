@@ -26,11 +26,21 @@ class Table : public QWidget {
   const Game *GetGame() const { return game_; }
  private:
   void UpdateSelected();
+  std::string player_name_;
   QLabel *name_at_name_{nullptr};
   QPushButton *butt_new_game_{nullptr};
   QPushButton *butt_add3_nomore_{nullptr};
   QLabel *picked_{nullptr};
   QLabel *status_summary_{nullptr};
+  // Player scores
+  QLabel *set_calls_good_{0};
+  QLabel *set_calls_bad_{0};
+  QLabel *add3_good_{0};
+  QLabel *add3_bad_{0};
+  QLabel *no_more_good_{0};
+  QLabel *no_more_bad_{0};
+  QLabel *score_{0};
+  
   DrawArea *draw_area_{nullptr};
   std::function<int(void)> new_game_func_;
   std::function<int(const std::vector<unsigned>&)> try3_func_;

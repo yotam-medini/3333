@@ -42,5 +42,6 @@ int main(int argc, char *argv[])
   QObject::connect(&client, &Client::Closed, &a, &QCoreApplication::quit);
   SetFunctions(client, ui);
   rc = a.exec();
+  qDebug() << fmt::format("QApplication exec exit rc={}", rc);
   return rc;
 }

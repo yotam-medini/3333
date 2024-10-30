@@ -120,7 +120,7 @@ void Client::SetGameState(const QVariantMap &result_map) {
   game_.tstate_ = result_map["tstate"].toInt();
   game_.gstate_ = result_map["gstate"].toInt();
 
-  const QJsonArray a =  result_map["active"].toJsonArray();
+  QJsonArray a = result_map["active"].toJsonArray();
   game_.cards_active_.clear();
   game_.cards_active_.reserve(a.size());
   for (auto iter = a.cbegin(); iter != a.cend(); ++iter) {
@@ -128,6 +128,26 @@ void Client::SetGameState(const QVariantMap &result_map) {
   }
   qDebug() << fmt::format("cards_ative_={}",
     fmt::join(game_.cards_active_, ", "));
+
+  QVariantMap m = result_map["players"].toMap();
+  game_.players_.clear();
+  game_.players_.reserve(m.size());
+  for (auto iter = m.cbegin(); iter != m.cend(); ++iter) {
+    Player player;
+    const QVariantMap player_map = iter->toMap();
+    player.name_ = player_map["name"].toString().toStdString();
+    const QJsonArray numbers = player_map["numbers"].toJsonArray();
+    player.set_calls_good_ = numbers[0].toInt();
+    player.set_calls_bad_  = numbers[1].toInt();
+    player.add3_good_      = numbers[2].toInt();
+    player.add3_bad_       = numbers[3].toInt();
+    player.no_more_good_   = numbers[4].toInt();
+    player.no_more_bad_    = numbers[5].toInt();
+    player.tcreated_ = player_map["tcreated"].toInt();
+    player.taction_ = player_map["taction"].toInt();
+    game_.players_.push_back(player);
+  }
+                         
   static constexpr bool cheat = true;
   if (cheat) {
     qDebug() << "== Cheat ==";

@@ -8,8 +8,8 @@
 Club::Club(QWidget *parent) : QWidget(parent) {
   qDebug("Club::Club");
   setStyleSheet("background-color:#ddd;");
-  QVBoxLayout *vlayout = new QVBoxLayout(this);
-  QHBoxLayout *hlayout = new QHBoxLayout(this);
+  QVBoxLayout *vlayout = new QVBoxLayout();
+  QHBoxLayout *hlayout = new QHBoxLayout();
   butt_referesh_ = new QPushButton("Refresh", this);
   butt_new_table_ = new QPushButton("New Table", this);
   QObject::connect(butt_new_table_, &QPushButton::clicked,

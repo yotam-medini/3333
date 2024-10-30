@@ -43,9 +43,6 @@ class Player {
   unsigned no_more_bad_{0};
   unsigned tcreated_{0};  
   unsigned taction_{0};
-
-  unsigned tcreated_{0};
-  unsigned taction_{0};
 };
 
 #endif /* PLAYER_H */
