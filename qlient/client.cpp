@@ -126,6 +126,7 @@ void Client::SetGameState(const QVariantMap &result_map) {
   for (auto iter = a.cbegin(); iter != a.cend(); ++iter) {
     game_.cards_active_.push_back(iter->toInt());
   }
+  game_.deck_ = result_map["deck"].toInt();
   qDebug() << fmt::format("cards_ative_={}",
     fmt::join(game_.cards_active_, ", "));
 

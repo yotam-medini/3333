@@ -26,7 +26,7 @@ Table::Table(QWidget *parent) :
   hlayout->addWidget(butt_add3_nomore_);
   picked_ = new QLabel("0 picked", this);
   hlayout->addWidget(picked_);
-  status_summary_ = new QLabel("# players, 69 @deck ", this);
+  status_summary_ = new QLabel("# players, # found, # @deck ", this);
   status_summary_->setToolTip("Status Summary");
   hlayout->addWidget(status_summary_);
 
@@ -89,6 +89,8 @@ void Table::NewTable(const QVariantMap &result_map) {
 
 void Table::SetGame(const Game& game) {
   game_ = &game;
+  status_summary_->setText(QString::fromStdString(fmt::format(
+    "{} players, {} found, {} @deck", game.players_.size(), -1, game.deck_)));
   auto iter = std::find_if(game.players_.begin(), game.players_.end(),
     [this](const Player& p) -> bool {
       return p.name_ == this->player_name_;
@@ -100,8 +102,15 @@ void Table::SetGame(const Game& game) {
       label->setText(QString::fromStdString(s));
     };
     label_set(set_calls_good_, player.set_calls_good_);
+    label_set(set_calls_bad_, player.set_calls_bad_);
+    label_set(add3_good_, player.add3_good_);
+    label_set(add3_bad_, player.add3_bad_);
+    label_set(no_more_good_, player.no_more_good_);
+    label_set(no_more_bad_, player.no_more_bad_);
+    label_set(score_, player.score());
   }
   selected_.clear();
+  UpdateSelected();
   draw_area_->update();
 }
 
