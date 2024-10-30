@@ -19,7 +19,7 @@ class DrawArea : public QWidget {
     std::vector<unsigned> &selected);
  protected:
   void paintEvent(QPaintEvent *event) override;
-  void mouseReleaseEvent(QMouseEvent *event);
+  void mouseReleaseEvent(QMouseEvent *event) override;
  private:
   void DrawCard(unsigned card, const QRect &card_rect, bool picked);
   QPainterPath GetDiamondPath(const QRect& symbol_rect) const;

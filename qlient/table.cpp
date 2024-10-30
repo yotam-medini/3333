@@ -97,7 +97,7 @@ void Table::SetGame(const Game& game) {
     });
   if (iter != game.players_.end()) {
     const Player &player = *iter;
-    auto label_set = [](QLabel *label, unsigned n) -> void {
+    auto label_set = [](QLabel *label, int n) -> void {
       const std::string s = fmt::format("<b>{}</b>", n);
       label->setText(QString::fromStdString(s));
     };

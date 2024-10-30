@@ -28,6 +28,19 @@ wasm-cmake:
 wasm-make:
 	(source ${EMSDK_ENV}; cd build-wasm; emmake make -s LOGLEVEL=4)
 
+# build-wasm/qclientgz.js build-wasm/qclient.wasm.gz: wasm-make
+
+wasm-gz: build-wasm/qclientgz.html build-wasm/qclientgz.js build-wasm/qclient.wasm.gz
+
+build-wasm/qclientgz.html: build-wasm/qclient.html
+	sed -e s/qclient.js/qclientgz.js/ < $< > $@
+
+build-wasm/qclientgz.js: build-wasm/qclient.js
+	sed -e s/qclient.wasm/qclient.wasm.gz/ < $< > $@
+
+build-wasm/qclient.wasm.gz: build-wasm/qclient.wasm
+	gzip -c $< > $@
+
 # Golden-test
 golden-test: ./bin.d/golden-test
 	./bin.d/golden-test 60 80 3
