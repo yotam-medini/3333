@@ -10,12 +10,29 @@
 #include "ui.h"
 #include "game.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/val.h>
+std::string getHostName() {
+    // Access JavaScript's `window.location.hostname` directly
+    emscripten::val window = emscripten::val::global("window");
+    emscripten::val location = window["location"];
+    std::string hostname = location["hostname"].as<std::string>();
+    return hostname;
+}
+#endif
+
 Client::Client(UI& ui, Game &game, const QUrl &url, QObject *parent) :
     QObject(parent),
     ui_{ui},
     game_{game} {
   connect(&ws_, &QWebSocket::connected, this, &Client::OnConnected);
   connect(&ws_, &QWebSocket::disconnected, this, &Client::Closed);
+#ifdef __EMSCRIPTEN__
+  const std::string host_name = getHostName();
+  qDebug() << fmt::format("host_name={}", host_name);
+#endif
+  qDebug() << fmt::format("Calling QWebSocket::open({})",
+    url.toDisplayString().toStdString());
   ws_.open(url);
 }
 

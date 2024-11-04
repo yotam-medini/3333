@@ -11,7 +11,8 @@ CPPS := $(wildcard *.cc)
 OBJS = $(patsubst %.cc, obj.d/%.o, ${CPPS})
 DEPS = $(patsubst %.cc, obj.d/%.d, ${CPPS})
 DBGFLAGS = -g
-CFLAGS = ${DBGFLAGS} -Wall -std=c++20
+OPTFLAGS =
+CFLAGS = ${OPTFLAGS} ${DBGFLAGS} -Wall -std=c++20
 
 LDFLAGS =
 LIBS = -lboost_program_options -lfmt
