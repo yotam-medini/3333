@@ -1,10 +1,13 @@
 #include "client.h"
 #include <iostream>
+#include <QString>
 #include <unordered_set>
 #include <fmt/core.h>
 #include <QDebug>
 #include <QtCore/qjsondocument.h>
 #include <QJsonArray>
+#include <QUrl>
+#include <QtWebSockets/QWebSocket>
 #include "../server/cs_consts.h"
 
 #include "ui.h"
@@ -21,16 +24,26 @@ std::string getHostName() {
 }
 #endif
 
-Client::Client(UI& ui, Game &game, const QUrl &url, QObject *parent) :
+Client::Client(UI& ui, Game &game, QObject *parent) :
     QObject(parent),
     ui_{ui},
     game_{game} {
+  using namespace Qt::Literals::StringLiterals;
   connect(&ws_, &QWebSocket::connected, this, &Client::OnConnected);
   connect(&ws_, &QWebSocket::disconnected, this, &Client::Closed);
+  const std::string host_name =
 #ifdef __EMSCRIPTEN__
-  const std::string host_name = getHostName();
-  qDebug() << fmt::format("host_name={}", host_name);
+    getHostName();
+#else
+    "localhost";
 #endif
+  qDebug() << fmt::format("host_name={}", host_name);
+  int port = 9090;
+  QUrl url;
+  QString scheme(u"ws"_s);
+  url.setScheme(scheme);
+  url.setHost(QString::fromStdString(host_name));
+  url.setPort(port);
   qDebug() << fmt::format("Calling QWebSocket::open({})",
     url.toDisplayString().toStdString());
   ws_.open(url);
