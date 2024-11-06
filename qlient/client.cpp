@@ -31,19 +31,24 @@ Client::Client(UI& ui, Game &game, QObject *parent) :
   using namespace Qt::Literals::StringLiterals;
   connect(&ws_, &QWebSocket::connected, this, &Client::OnConnected);
   connect(&ws_, &QWebSocket::disconnected, this, &Client::Closed);
+  const std::string localhost{"localhost"};
   const std::string host_name =
 #ifdef __EMSCRIPTEN__
     getHostName();
 #else
-    "localhost";
+    localhost;
 #endif
   qDebug() << fmt::format("host_name={}", host_name);
   int port = 9090;
   QUrl url;
-  QString scheme(u"ws"_s);
+  QString scheme(host_name == localhost ? u"ws"_s : u"wss"_s);
   url.setScheme(scheme);
   url.setHost(QString::fromStdString(host_name));
-  url.setPort(port);
+  if (host_name == localhost) {
+    url.setPort(port);
+  } else {
+    url.setPath("/sg");
+  }
   qDebug() << fmt::format("Calling QWebSocket::open({})",
     url.toDisplayString().toStdString());
   ws_.open(url);

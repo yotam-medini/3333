@@ -30,6 +30,7 @@ wasm-make:
 
 # build-wasm/qclientgz.js build-wasm/qclient.wasm.gz: wasm-make
 
+# no need ?
 wasm-gz: build-wasm/qclientgz.html build-wasm/qclientgz.js build-wasm/qclient.wasm.gz
 
 build-wasm/qclientgz.html: build-wasm/qclient.html
