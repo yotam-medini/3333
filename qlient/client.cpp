@@ -24,7 +24,11 @@ std::string getHostName() {
 }
 #endif
 
-Client::Client(UI& ui, Game &game, QObject *parent) :
+Client::Client(
+  UI& ui,
+  Game &game,
+  const std::string &force_url,
+  QObject *parent) :
     QObject(parent),
     ui_{ui},
     game_{game} {
@@ -41,13 +45,17 @@ Client::Client(UI& ui, Game &game, QObject *parent) :
   qDebug() << fmt::format("host_name={}", host_name);
   int port = 9090;
   QUrl url;
-  QString scheme(host_name == localhost ? u"ws"_s : u"wss"_s);
-  url.setScheme(scheme);
-  url.setHost(QString::fromStdString(host_name));
-  if (host_name == localhost) {
-    url.setPort(port);
+  if (force_url.empty()) {
+    QString scheme(host_name == localhost ? u"ws"_s : u"wss"_s);
+    url.setScheme(scheme);
+    url.setHost(QString::fromStdString(host_name));
+    if (host_name == localhost) {
+      url.setPort(port);
+    } else {
+      url.setPath("/sg");
+    }
   } else {
-    url.setPath("/sg");
+    url.setUrl(QString::fromStdString(force_url));
   }
   qDebug() << fmt::format("Calling QWebSocket::open({})",
     url.toDisplayString().toStdString());

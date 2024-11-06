@@ -11,7 +11,11 @@ class Game;
 class Client : public QObject {
   Q_OBJECT
  public:
-  explicit Client(UI& ui, Game& game, QObject *parent=nullptr);
+  explicit Client(
+    UI& ui,
+    Game& game,
+    const std::string &force_url="",
+    QObject *parent=nullptr);
   int ClubRefresh();
   int NewTable(
     const std::string &table_name,
