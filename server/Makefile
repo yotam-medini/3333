@@ -15,7 +15,7 @@ OPTFLAGS =
 CFLAGS = ${OPTFLAGS} ${DBGFLAGS} -Wall -std=c++20
 
 LDFLAGS =
-LIBS = -lboost_program_options -lfmt
+LIBS = -lboost_program_options -lfmt -lssl -lcrypto
 
 objs: ${OBJS}
 
