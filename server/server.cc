@@ -22,6 +22,7 @@
 #include "ws_session.h"
 #include "cs_consts.h"
 #include "net_utils.h"
+#include "ssl_ws.h"
 
 class WebSocketSession;
 using notify_ws_t = std::function<void(WebSocketSession*)>;
@@ -42,9 +43,10 @@ class NetServer {
     pLogger_{pLogger},
     host_{host},
     port_(port),
-    ssl_context_{ssl_context},
+    // ssl_context_{ssl_context},
     acceptor_{ioc_},
     socket_{ioc_},
+    // ssl_ws_{ioc_},
     notify_ws_add_{notify_ws_add},
     notify_ws_delete_{notify_ws_delete_},
     report_message_{report_message} {
@@ -59,8 +61,10 @@ class NetServer {
       std::cerr << fn << " make_address failed, ec=" << ec << '\n';
     } else {
       endpoint = tcp::endpoint{address, port_};
-      pLogger_->log(fmt::format("endpoint={}:{}",
-        endpoint.address().to_string(), endpoint.port()));
+      const std::string  message  = fmt::format("endpoint={}:{}",
+        endpoint.address().to_string(), endpoint.port());
+      std::cerr << message << '\n';
+      pLogger_->log(message);
     }
     if (!ec) {
       acceptor_.open(endpoint.protocol(), ec);
@@ -93,6 +97,10 @@ class NetServer {
   }
  private:
   void accept_next() {
+    const std::string msg = fmt::format("{} {}: accept_next",
+      FuncName(), YMDHMS());
+    std::cerr << msg << '\n';
+    pLogger_->log(msg);
     acceptor_.async_accept(
       socket_,
       [this](error_code ec) {
@@ -134,6 +142,7 @@ class NetServer {
   net::io_context ioc_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
+  // ssl_ws ssl_ws_;
   notify_ws_t notify_ws_add_;
   notify_ws_t notify_ws_delete_;
   report_message_t report_message_;

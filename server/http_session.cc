@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <fmt/format.h>
 #include "net.h"
 #include "utils.h"
 #include "ws_session.h"
@@ -34,7 +35,9 @@ void HttpSession::on_read(error_code ec, std::size_t) {
   if (ec == http::error::end_of_stream) {
     socket_.shutdown(tcp::socket::shutdown_send, ec); // client closed
   } else if (ec) {
-    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
+    static const http::detail::http_error_category cat;
+    std::cerr << fmt::format("{} failed, ec=({}) {}\n", FuncName(), 
+      ec.value(), ec.message());
   } else if (websocket::is_upgrade(req_)) {
     std::cerr << "new websocket_session\n";
     wss_ = new WebSocketSession(std::move(socket_), report_message_);
