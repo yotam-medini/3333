@@ -23,6 +23,7 @@ class Player {
   void BumpNoMoreGood() { ++no_more_good_; }
   void BumpNoMoreBad() { ++no_more_bad_; }
   void SetTAction();
+  void RestNumbers();
   int GetTAction() const { return taction_; }
   Table *GetTable() { return table_; }
   unsigned GetTimeCreated() const { return tcreated_; }

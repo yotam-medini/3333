@@ -12,6 +12,15 @@ void Player::SetTAction() {
   taction_ = GetTime();
 }
 
+void Player::RestNumbers() {
+  sets_found_ = 0;
+  bad_calls_ = 0;
+  add3s_good_ = 0;
+  add3s_bad_ = 0;
+  no_more_good_ = 0;
+  no_more_bad_ = 0;
+}
+
 std::string Player::json() const {
   std::string j{"{\n"};
   j += fmt::format(R"j(  "name": "{}",)j" "\n", name_);

@@ -82,6 +82,9 @@ void Table::NewGame() {
   DealCards(std::min<size_t>(12, cards_deck_.size()));
   game_active_ = true;
   GameStateBump();
+  for (auto &player: players_) {
+    player->RestNumbers();
+  }
 }
 
 void Table::StateBump() {
