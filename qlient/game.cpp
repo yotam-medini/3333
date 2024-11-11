@@ -3,7 +3,8 @@
 Game::Game() {
 }
 
-void Game::reset() {
+void Game::Reset() {
+  active_ = false;
   tstate_ = -1;
   gstate_ = -1;
   for (Player &player: players_) {

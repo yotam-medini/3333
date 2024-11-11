@@ -88,6 +88,7 @@ void Client::OnReceived(QString message) {
         qDebug() << "E3333_S2C_TBLS not yet supported";
         break;
        case E3333_S2C_NTBL:
+        game_.Reset();
         ui_.NewTable(result_map);
         break;
        case E3333_S2C_GSTATE:

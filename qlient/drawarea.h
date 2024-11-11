@@ -27,6 +27,8 @@ class DrawArea : public QWidget {
   QPainterPath GetOvalPath(const QRect& symbol_rect) const;
   void SetBrushes(unsigned card_height);
   void SetBrush(unsigned ci);
+  void DrawWaitForOwner(QPainter &painter);
+  void DrawGameOver();
   static const std::vector<bool> shading_fill_passes_[3];
   static const QColor card_colors_[3]; // red, green, purple
   QBrush color_stripes_brushes_[3];

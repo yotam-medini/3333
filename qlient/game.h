@@ -6,7 +6,7 @@
 class Game {
  public:
   Game();
-  void reset();
+  void Reset();
   bool active_{false};
   int tstate_{-1};
   int gstate_{-1};

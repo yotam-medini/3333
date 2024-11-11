@@ -52,6 +52,11 @@ void DrawArea::paintEvent(QPaintEvent *event) {
       DrawCard(game->cards_active_[ai], card_rect,
         std::find(selected_.begin(), selected_.end(), ai) != selected_.end());
     }
+    if (!game->active_) {
+      DrawGameOver();
+    }
+  } else {
+    DrawWaitForOwner(painter);
   }
 }
 
@@ -220,4 +225,34 @@ QPainterPath DrawArea::GetOvalPath(const QRect& rect) const {
   QPainterPath path;
   path.addEllipse(rect);
   return path;
+}
+
+void DrawArea::DrawWaitForOwner(QPainter &painter) {
+  int w = width();
+  int h = height();
+  QFont font = painter.font();
+  font.setPixelSize(h/12);
+  painter.setFont(font);
+  painter.setPen(Qt::black);
+  const QRect rect0 = QRect(w/8, h/8, (3*w)/4, (3*h)/4);
+  painter.drawText(rect0, 0, tr("Wait for owner"));
+  const QRect rect1 = QRect(w/8, (3*h)/8, (3*w)/4, (3*h)/4);
+  painter.drawText(rect1, 0, tr("to start a new game"));
+}
+
+void DrawArea::DrawGameOver() {
+  int w = width();
+  int h = height();
+  QPainter painter(this);
+  QFont font = painter.font();
+  painter.setPen(Qt::black);
+  font.setPixelSize(h/8);
+  painter.setFont(font);
+  const QRect rect0 = QRect(w/8, h/8, (3*w)/4, (3*h)/4);
+  painter.drawText(rect0, 0, tr("Game Over!"));
+  font.setPixelSize(h/12);
+  const QRect rect1 = QRect(w/8, (3*h)/8, (3*w)/4, (3*h)/4);
+  painter.drawText(rect1, 0, tr("Wait for owner"));
+  const QRect rect2 = QRect(w/8, (5*h)/8, (3*w)/4, (3*h)/4);
+  painter.drawText(rect2, 0, tr("to start a new game"));
 }
