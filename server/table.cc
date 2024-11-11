@@ -175,8 +175,7 @@ std::string Table::Add3() {
   std::string err;
   if (ActiveHasSet()) {
     err = "Adding cards was not necessary";
-  }
-  if (cards_deck_.size() < 3) {
+  } else if (cards_deck_.size() < 3) {
     err = "Deck size < 3";
   } else {
     DealCards(3);
