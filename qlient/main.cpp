@@ -17,6 +17,7 @@ void SetFunctions(Client &client, UI& ui) {
       return client.NewTable(table_name, table_password, owner_password);
     });
   ui.SetNewGameFunc([&client]() -> int { return client.NewGame(); });
+  ui.SetAdd3NoMoreFunc([&client]() -> int { return client.Add3NoMore(); });
   ui.SetTry3Func([&client](const std::vector<unsigned> &ca) -> int {
     return client.Try3(ca);
   });

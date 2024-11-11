@@ -24,6 +24,8 @@ Table::Table(QWidget *parent) :
   hlayout->addWidget(butt_new_game_);
   butt_add3_nomore_ = new QPushButton("Add 3", this);
   hlayout->addWidget(butt_add3_nomore_);
+  connect(butt_add3_nomore_, &QPushButton::clicked, [this]() {
+    this->add3_nomore_func_(); });
   picked_ = new QLabel("0 picked", this);
   hlayout->addWidget(picked_);
   status_summary_ = new QLabel("# players, # found, # @deck ", this);
@@ -91,6 +93,7 @@ void Table::SetGame(const Game& game) {
   game_ = &game;
   status_summary_->setText(QString::fromStdString(fmt::format(
     "{} players, {} found, {} @deck", game.players_.size(), -1, game.deck_)));
+  butt_add3_nomore_->setText(game.deck_ != 0 ? "Add 3" : "No More");
   auto iter = std::find_if(game.players_.begin(), game.players_.end(),
     [this](const Player& p) -> bool {
       return p.name_ == this->player_name_;

@@ -135,6 +135,15 @@ int Client::NewGame() {
   return rc;
 }
 
+int Client::Add3NoMore() {
+  int rc = 0;
+  const std::string cmd = fmt::format("{} {}", 
+    game_.deck_ != 0 ? S3333_C2S_ADD3 : S3333_C2S_NMOR, game_.gstate_);
+  qDebug() << fmt::format("Client::Add3NoMore {}", cmd);
+  ws_.sendTextMessage(QString::fromStdString(cmd));
+  return rc;
+}
+
 int Client::Try3(const std::vector<unsigned> &active_3cards) {
   int rc = 0;
   std::string command = fmt::format("{} {} {}",

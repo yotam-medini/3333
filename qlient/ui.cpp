@@ -45,6 +45,9 @@ class UIImpl {
   void SetNewGameFunc(std::function<int(void)> f) {
     table_->SetNewGameFunc(f);
   }
+  void SetAdd3NoMoreFunc(std::function<int(void)> f) {
+    table_->SetAdd3NoMoreFunc(f);
+  }
   void SetTry3Func(std::function<int(const std::vector<unsigned>&)> f) {
     table_->SetTry3Func(f);
   }
@@ -83,6 +86,10 @@ void UI::NewTable(const QVariantMap &result_map) {
 
 void UI::SetNewGameFunc(std::function<int(void)> f) {
   impl_->SetNewGameFunc(f);
+}
+
+void UI::SetAdd3NoMoreFunc(std::function<int(void)> f) {
+  impl_->SetAdd3NoMoreFunc(f);
 }
 
 void UI::SetTry3Func(std::function<int(const std::vector<unsigned>&)> f) {
