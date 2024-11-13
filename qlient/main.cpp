@@ -16,6 +16,15 @@ void SetFunctions(Client &client, UI& ui) {
         const std::string &owner_password) -> int {
       return client.NewTable(table_name, table_password, owner_password);
     });
+  ui.SetJoinTableFunc(
+    [&client](
+        const std::string &table_name,
+        const std::string &player_name,
+        const std::string &table_password,
+        const std::string &player_password) -> int {
+      return client.JoinTable(
+        table_name, player_name, table_password, player_password);
+    });
   ui.SetNewGameFunc([&client]() -> int { return client.NewGame(); });
   ui.SetAdd3NoMoreFunc([&client]() -> int { return client.Add3NoMore(); });
   ui.SetTry3Func([&client](const std::vector<unsigned> &ca) -> int {

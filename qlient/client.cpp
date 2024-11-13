@@ -65,6 +65,7 @@ Client::Client(
 void Client::OnConnected() {
   std::cout << "OnConnected\n";
   connect(&ws_, &QWebSocket::textMessageReceived, this, &Client::OnReceived);
+  ClubRefresh();
 }
 
 void Client::OnReceived(QString message) {
