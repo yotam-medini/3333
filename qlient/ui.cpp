@@ -49,10 +49,12 @@ class UIImpl {
   void NewTable(const QVariantMap &result_map) {
     tab_->setCurrentIndex(table_idx_);
     table_->NewTable(result_map);
+    players_->NewTable(result_map);
   }
   void JoinTable(const QVariantMap &result_map) {
     tab_->setCurrentIndex(table_idx_);
     table_->JoinTable(result_map);
+    players_->NewTable(result_map);
   }
   void SetNewGameFunc(std::function<int(void)> f) {
     table_->SetNewGameFunc(f);
@@ -63,8 +65,9 @@ class UIImpl {
   void SetTry3Func(std::function<int(const std::vector<unsigned>&)> f) {
     table_->SetTry3Func(f);
   }
-  void DrawGame() {
+  void UpdateGame() {
     table_->SetGame(game_);
+    players_->UpdatePlayers(game_);
   }
  private:
   Game &game_; 
@@ -72,7 +75,7 @@ class UIImpl {
   QTabWidget *tab_{nullptr};
   Club *club_{nullptr};
   Table *table_{nullptr};
-  QWidget *players_{nullptr};
+  Players *players_{nullptr};
   int club_idx_, table_idx_, players_idx_;
 };
 
@@ -120,6 +123,6 @@ void UI::SetTry3Func(std::function<int(const std::vector<unsigned>&)> f) {
   impl_->SetTry3Func(f);
 }
 
-void UI::DrawGame() {
-  impl_->DrawGame();
+void UI::UpdateGame() {
+  impl_->UpdateGame();
 }

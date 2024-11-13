@@ -23,7 +23,7 @@ class UI {
   void SetNewGameFunc(std::function<int(void)> f);
   void SetAdd3NoMoreFunc(std::function<int(void)> f);
   void SetTry3Func(std::function<int(const std::vector<unsigned>&)> f);
-  void DrawGame();
+  void UpdateGame();
  private:
   std::unique_ptr<UIImpl> impl_{nullptr};
 };
