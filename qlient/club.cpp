@@ -182,7 +182,8 @@ Club::TitleSort::TitleSort(const std::string &text, QWidget *parent) {
   button_descend_ = new QPushButton(parent);
   button_descend_->setIcon(style.standardIcon(QStyle::SP_ArrowDown));
   auto layout = new QHBoxLayout();
-  layout->addWidget(new QLabel(QString::fromStdString(text), parent), 1);
+  const std::string btextb = fmt::format("<b>{}</b>", text);
+  layout->addWidget(new QLabel(QString::fromStdString(btextb), parent), 1);
   layout->addWidget(button_ascend_);
   layout->addWidget(button_descend_);
   container_->setLayout(layout);

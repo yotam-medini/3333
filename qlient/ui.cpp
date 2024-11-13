@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include "club.h"
+#include "players.h"
 #include "table.h"
 
 class UIImpl {
@@ -24,7 +25,7 @@ class UIImpl {
     table_ = new Table(tab_);
     table_idx_ = tab_->addTab(table_, "Table");
     layout->addWidget(tab_);
-    players_ = new QWidget(tab_);
+    players_ = new Players(tab_);
     players_idx_ = tab_->addTab(players_, "Players");
     layout->addWidget(tab_);
 
