@@ -11,6 +11,7 @@
 #include <QScrollArea>
 #include <QString>
 #include <QVBoxLayout>
+#include "jointbl.h"
 #include "newtbl.h"
 #include "utils.h"
 
@@ -98,6 +99,10 @@ void Club::FillTablesTable() {
       QPushButton *name_join =
         new QPushButton(QString::fromStdString(table_info.name_), this);
       name_join->setStyleSheet("background-color: #2e3;");
+      QObject::connect(name_join, &QPushButton::clicked,
+        [this, table_info]() {
+          this->OpenJoinTableDialog(table_info.name_);
+        });
       tables_table_->addWidget(name_join, ti + 1, 0);
       label = NewLabel(fmt::format("{}", table_info.num_players_), this);
       tables_table_->addWidget(label, ti + 1, 1);
@@ -111,13 +116,6 @@ void Club::FillTablesTable() {
 void Club::SetRefresh(std::function<void(void)> f) {
   QObject::connect(butt_referesh_, &QPushButton::clicked, f);
 }
-
-#if 0
-void Club::SetTablesInfo(const std::vector<TableInfo> &tables_info) {
-  tables_info_ = tables_info;
-  FillTablesTable();
-}
-#endif
 
 void Club::Update(const QVariantMap &result_map) {
   tables_info_.clear();
@@ -151,6 +149,28 @@ void Club::OpenNewTableDialog() {
       });
   }
   new_table_dialog_->open();
+}
+
+void Club::OpenJoinTableDialog(const std::string &table_name) {
+  qDebug("new Join Table");
+  if (!join_table_dialog_) {
+    qDebug() << fmt::format("curr sizes: {}x{}", width(), height());
+    join_table_dialog_ = new JoinTable(this, this->join_table_func_);
+    connect(join_table_dialog_, &QDialog::finished,
+      [this, table_name](int result) {
+        qDebug() << fmt::format("JoinTable resultt={}", result);
+        if (result == QDialog::Accepted) {
+           JoinTable *dlg = this->join_table_dialog_;
+           this->join_table_func_(
+             table_name,
+             dlg->GetPlayerName(),
+             dlg->GetTablePassword(),
+             dlg->GetPlayerPassword());
+        }
+      });
+  }
+  join_table_dialog_->SetTableName(table_name);
+  join_table_dialog_->open();
 }
 
 Club::TitleSort::TitleSort(const std::string &text, QWidget *parent) {

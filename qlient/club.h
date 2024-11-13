@@ -8,6 +8,7 @@
 class QGridLayout;
 class QPushButton;
 class QWidget;
+class JoinTable;
 class NewTable;
 
 class Club : public QWidget {
@@ -46,11 +47,13 @@ class Club : public QWidget {
   };
   void FillTablesTable();
   void OpenNewTableDialog();
+  void OpenJoinTableDialog(const std::string &table_name);
   QPushButton *butt_referesh_{nullptr};
   QPushButton *butt_new_table_{nullptr};
   QWidget *ttwrap_{nullptr};
   QGridLayout *tables_table_{nullptr};
   NewTable *new_table_dialog_{nullptr};
+  JoinTable *join_table_dialog_{nullptr};
   new_table_func_t new_table_func_;
   join_table_func_t join_table_func_;
   std::vector<TableInfo> tables_info_;

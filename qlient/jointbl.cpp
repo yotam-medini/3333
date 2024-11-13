@@ -19,23 +19,23 @@ JoinTable::JoinTable(QWidget *parent, join_table_func_t f) :
   qDebug() << fmt::format("JoinTable::JoinTable: {}x{}", w, h);
   resize(w, h);
   QVBoxLayout *layout = new QVBoxLayout(this);
-  QLabel *title = new QLabel("<b>Join Table</b>", this);
-  layout->addWidget(title, 0, Qt::AlignHCenter);
+  title_ = new QLabel("<b>Join Table</b>", this);
+  layout->addWidget(title_, 0, Qt::AlignHCenter);
   QGridLayout *grid = new QGridLayout;
   auto alphanum = QRegularExpression("[A-Za-z0-9_]+");
 
   grid->addWidget(new QLabel("Player Name", this), 0, 0);
-  player_name_ = new QLineEdit();
+  player_name_ = new QLineEdit(this);
   player_name_->setValidator(new QRegularExpressionValidator(alphanum));
   grid->addWidget(player_name_, 0, 1);
 
   grid->addWidget(new QLabel("Table Password", this), 1, 0);
-  table_password_ = new QLineEdit();
+  table_password_ = new QLineEdit(this);
   table_password_->setValidator(new QRegularExpressionValidator(alphanum));
   grid->addWidget(table_password_, 1, 1);
 
   grid->addWidget(new QLabel("Player Password", this), 2, 0);
-  player_password_ = new QLineEdit();
+  player_password_ = new QLineEdit(this);
   player_password_->setValidator(new QRegularExpressionValidator(alphanum));
   grid->addWidget(player_password_, 2, 1);
 
@@ -55,7 +55,18 @@ JoinTable::JoinTable(QWidget *parent, join_table_func_t f) :
   
   layout->addWidget(buttonBox);
 }
-  
+
+void JoinTable::SetTableName(const std::string &table_name) {
+    std::string join_title = fmt::format("Join Table {}", table_name);
+    setWindowTitle(QString::fromStdString(join_title));
+    join_title = fmt::format("<b>{}</b>", join_title);
+    title_->setText(QString::fromStdString(join_title));
+}
+
+std::string JoinTable::GetPlayerName() const {
+  return player_name_->text().toStdString();
+}
+
 std::string JoinTable::GetPlayerPassword() const {
   return player_password_->text().toStdString();
 }
