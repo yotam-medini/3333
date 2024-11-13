@@ -95,8 +95,10 @@ void Club::FillTablesTable() {
   QLabel *label;
   for (size_t ti = 0; ti < tables_info_.size(); ++ti) {
     const auto &table_info = tables_info_[ti];
-      label = NewLabel(table_info.name_, this);
-      tables_table_->addWidget(label, ti + 1, 0);
+      QPushButton *name_join =
+        new QPushButton(QString::fromStdString(table_info.name_), this);
+      name_join->setStyleSheet("background-color: #2e3;");
+      tables_table_->addWidget(name_join, ti + 1, 0);
       label = NewLabel(fmt::format("{}", table_info.num_players_), this);
       tables_table_->addWidget(label, ti + 1, 1);
       label = NewLabel(ymdhms(table_info.tcreated_), this);

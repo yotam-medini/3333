@@ -39,8 +39,11 @@ class UIImpl {
     qDebug() << "UpdateClub";
     club_->Update(result_map);
   }
-  void setNewTableFunc(new_table_func_t f) {
-    club_->setNewTableFunc(f);
+  void SetNewTableFunc(new_table_func_t f) {
+    club_->SetNewTableFunc(f);
+  }
+  void SetJoinTableFunc(join_table_func_t f) {
+    club_->SetJoinTableFunc(f);
   }
   void NewTable(const QVariantMap &result_map) {
     tab_->setCurrentIndex(table_idx_);
@@ -85,7 +88,11 @@ void UI::UpdateClub(const QVariantMap &result_map) {
 }
 
 void UI::SetNewTableFunc(new_table_func_t f) {
-  impl_->setNewTableFunc(f);
+  impl_->SetNewTableFunc(f);
+}
+
+void UI::SetJoinTableFunc(join_table_func_t f) {
+  impl_->SetJoinTableFunc(f);
 }
 
 void UI::NewTable(const QVariantMap &result_map) {

@@ -21,6 +21,11 @@ class Client : public QObject {
     const std::string &table_name,
     const std::string &table_password,
     const std::string &owner_password);
+  int JoinTable(
+    const std::string &table_name,
+    const std::string &player_name,
+    const std::string &table_password,
+    const std::string &player_password);
   int NewGame();
   int Add3NoMore();
   int Try3(const std::vector<unsigned> &active_3cards);

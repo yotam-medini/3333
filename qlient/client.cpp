@@ -129,6 +129,26 @@ int Client::NewTable(
   return rc;
 }
 
+int Client::JoinTable(
+    const std::string &table_name,
+    const std::string &player_name,
+    const std::string &table_password,
+    const std::string &player_password) {
+  int rc = 0;
+  qDebug() << fmt::format("Client::JoinTable table_name={} "
+    " player_name={}, table_password={} player_password={}",
+    table_name, player_name, table_password, player_password);
+  const unsigned flags =
+    (table_password.empty() ? 0 : 1) +
+    (player_password.empty() ? 0 : 2);
+  std::string command = fmt::format("{} {} {} {} {}",
+    S3333_C2S_JOIN, table_name, player_name,
+    flags, table_password, player_password);
+  qDebug() << fmt::format("command= {}", command);
+  ws_.sendTextMessage(QString::fromStdString(command));
+  return rc;
+}
+
 int Client::NewGame() {
   int rc = 0;
   qDebug() << "Client::NewGame";

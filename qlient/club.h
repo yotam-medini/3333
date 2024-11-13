@@ -17,7 +17,8 @@ class Club : public QWidget {
   void SetRefresh(std::function<void(void)> f);
   // void SetTablesInfo(const std::vector<TableInfo> &tables_info);
   void Update(const QVariantMap &result_map);
-  void setNewTableFunc(new_table_func_t f) { new_table_func_ = f; }
+  void SetNewTableFunc(new_table_func_t f) { new_table_func_ = f; }
+  void SetJoinTableFunc(join_table_func_t f) { join_table_func_ = f; }
  private:
   class TableInfo {
    public:
@@ -51,5 +52,6 @@ class Club : public QWidget {
   QGridLayout *tables_table_{nullptr};
   NewTable *new_table_dialog_{nullptr};
   new_table_func_t new_table_func_;
+  join_table_func_t join_table_func_;
   std::vector<TableInfo> tables_info_;
 };
