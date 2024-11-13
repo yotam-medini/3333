@@ -87,6 +87,7 @@ void Table::NewTable(const QVariantMap &result_map) {
   qDebug() << fmt::format("name={}", name);
   std::string t = fmt::format("<b>{}@{}</b>", player_name_, name);
   name_at_name_->setText(QString::fromStdString(t));
+  butt_new_game_->setEnabled(true);
 }
 
 void Table::JoinTable(const QVariantMap &result_map) {
@@ -97,6 +98,7 @@ void Table::JoinTable(const QVariantMap &result_map) {
   std::string t = fmt::format("<b>{}@{}</b>", player_name_, table_name);
   qDebug() << t;
   name_at_name_->setText(QString::fromStdString(t));
+  butt_new_game_->setEnabled(false);
 }
 
 void Table::SetGame(const Game& game) {
