@@ -49,6 +49,7 @@ class Server {
     WebSocketSession *ws);
   std::string Join(
     const cmd_t &cmd,
+    Table *&table,
     std::string &table_name,
     std::string &player_name,
     WebSocketSession *ws);

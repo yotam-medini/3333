@@ -257,12 +257,13 @@ void Server::WsReceivedMessage(
       }
       std::string table_name;
       std::string player_name;
-      err = Join(cmd, table_name, player_name, ws);
+      err = Join(cmd, table, table_name, player_name, ws);
       if (err.empty()) {
         auto result = brace(
           fmt::format(R"j( "table_name": {}, "player_name": {})j",
           dq(table_name), dq(player_name)));
         ws->send(ServerToClient(E3333_S2C_JOIN, 0, result));
+        UpdateTableGstate(table);
       }
     } else if (cmd[0] == S3333_C2S_GNEW) {
       table->NewGame();
@@ -408,13 +409,14 @@ std::string Server::NewTable(
 
 std::string Server::Join(
   const cmd_t &cmd,
+  Table *&table,
   std::string &table_name,
   std::string &player_name,
   WebSocketSession *ws) {
   std::string err;
   const size_t sz = cmd.size();
   std::string table_password, player_password;
-  Table *table = nullptr;
+  table = nullptr;
   if ((sz < 4) || (6 < sz)) {
     err = fmt::format("{}: Bad command size: {}", cmd[0], sz);
   } else {
