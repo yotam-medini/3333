@@ -15,6 +15,7 @@ class UI {
   UI(Game &game);
   ~UI();
   void SetClubRefresh(std::function<void(void)> f);
+  void UpdateClub(const QVariantMap &result_map);
   void SetNewTableFunc(new_table_func_t f);
   void NewTable(const QVariantMap &result_map);
   void SetNewGameFunc(std::function<int(void)> f);

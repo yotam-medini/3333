@@ -31,6 +31,7 @@ class Client : public QObject {
   void OnReceived(QString message);
  private :
   void SetGameState(const QVariantMap &result_map);
+  void UpdateClub(const QVariantMap &result_map);
   UI &ui_;
   Game &game_;
   QWebSocket ws_;

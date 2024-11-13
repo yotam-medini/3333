@@ -35,6 +35,10 @@ class UIImpl {
   void SetClubRefresh(std::function<void(void)> f) {
     club_->SetRefresh(f);
   }
+  void UpdateClub(const QVariantMap &result_map) {
+    qDebug() << "UpdateClub";
+    club_->Update(result_map);
+  }
   void setNewTableFunc(new_table_func_t f) {
     club_->setNewTableFunc(f);
   }
@@ -74,6 +78,10 @@ UI::~UI() {
 
 void UI::SetClubRefresh(std::function<void(void)> f) {
   impl_->SetClubRefresh(f);
+}
+
+void UI::UpdateClub(const QVariantMap &result_map) {
+  impl_->UpdateClub(result_map);
 }
 
 void UI::SetNewTableFunc(new_table_func_t f) {

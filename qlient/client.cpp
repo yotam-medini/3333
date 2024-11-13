@@ -85,7 +85,7 @@ void Client::OnReceived(QString message) {
       qDebug() << fmt::format("#(result)={}", result_map.size());
       switch (cmd) {
        case E3333_S2C_TBLS:
-        qDebug() << "E3333_S2C_TBLS not yet supported";
+        ui_.UpdateClub(result_map);
         break;
        case E3333_S2C_NTBL:
         game_.Reset();
@@ -217,4 +217,7 @@ void Client::SetGameState(const QVariantMap &result_map) {
       }
     }
   }
+}
+
+void Client::UpdateClub(const QVariantMap &result_map) {
 }
