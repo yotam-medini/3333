@@ -81,6 +81,7 @@ void Table::NewGame() {
   cards_active_.clear();
   DealCards(std::min<size_t>(12, cards_deck_.size()));
   game_active_ = true;
+  sets_found_ = 0;
   GameStateBump();
   for (auto &player: players_) {
     player->RestNumbers();
@@ -102,6 +103,7 @@ std::string Table::json() const {
   j += fmt::format(R"j(  "tstate": {},)j" "\n", tstate_);
   j += fmt::format(R"j(  "gstate": {},)j" "\n", gstate_);
   j += fmt::format(R"j(  "gactive": {},)j" "\n", int(game_active_));
+  j += fmt::format(R"j(  "found": {},)j" "\n", sets_found_);
   j += fmt::format("  {}: ", dq("players"));
   j += "{\n";                   
   const char *sep = "";

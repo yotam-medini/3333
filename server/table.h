@@ -34,6 +34,7 @@ class Table {
   void StateBump();
   void GameStateBump();
   bool Try3(const a3i_t& a3i);
+  void BumpSetsFound() { ++sets_found_; }
   std::string Add3();
   bool NoMore();
   bool GetGameActive() const { return game_active_; }
@@ -51,6 +52,7 @@ class Table {
   std::vector<std::unique_ptr<Player>> players_; // first is owner
   const std::string password_;
   bool game_active_{false};
+  int sets_found_{0};
   std::vector<uint8_t> cards_deck_;
   std::vector<uint8_t> cards_active_;
   int time_last_action_;

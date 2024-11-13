@@ -104,7 +104,8 @@ void Table::JoinTable(const QVariantMap &result_map) {
 void Table::SetGame(const Game& game) {
   game_ = &game;
   status_summary_->setText(QString::fromStdString(fmt::format(
-    "{} players, {} found, {} @deck", game.players_.size(), -1, game.deck_)));
+    "{} players, {} found, {} @deck",
+    game.players_.size(), game.sets_found_, -1, game.deck_)));
   butt_add3_nomore_->setText(game.deck_ != 0 ? "Add 3" : "No More");
   auto iter = std::find_if(game.players_.begin(), game.players_.end(),
     [this](const Player& p) -> bool {

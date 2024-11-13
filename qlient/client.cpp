@@ -196,6 +196,7 @@ void Client::SetGameState(const QVariantMap &result_map) {
   game_.active_ = (result_map["gactive"].toInt() == 1);
   game_.tstate_ = result_map["tstate"].toInt();
   game_.gstate_ = result_map["gstate"].toInt();
+  game_.sets_found_ = result_map["found"].toInt();
 
   QJsonArray a = result_map["active"].toJsonArray();
   game_.cards_active_.clear();

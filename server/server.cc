@@ -506,6 +506,7 @@ std::string Server::Try3(Player *player, Table *table, const cmd_t &cmd) {
   }
   if (err.empty()) {
     if (table->Try3(a3i)) {
+      table->BumpSetsFound();
       player->BumpSetsFound();
     } else {
       player->BumpBadCalls();
