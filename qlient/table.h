@@ -18,6 +18,7 @@ class Table : public QWidget {
   ~Table();
   void SetName(const std::string &s);
   void NewTable(const QVariantMap &result_map);
+  void JoinTable(const QVariantMap &result_map);
   void SetNewGameFunc(std::function<int(void)> f) { new_game_func_ = f; }
   void SetAdd3NoMoreFunc(std::function<int(void)> f) { add3_nomore_func_ = f; }
   void SetTry3Func(std::function<int(const std::vector<unsigned>&)> f) {

@@ -92,6 +92,9 @@ void Client::OnReceived(QString message) {
         game_.Reset();
         ui_.NewTable(result_map);
         break;
+       case E3333_S2C_JOIN:
+        ui_.JoinTable(result_map);
+        break;
        case E3333_S2C_GSTATE:
         SetGameState(result_map);
         ui_.DrawGame();
@@ -142,7 +145,7 @@ int Client::JoinTable(
   const unsigned flags =
     (table_password.empty() ? 0 : 1) +
     (player_password.empty() ? 0 : 2);
-  std::string command = fmt::format("{} {} {} {} {}",
+  std::string command = fmt::format("{} {} {} {} {} {}",
     S3333_C2S_JOIN, table_name, player_name,
     flags, table_password, player_password);
   qDebug() << fmt::format("command= {}", command);

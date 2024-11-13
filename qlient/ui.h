@@ -19,6 +19,7 @@ class UI {
   void SetNewTableFunc(new_table_func_t f);
   void SetJoinTableFunc(join_table_func_t f);
   void NewTable(const QVariantMap &result_map);
+  void JoinTable(const QVariantMap &result_map);
   void SetNewGameFunc(std::function<int(void)> f);
   void SetAdd3NoMoreFunc(std::function<int(void)> f);
   void SetTry3Func(std::function<int(const std::vector<unsigned>&)> f);

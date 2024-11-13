@@ -49,6 +49,10 @@ class UIImpl {
     tab_->setCurrentIndex(table_idx_);
     table_->NewTable(result_map);
   }
+  void JoinTable(const QVariantMap &result_map) {
+    tab_->setCurrentIndex(table_idx_);
+    table_->JoinTable(result_map);
+  }
   void SetNewGameFunc(std::function<int(void)> f) {
     table_->SetNewGameFunc(f);
   }
@@ -97,6 +101,10 @@ void UI::SetJoinTableFunc(join_table_func_t f) {
 
 void UI::NewTable(const QVariantMap &result_map) {
   impl_->NewTable(result_map);
+}
+
+void UI::JoinTable(const QVariantMap &result_map) {
+  impl_->JoinTable(result_map);
 }
 
 void UI::SetNewGameFunc(std::function<int(void)> f) {
