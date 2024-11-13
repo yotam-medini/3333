@@ -9,7 +9,7 @@
 #include <QLineEdit>
 
 NewTable::NewTable(QWidget *parent, new_table_func_t f) :
-    QDialog(parent),
+    DialogTableBase(parent),
     new_table_func_(f) {
   setWindowTitle("New Table");
   auto parent_w = parent->width();
@@ -57,14 +57,6 @@ NewTable::NewTable(QWidget *parent, new_table_func_t f) :
   layout->addWidget(buttonBox);
 }
   
-std::string NewTable::GetTableName() const {
-  return table_name_->text().toStdString();
-}
-
-std::string NewTable::GetTablePassword() const {
-  return table_password_->text().toStdString();
-}
-
 std::string NewTable::GetOwnerPassword() const {
   return owner_password_->text().toStdString();
 }

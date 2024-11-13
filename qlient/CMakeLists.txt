@@ -32,6 +32,7 @@ qt_add_executable(qclient
     client.cpp client.h
     club.cpp club.h
     table.cpp table.h
+    dlgtbl.cpp dlgtbl.h
     newtbl.cpp newtbl.h
     ui.cpp ui.h
     player.cpp player.h
