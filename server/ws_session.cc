@@ -7,9 +7,11 @@
 
 WebSocketSession::WebSocketSession(
   tcp::socket socket,
-  report_message_t report_message) :
+  report_message_t report_message,
+  delete_func_t delete_me) :
   socket_{std::move(socket)},
-  report_message_{report_message} {
+  report_message_{report_message},
+  delete_me_{delete_me} {
 }
 
 void WebSocketSession::run(http::request<http::string_body> req) {
@@ -45,6 +47,7 @@ void WebSocketSession::read_next() {
 void WebSocketSession::on_read(error_code ec, std::size_t) {
   if (ec) { 
     std::cerr << FuncName() << " failed, ec=" << ec << '\n';
+    delete_me_();
   } else {
     // state_->send(beast::buffers_to_string(buffer_.data()));
     const std::string message{beast::buffers_to_string(buffer_.data())};

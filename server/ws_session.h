@@ -12,7 +12,11 @@ class WebSocketSession {
  public:
   using report_message_t =
     std::function<void(WebSocketSession*, const std::string&)>;
-  WebSocketSession(tcp::socket socket, report_message_t report_message);
+  using delete_func_t = std::function<void(void)>;
+  WebSocketSession(
+    tcp::socket socket,
+    report_message_t report_message,
+    delete_func_t delete_me);
   void run(http::request<http::string_body> req);
   void send(const std::string &s);
  private:
@@ -24,7 +28,8 @@ class WebSocketSession {
   beast::flat_buffer buffer_;
   websocket::stream<tcp::socket> socket_;
   std::queue<std::string> queue_;
-  report_message_t report_message_;
+  report_message_t report_message_{nullptr};
+  delete_func_t delete_me_{nullptr};
 };
   
 #endif /* WS_SESSION_H */

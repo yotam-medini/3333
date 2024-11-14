@@ -40,7 +40,8 @@ void HttpSession::on_read(error_code ec, std::size_t) {
       ec.value(), ec.message());
   } else if (websocket::is_upgrade(req_)) {
     std::cerr << "new websocket_session\n";
-    wss_ = new WebSocketSession(std::move(socket_), report_message_);
+    wss_ = new WebSocketSession(std::move(socket_), report_message_,
+      [this]() { this->DeleteMe(); });
     wss_->run(std::move(req_));
   } else { // response
     respond();
@@ -75,4 +76,12 @@ void HttpSession::respond() {
     [this, sp](error_code ec, std::size_t bytes) {
       this->on_write(ec, bytes, sp->need_eof()); 
     });
+}
+
+void HttpSession::DeleteMe() {
+  std::cerr << fmt::format("{} this={}, wss_={}\n", FuncName(),
+    static_cast<void*>(this), static_cast<void*>(wss_));
+  delete wss_;
+  wss_ = nullptr;
+  unregister_(this);
 }

@@ -1,6 +1,5 @@
 // -*- c++ -*-
-#if !defined(HTTP_SESSION_H)
-#define HTTP_SESSION_H 1
+#pragma once
 
 #include "net.h"
 #include "beast.h"
@@ -21,6 +20,7 @@ class HttpSession {
   void on_read(error_code ec, std::size_t);
   void on_write(error_code ec, std::size_t, bool close);
   void respond();
+  void DeleteMe();
   tcp::socket socket_;
   beast::flat_buffer buffer_;
   http::request<http::string_body> req_;
@@ -29,5 +29,3 @@ class HttpSession {
   std::function<void(WebSocketSession*, const std::string&)> report_message_;
   WebSocketSession *wss_;
 };
-
-#endif /* HTTP_SESSION_H */
