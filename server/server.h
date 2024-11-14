@@ -19,8 +19,6 @@ class Server {
   Server(
     const std::string &host,
     const uint16_t port,
-    const std::string &sslcert,
-    const std::string &sslprivate,
     const size_t max_tables,
     const size_t max_players,
     const unsigned expire_seconds,

@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
-#include <boost/asio/ssl/context.hpp>
 #include <fmt/core.h>
 
 #include "net.h"
@@ -22,13 +21,11 @@
 #include "ws_session.h"
 #include "cs_consts.h"
 #include "net_utils.h"
-#include "ssl_ws.h"
 
 class WebSocketSession;
 using notify_ws_t = std::function<void(WebSocketSession*)>;
 using report_message_t =
   std::function<void(WebSocketSession*, const std::string&)>;
-using ssl_ctx = net::ssl::context;
 
 class NetServer {
  public:
@@ -36,17 +33,14 @@ class NetServer {
     Logger *pLogger,
     const std::string &host,
     uint16_t port,
-    ssl_ctx *ssl_context,
     notify_ws_t notify_ws_add,
     notify_ws_t notify_ws_delete,
     report_message_t report_message) :
     pLogger_{pLogger},
     host_{host},
     port_(port),
-    // ssl_context_{ssl_context},
     acceptor_{ioc_},
     socket_{ioc_},
-    // ssl_ws_{ioc_},
     notify_ws_add_{notify_ws_add},
     notify_ws_delete_{notify_ws_delete},
     report_message_{report_message} {
@@ -138,11 +132,9 @@ class NetServer {
   Logger *pLogger_;
   const std::string host_;
   const uint16_t port_;
-  ssl_ctx *ssl_context_;
   net::io_context ioc_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
-  // ssl_ws ssl_ws_;
   notify_ws_t notify_ws_add_;
   notify_ws_t notify_ws_delete_;
   report_message_t report_message_;
@@ -152,8 +144,6 @@ class NetServer {
 Server::Server(
   const std::string &host,
   uint16_t port,
-  const std::string &sslcert,
-  const std::string &sslprivate,
   const size_t max_tables,
   const size_t max_players,
   const unsigned expire_seconds,
@@ -168,21 +158,10 @@ Server::Server(
     pidfn_{pidfn},
     debug_flags_{debug_flags},
     net_server_{nullptr} {
-  std::unique_ptr<ssl_ctx> ssl_context;
-  if (!sslcert.empty()) {
-    ssl_context = std::make_unique<ssl_ctx>(ssl_ctx::tlsv12_server);
-    ssl_context->set_options(
-      ssl_ctx::default_workarounds |
-      ssl_ctx::no_sslv2 |
-      ssl_ctx::single_dh_use);
-      ssl_context->use_certificate_chain_file(sslcert);
-      ssl_context->use_private_key_file(sslprivate, ssl_ctx::pem);
-  }
   net_server_ = new NetServer{
     pLogger_.get(),
     host,
     port,
-    ssl_context.get(),
     [this](WebSocketSession *ws) -> void {
       this->ws_player_[ws] = nullptr;
     },

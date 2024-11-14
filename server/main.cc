@@ -18,14 +18,12 @@ void add_options(po::options_description &desc) {
     ("maxplayers", po::value<size_t>()->default_value(4), "Max Players")
     ("expire", po::value<unsigned>()->default_value(300),
       "Seconds of no action to expire")
-    ("sslcert", po::value<std::string>()->default_value(""),
-      "SSL certificate chain file name")
-    ("sslprivate", po::value<std::string>()->default_value(""),
-      "SSL private key file name")
     ("pidfn", po::value<std::string>()->default_value("/tmp/3333-server.pid"),
       "File to record PID")
     ("initdeck", po::value<std::string>()->default_value("-"),
       "debug: comma separated indices")
+    ("stoppable", po::bool_switch()->default_value(false),
+      "May stop bt existing STOP file")
     ("debug", po::value<std::string>()->default_value("0"), "Debug flags")
   ;
 }
@@ -47,22 +45,16 @@ int main(int argc, char **argv) {
     }
 
     const std::string debug_flags_raw = vm["debug"].as<std::string>();
-    const std::string sslcert = vm["sslcert"].as<std::string>();
-    const std::string sslprivate = vm["sslprivate"].as<std::string>();
     if (!ValidateUnsigned(debug_flags_raw)) {
       std::cerr << "Bad debug value=" << debug_flags_raw << '\n';
-      rc = 1;
-    } else if (sslcert.empty() != sslprivate.empty()) {
-      std::cerr << "sslcert & sslprivate must both be empty or not";
       rc = 1;
     } else {
       unsigned debug_flags = std::stoi(debug_flags_raw, nullptr, 0);
       std::cerr << "debug_flags=" << debug_flags << '\n';
+      std::cerr << "stoppable=" << vm["stoppable"].as<bool>() << '\n';
       Server server{
          vm["host"].as<std::string>(),
          vm["port"].as<uint16_t>(),
-         sslcert,
-         sslprivate,
          vm["maxtables"].as<size_t>(),
          vm["maxplayers"].as<size_t>(),
          vm["expire"].as<unsigned>(),
