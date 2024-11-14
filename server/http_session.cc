@@ -42,6 +42,7 @@ void HttpSession::on_read(error_code ec, std::size_t) {
     std::cerr << "new websocket_session\n";
     wss_ = new WebSocketSession(std::move(socket_), report_message_,
       [this]() { this->DeleteMe(); });
+    ws_register_(this, wss_);
     wss_->run(std::move(req_));
   } else { // response
     respond();
@@ -81,7 +82,5 @@ void HttpSession::respond() {
 void HttpSession::DeleteMe() {
   std::cerr << fmt::format("{} this={}, wss_={}\n", FuncName(),
     static_cast<void*>(this), static_cast<void*>(wss_));
-  delete wss_;
-  wss_ = nullptr;
   unregister_(this);
 }

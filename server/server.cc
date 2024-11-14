@@ -48,7 +48,7 @@ class NetServer {
     socket_{ioc_},
     // ssl_ws_{ioc_},
     notify_ws_add_{notify_ws_add},
-    notify_ws_delete_{notify_ws_delete_},
+    notify_ws_delete_{notify_ws_delete},
     report_message_{report_message} {
   }
   void run() {
@@ -208,7 +208,17 @@ void Server::WsDeleted(WebSocketSession *ws) {
     std::cerr << __func__ << '\n';
   }
   auto iter = ws_player_.find(ws);
-  ws_player_.erase(iter);
+  if (iter != ws_player_.end()) {
+    Player *player = iter->second;
+    if (player) {
+      Table *table = player->GetTable();
+      if (table) {
+        table->DeletePlayer(player);
+        UpdateTableGstate(table);
+      }
+    }
+    ws_player_.erase(iter);
+  }
 }
 
 Player *Server::WsGetPlayer(WebSocketSession *ws) {
