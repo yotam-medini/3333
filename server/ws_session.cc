@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <utility>
+#include <fmt/core.h>
 #include "beast.h"
 #include "utils.h"
 
@@ -30,7 +31,8 @@ void WebSocketSession::send(const std::string &s) {
 
 void WebSocketSession::on_accept(error_code ec) {
   if (ec) {
-    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
+    std::cerr << fmt::format("{} {} failed, ec={}\n",
+      YMDHMS(), FuncName() << ec);
   } else {
     read_next();
   }
@@ -46,7 +48,8 @@ void WebSocketSession::read_next() {
 
 void WebSocketSession::on_read(error_code ec, std::size_t) {
   if (ec) { 
-    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
+    std::cerr << fmt::format("{} {} failed, ec={}\n",
+      YMDHMS(), FuncName() << ec);
     delete_me_();
   } else {
     // state_->send(beast::buffers_to_string(buffer_.data()));
@@ -68,7 +71,8 @@ void WebSocketSession::write_next() {
 void WebSocketSession::on_write(error_code ec, std::size_t)
 {
   if (ec) {
-    std::cerr << FuncName() << " failed, ec=" << ec << '\n';
+    std::cerr << fmt::format("{} {} failed, ec={}\n",
+      YMDHMS(), FuncName() << ec);
   } else {
     queue_.pop();
     if (!queue_.empty()) {
