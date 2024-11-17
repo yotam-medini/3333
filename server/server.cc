@@ -52,7 +52,8 @@ class NetServer {
     tcp::endpoint endpoint;
     auto address = net::ip::make_address(host_, ec);
     if (ec) {
-      std::cerr << fn << " make_address failed, ec=" << ec << '\n';
+      std::cerr << fmt::format("{} {} make_address failed, ec={}\n",
+        YMDHMS(), fn, ec.value());
     } else {
       endpoint = tcp::endpoint{address, port_};
       const std::string  message  = fmt::format("endpoint={}:{}",
@@ -63,24 +64,28 @@ class NetServer {
     if (!ec) {
       acceptor_.open(endpoint.protocol(), ec);
       if (ec) {
-        std::cerr << fn << " acceptor.open failed, ec=" << ec << '\n';
+        std::cerr << fmt::format("{} {} make_address failed, ec={}\n",
+          YMDHMS(), fn, ec.value());
       } else {
         acceptor_.set_option(net::socket_base::reuse_address(true));
         if (ec) {
-          std::cerr << fn << " acceptor.set_option failed, ec=" << ec << '\n';
+          std::cerr << fmt::format("{} {} acceptor.set_option failed, ec={}\n",
+            YMDHMS(), fn, ec.value());
         }
       }
     }
     if (!ec) {
       acceptor_.bind(endpoint, ec);
       if (ec) {
-        std::cerr << fn << " acceptor.bind failed, ec=" << ec << '\n';
+        std::cerr << fmt::format("{} {} acceptor.bind failed, ec={}\n",
+          YMDHMS(), fn, ec.value());
       }
     }
     if (!ec) {
       acceptor_.listen(net::socket_base::max_listen_connections, ec);
       if (ec) {
-        std::cerr << fn << "acceptor.listen failed, ec=" << ec << '\n';
+        std::cerr << fmt::format("{} {} acceptor.listen failed, ec={}\n",
+          YMDHMS(), fn, ec.value());
       }
     }
     if (!ec) {
@@ -92,7 +97,7 @@ class NetServer {
  private:
   void accept_next() {
     const std::string msg = fmt::format("{} {}: accept_next",
-      FuncName(), YMDHMS());
+      YMDHMS(), FuncName());
     std::cerr << msg << '\n';
     pLogger_->log(msg);
     acceptor_.async_accept(
@@ -103,7 +108,8 @@ class NetServer {
   }
   void on_accept(error_code ec) {
     if (ec) {
-      std::cerr << "accept failedm ec=" << ec << '\n';
+      std::cerr << fmt::format("{} {} failed ec={}\n",
+        YMDHMS(), FuncName(), ec.value());
     } else {
       // Launch a new session for this connection
       pLogger_->log(fmt::format("accept connection from {}",
@@ -171,7 +177,7 @@ Server::Server(
     }
   };
 }
-    
+
 Server::~Server() {
   delete net_server_;
 }
@@ -184,7 +190,7 @@ void Server::run() {
 
 void Server::WsDeleted(WebSocketSession *ws) {
   if (debug_flags_ & 0x1) {
-    std::cerr << __func__ << '\n';
+    std::cerr << fmt::format("{} {}\n", YMDHMS(), FuncName());
   }
   auto iter = ws_player_.find(ws);
   if (iter != ws_player_.end()) {
@@ -211,9 +217,7 @@ void Server::WsReceivedMessage(
   const std::string &message) {
   std::vector<std::string> cmd = SSplit(message);
   if (debug_flags_ & 0x1) {
-    std::cerr << YMDHMS() << ' ' << FuncName() <<
-      " message=" << message << '\n';
-    std::cerr << fmt::format("{} {} message='{}', #(cmd)={}\n",
+    std::cerr << fmt::format("{} {} message={} #(cmd)={}\n",
       YMDHMS(), FuncName(), message, cmd.size());
   }
   if (!cmd.empty()) {
@@ -226,7 +230,8 @@ void Server::WsReceivedMessage(
       table->SetTimeLastAction(player->GetTAction());
     }
     if (!CheckCommandGStateOK(cmd, table)) {
-      std::cerr << "Unsynced Game State for command: " << cmd[0] << '\n';
+      std::cerr << fmt::format("{} Unsynced Game State for command: {}\n",
+        YMDHMS(), cmd[0]);
     } else if (cmd[0] == S3333_C2S_TBLS) {
       ws->send(ServerToClient(E3333_S2C_TBLS, 0, TablesToJson()));
     } else if (cmd[0] == S3333_C2S_NTBL) {
@@ -303,7 +308,7 @@ R"J({}
 {}
 )J",
     "{", op, error_code, result, "}");
-  std::cerr << "ServerToClient: ret=" << ret << '\n';
+  std::cerr << fmt::format("{} {} ret={}", YMDHMS(), FuncName(), ret);
   return ret;
 }
 

@@ -35,7 +35,6 @@ void HttpSession::on_read(error_code ec, std::size_t) {
   if (ec == http::error::end_of_stream) {
     socket_.shutdown(tcp::socket::shutdown_send, ec); // client closed
   } else if (ec) {
-    static const http::detail::http_error_category cat;
     std::cerr << fmt::format("{} failed, ec=({}) {}\n", FuncName(), 
       ec.value(), ec.message());
   } else if (websocket::is_upgrade(req_)) {
@@ -51,9 +50,10 @@ void HttpSession::on_read(error_code ec, std::size_t) {
 
 void HttpSession::on_write(error_code ec, std::size_t, bool close) {
   if (ec) {
-    std::cerr << FuncName() << " failed ec=" << ec << '\n';
+    std::cerr << fmt::format("{} {} failed, ec=({}) {}\n",
+      YMDHMS(), FuncName(), ec.value(), ec.message());
   } else if (close) {
-    std::cerr << "HttpSession:: close\n";
+    std::cerr << fmt::format("{} {} close\n", YMDHMS(), FuncName());
   } else {
     req_ = {};
     run();
