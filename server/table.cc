@@ -37,7 +37,8 @@ Table::Table(
   const std::string& player_name,
   const std::string &player_password,
   const std::string& password) :
-  password_(password),
+  name_{player_name},
+  password_{password},
   time_last_action_(GetTime()) {
   players_.push_back(make_unique<Player>(player_name, player_password));
   players_.front()->SetTable(this);
@@ -46,10 +47,6 @@ Table::Table(
 #include <iostream> // DELETE ME~!!!!!!!!!!!!!!
 Table::~Table() {
   std::cerr << __FILE__ << " Table::~Table()\n";
-}
-
-const std::string &Table::GetName() const {
-  return players_[0]->GetName();
 }
 
 void Table::Close() {

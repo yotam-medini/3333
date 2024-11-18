@@ -19,7 +19,7 @@ class Table {
     const std::string &password);
   ~Table();
   void Close();
-  const std::string &GetName() const;
+  const std::string &GetName() const { return name_; }
   const std::string &GetPassword() const { return password_; }
   const std::vector<std::unique_ptr<Player>> &GetPlayers() const {
     return players_;
@@ -49,8 +49,9 @@ class Table {
   void DealCards(size_t n);
   bool ActiveHasSet() const;
   static std::vector<uint8_t> initial_cards_deck_;
-  std::vector<std::unique_ptr<Player>> players_; // first is owner
+  const std::string name_; // == first player name
   const std::string password_;
+  std::vector<std::unique_ptr<Player>> players_; // first is owner
   bool game_active_{false};
   int sets_found_{0};
   std::vector<uint8_t> cards_deck_;

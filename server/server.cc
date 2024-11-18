@@ -200,6 +200,12 @@ void Server::WsDeleted(WebSocketSession *ws) {
       if (table) {
         table->DeletePlayer(player);
         UpdateTableGstate(table);
+        if (table->GetPlayers().empty()) {
+          const std::string table_name = table->GetName();
+          std::cerr << fmt::format("{} Table {} no players - deleting\n",
+            YMDHMS(), table_name);
+          name_table_.erase(table_name);
+        }
       }
     }
     ws_player_.erase(iter);
