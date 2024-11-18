@@ -266,8 +266,12 @@ void Server::WsReceivedMessage(
         UpdateTableGstate(table);
       }
     } else if (cmd[0] == S3333_C2S_GNEW) {
-      table->NewGame();
-      UpdateTableGstate(table);
+      if (table) {
+        table->NewGame();
+        UpdateTableGstate(table);
+      } else {
+        err = "Table not yet created";
+      }
     } else if (cmd[0] == S3333_C2S_ADD3) {
       // need to check time
       err = table->Add3();
