@@ -8,7 +8,9 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include "game.h"
+#include "icondata.h"
 #include "drawarea.h"
+#include "svglabel.h"
 #include "utils.h"
 
 Table::Table(QWidget *parent) :
@@ -34,13 +36,33 @@ Table::Table(QWidget *parent) :
   wrap->setLayout(hlayout_top);
   vlayout->addWidget(wrap);
 
+  
+  hlayout_stats->addWidget(new SvgLabel(pick_data, this));
+  status_picked_ = new QLabel("0 ", this);
+  hlayout_stats->addWidget(status_picked_);
+
+  hlayout_stats->addWidget(new SvgLabel(players_data, this));
+  status_players_ = new QLabel("0 ", this);
+  hlayout_stats->addWidget(status_players_);
+
+  hlayout_stats->addWidget(new SvgLabel(found_data, this));
+  status_found_ = new QLabel("0 ", this);
+  hlayout_stats->addWidget(status_found_);
+
+  hlayout_stats->addWidget(new SvgLabel(deck_data, this));
+  status_deck_ = new QLabel("0 ", this);
+  hlayout_stats->addWidget(status_deck_);
+
+  hlayout_stats->addWidget(new QLabel("  ")); // space
+
   picked_ = new QLabel("0 picked", this);
   hlayout_stats->addWidget(picked_);
+
   status_summary_ = new QLabel("# players, # found, # @deck ", this);
   status_summary_->setToolTip("Status Summary");
   hlayout_stats->addWidget(status_summary_);
 
-  setStyleSheet("QToolTip {color: #000; background-color: #fff;}");
+  setStyleSheet("QToolTip {color: #000; baueckground-color: #fff;}");
   const QString style_good{"QLabel {background-color: white; color: #0a0; }"};
   const QString style_bad{"QLabel {background-color: white; color: #a00; }"};
 
@@ -115,6 +137,9 @@ void Table::JoinTable(const QVariantMap &result_map) {
 void Table::SetGame(const Game& game) {
   game_ = &game;
   butt_add3_nomore_->setEnabled(game.active_);
+  LabelSetNumber(status_players_, game.players_.size());
+  LabelSetNumber(status_found_, game.sets_found_);
+  LabelSetNumber(status_deck_, game.deck_);
   status_summary_->setText(QString::fromStdString(fmt::format(
     "{} players, {} found, {} @deck",
     game.players_.size(), game.sets_found_, game.deck_)));
@@ -145,9 +170,14 @@ void Table::SetGame(const Game& game) {
 
 void Table::UpdateSelected() {
   qDebug() << "Table::UpdateSelected";
+  LabelSetNumber(status_picked_, selected_.size());
   std::string text = fmt::format("{} picked", selected_.size());
   picked_->setText(QString::fromStdString(text));
   if (selected_.size() == 3) {
     try3_func_(selected_);
   }
+}
+
+void Table::LabelSetNumber(QLabel *label, int n) {
+  label->setText(QString::fromStdString(fmt::format("{} ", n)));
 }

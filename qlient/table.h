@@ -28,12 +28,17 @@ class Table : public QWidget {
   const Game *GetGame() const { return game_; }
  private:
   void UpdateSelected();
+  void LabelSetNumber(QLabel *label, int n);
   std::string player_name_;
   QLabel *name_at_name_{nullptr};
   QPushButton *butt_new_game_{nullptr};
   QPushButton *butt_add3_nomore_{nullptr};
-  QLabel *picked_{nullptr};
-  QLabel *status_summary_{nullptr};
+  QLabel *picked_{nullptr}; // deprecated
+  QLabel *status_picked_{nullptr};
+  QLabel *status_players_{nullptr};
+  QLabel *status_found_{nullptr};
+  QLabel *status_deck_{nullptr};
+  QLabel *status_summary_{nullptr}; // deprecated
   // Player scores
   QLabel *set_calls_good_{0};
   QLabel *set_calls_bad_{0};
