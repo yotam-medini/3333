@@ -53,14 +53,7 @@ Table::Table(QWidget *parent) :
   status_deck_ = new QLabel("0 ", this);
   hlayout_stats->addWidget(status_deck_);
 
-  hlayout_stats->addWidget(new QLabel("  ")); // space
-
-  picked_ = new QLabel("0 picked", this);
-  hlayout_stats->addWidget(picked_);
-
-  status_summary_ = new QLabel("# players, # found, # @deck ", this);
-  status_summary_->setToolTip("Status Summary");
-  hlayout_stats->addWidget(status_summary_);
+  hlayout_stats->addWidget(new QWidget(this)); // space
 
   setStyleSheet("QToolTip {color: #000; baueckground-color: #fff;}");
   const QString style_good{"QLabel {background-color: white; color: #0a0; }"};
@@ -93,7 +86,8 @@ Table::Table(QWidget *parent) :
   no_more_bad_->setToolTip("Bad No more calls");
   hlayout_stats->addWidget(no_more_bad_);
 
-  score_ = new QLabel("Score: <b>0</b>", this);
+  hlayout_stats->addWidget(new SvgLabel(score_data, this));
+  score_ = new QLabel("<b>0</b>", this);
   score_->setToolTip("Total: good-bad");
   hlayout_stats->addWidget(score_);
 
@@ -140,9 +134,6 @@ void Table::SetGame(const Game& game) {
   LabelSetNumber(status_players_, game.players_.size());
   LabelSetNumber(status_found_, game.sets_found_);
   LabelSetNumber(status_deck_, game.deck_);
-  status_summary_->setText(QString::fromStdString(fmt::format(
-    "{} players, {} found, {} @deck",
-    game.players_.size(), game.sets_found_, game.deck_)));
   butt_add3_nomore_->setText(game.deck_ != 0 ? "Add 3" : "No More");
   auto iter = std::find_if(game.players_.begin(), game.players_.end(),
     [this](const Player& p) -> bool {
@@ -171,8 +162,6 @@ void Table::SetGame(const Game& game) {
 void Table::UpdateSelected() {
   qDebug() << "Table::UpdateSelected";
   LabelSetNumber(status_picked_, selected_.size());
-  std::string text = fmt::format("{} picked", selected_.size());
-  picked_->setText(QString::fromStdString(text));
   if (selected_.size() == 3) {
     try3_func_(selected_);
   }
