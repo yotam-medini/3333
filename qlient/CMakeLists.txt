@@ -8,6 +8,7 @@ find_package(Qt6
     REQUIRED COMPONENTS
       Core
       Gui
+      Svg
       Widgets
       WebSockets
 )
@@ -42,12 +43,15 @@ qt_add_executable(qclient
     golden.cpp golden.h
     drawarea.cpp drawarea.h
     utils.cpp utils.h
+    svglabel.cpp svglabel.h
+    icondata.cpp icondata.h
     main.cpp
 )
 
 target_link_libraries(qclient PUBLIC
     Qt::Core
     Qt::Gui
+    Qt::Svg
     Qt::Widgets
     Qt::WebSockets
     fmt::fmt-header-only

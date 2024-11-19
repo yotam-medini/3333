@@ -14,23 +14,29 @@
 Table::Table(QWidget *parent) :
     QWidget(parent) {
   setStyleSheet("background-color:#392;");
+  QWidget *wrap;
   QVBoxLayout *vlayout = new QVBoxLayout();
-  QHBoxLayout *hlayout = new QHBoxLayout();
+  QHBoxLayout *hlayout_top = new QHBoxLayout();
+  QHBoxLayout *hlayout_stats = new QHBoxLayout();
   name_at_name_ = new QLabel("<b>?@?</b>", this);
-  hlayout->addWidget(name_at_name_);
+  hlayout_top->addWidget(name_at_name_);
   butt_new_game_ = new QPushButton("New Game", this);
   connect(butt_new_game_, &QPushButton::clicked, [this]() {
     this->new_game_func_(); });
-  hlayout->addWidget(butt_new_game_);
+  hlayout_top->addWidget(butt_new_game_);
   butt_add3_nomore_ = new QPushButton("Add 3", this);
-  hlayout->addWidget(butt_add3_nomore_);
+  hlayout_top->addWidget(butt_add3_nomore_);
   connect(butt_add3_nomore_, &QPushButton::clicked, [this]() {
     this->add3_nomore_func_(); });
+  wrap = new QWidget(this);
+  wrap->setLayout(hlayout_top);
+  vlayout->addWidget(wrap);
+
   picked_ = new QLabel("0 picked", this);
-  hlayout->addWidget(picked_);
+  hlayout_stats->addWidget(picked_);
   status_summary_ = new QLabel("# players, # found, # @deck ", this);
   status_summary_->setToolTip("Status Summary");
-  hlayout->addWidget(status_summary_);
+  hlayout_stats->addWidget(status_summary_);
 
   setStyleSheet("QToolTip {color: #000; background-color: #fff;}");
   const QString style_good{"QLabel {background-color: white; color: #0a0; }"};
@@ -39,35 +45,38 @@ Table::Table(QWidget *parent) :
   set_calls_good_ = new QLabel("0", this);
   set_calls_good_->setStyleSheet(style_good);
   set_calls_good_->setToolTip("Good Set calls");
-  hlayout->addWidget(set_calls_good_);
+  hlayout_stats->addWidget(set_calls_good_);
   set_calls_bad_ = new QLabel("0", this);
   set_calls_bad_->setStyleSheet(style_bad);
   set_calls_bad_->setToolTip("Bad Set calls");
-  hlayout->addWidget(set_calls_bad_);
+  hlayout_stats->addWidget(set_calls_bad_);
 
   add3_good_ = new QLabel("0", this);
   add3_good_->setStyleSheet(style_good);
   add3_good_->setToolTip("Good Add3 calls");
-  hlayout->addWidget(add3_good_);
+  hlayout_stats->addWidget(add3_good_);
   add3_bad_ = new QLabel("0", this);
   add3_bad_->setStyleSheet(style_bad);
   add3_bad_->setToolTip("Bad Add3 calls");
-  hlayout->addWidget(add3_bad_);
+  hlayout_stats->addWidget(add3_bad_);
 
   no_more_good_ = new QLabel("0", this);
   no_more_good_->setStyleSheet(style_good);
   no_more_good_->setToolTip("Good No more calls");
-  hlayout->addWidget(no_more_good_);
+  hlayout_stats->addWidget(no_more_good_);
   no_more_bad_ = new QLabel("0", this);
   no_more_bad_->setStyleSheet(style_bad);
   no_more_bad_->setToolTip("Bad No more calls");
-  hlayout->addWidget(no_more_bad_);
+  hlayout_stats->addWidget(no_more_bad_);
 
   score_ = new QLabel("Score: <b>0</b>", this);
   score_->setToolTip("Total: good-bad");
-  hlayout->addWidget(score_);
+  hlayout_stats->addWidget(score_);
 
-  vlayout->addLayout(hlayout);
+  wrap = new QWidget(this);
+  wrap->setLayout(hlayout_stats);
+  vlayout->addWidget(wrap);
+
   draw_area_ = new DrawArea(
     this, 
     [this]() { this->UpdateSelected(); },

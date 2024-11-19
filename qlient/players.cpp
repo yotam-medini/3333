@@ -6,7 +6,9 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include "game.h"
+#include "icondata.h"
 #include "player.h"
+#include "svglabel.h"
 #include "utils.h"
 
 Players::Players(QWidget *parent) : QWidget(parent) {
@@ -94,16 +96,21 @@ void Players::SetGridTitleRow() {
   grid_->addWidget(new_bold_label("Score"),   0, 3, 2, 1);
 
   grid_->addWidget(new_bold_label("Sets"),    0, 4, 1, 2);
-  grid_->addWidget(new_bold_label("Good"),    1, 4, 1, 1);
-  grid_->addWidget(new_bold_label("Wrong"),   1, 5, 1, 1);
+  // grid_->addWidget(new_bold_label("Good"),    1, 4, 1, 1);
+  grid_->addWidget(new SvgLabel(smile_data, this), 1, 4, // 1, 1,
+    Qt::AlignCenter);
+  // grid_->setRowStretch(1, 1);
+  // grid_->setColumnStretch(4, 1);
+  // grid_->addWidget(new_bold_label("Wrong"),   1, 5, 1, 1);
+  grid_->addWidget(new SvgLabel(frown_data, this), 1, 5, Qt::AlignCenter);
 
   grid_->addWidget(new_bold_label("Add3"),    0, 6, 1, 2);
-  grid_->addWidget(new_bold_label("Good"),    1, 6, 1, 1);
-  grid_->addWidget(new_bold_label("Wrong"),   1, 7, 1, 1);
+  grid_->addWidget(new SvgLabel(smile_data, this), 1, 6, Qt::AlignCenter);
+  grid_->addWidget(new SvgLabel(frown_data, this), 1, 7, Qt::AlignCenter);
 
   grid_->addWidget(new_bold_label("No More"), 0, 8, 1, 2);
-  grid_->addWidget(new_bold_label("Good"),    1, 8, 1, 1);
-  grid_->addWidget(new_bold_label("Wrong"),   1, 9, 1, 1);
+  grid_->addWidget(new SvgLabel(smile_data, this), 1, 8, Qt::AlignCenter);
+  grid_->addWidget(new SvgLabel(frown_data, this), 1, 9, Qt::AlignCenter);
 }
 
 void Players::ClearGridData() {
