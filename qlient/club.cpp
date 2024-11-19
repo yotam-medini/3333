@@ -93,6 +93,21 @@ void Club::FillTablesTable() {
   TitleSort title_action{"Action", this};
   tables_table_->addWidget(title_action.container_, 0, 3);
 
+  bool same_create_ymd = true;
+  bool same_action_ymd = true;
+  if (!tables_info_.empty()) {
+    const std::string ymd_created{ymd(tables_info_[0].tcreated_)};
+    const std::string ymd_action{ymd(tables_info_[0].taction_)};
+    for (size_t i = 1; (i < tables_info_.size()) &&
+        (same_create_ymd || same_action_ymd); ++i) {
+      const TableInfo &ti = tables_info_[i];
+      same_create_ymd = same_create_ymd && (ymd_created == ymd(ti.tcreated_));
+      same_action_ymd = same_action_ymd && (ymd_action == ymd(ti.taction_));
+    }
+  }
+  using time_func_t = std::string(*)(unsigned);
+  time_func_t created_tfunc = (same_create_ymd ? &hms : &ymdhms);
+  time_func_t action_tfunc = (same_action_ymd ? &hms : &ymdhms);
   QLabel *label;
   for (size_t ti = 0; ti < tables_info_.size(); ++ti) {
     const auto &table_info = tables_info_[ti];
@@ -106,9 +121,9 @@ void Club::FillTablesTable() {
       tables_table_->addWidget(name_join, ti + 1, 0);
       label = NewLabel(fmt::format("{}", table_info.num_players_), this);
       tables_table_->addWidget(label, ti + 1, 1);
-      label = NewLabel(ymdhms(table_info.tcreated_), this);
+      label = NewLabel((*created_tfunc)(table_info.tcreated_), this);
       tables_table_->addWidget(label, ti + 1, 2);
-      label = NewLabel(ymdhms(table_info.taction_), this);
+      label = NewLabel((*action_tfunc)(table_info.taction_), this);
       tables_table_->addWidget(label, ti + 1, 3);
   }
 }

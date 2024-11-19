@@ -11,6 +11,24 @@ std::string dq(const std::string& s) {
   return ret;
 }
 
+std::string ymd(unsigned epcoh) {
+  time_t t = epcoh;
+  std::tm tm;
+  gmtime_r(&t, &tm);
+  std::string s = fmt::format("{:04d}/{:02d}/{:02d}",
+    tm.tm_year + 1900,(tm.tm_mon), tm.tm_mday);
+  return s;
+}
+
+std::string hms(unsigned epcoh) {
+  time_t t = epcoh;
+  std::tm tm;
+  gmtime_r(&t, &tm);
+  std::string s = fmt::format("{:02d}:{:02d}:{:02d}",
+    tm.tm_hour, tm.tm_min, tm.tm_sec);
+  return s;
+}
+
 std::string ymdhms(unsigned epcoh) {
   time_t t = epcoh;
   std::tm tm;

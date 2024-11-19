@@ -52,6 +52,23 @@ void Players::NewTable(const QVariantMap &result_map) {
 void Players::UpdatePlayers(const Game& game) {
   ClearGridData();
   int row = 2;
+  const std::vector<Player> &players = game.players_;
+  bool same_create_ymd = true;
+  bool same_action_ymd = true;
+  if (!players.empty()) {
+    const std::string ymd_created{ymd(players[1].tcreated_)};
+    const std::string ymd_action{ymd(players[1].taction_)};
+    for (size_t i = 1;
+        (i < players.size()) && (same_create_ymd || same_action_ymd); ++i) {
+      same_create_ymd =
+        same_create_ymd && (ymd_created == ymd(players[i].tcreated_));
+      same_action_ymd =
+        same_action_ymd && (ymd_action == ymd(players[i].taction_));
+    }
+  }
+  using time_func_t = std::string(*)(unsigned);
+  time_func_t created_tfunc = (same_create_ymd ? &hms : &ymdhms);
+  time_func_t action_tfunc = (same_action_ymd ? &hms : &ymdhms);
   for (const Player &player: game.players_) {
     std::string name = player.name_;
     if (name == table_name_) {
@@ -60,11 +77,11 @@ void Players::UpdatePlayers(const Game& game) {
     grid_->addWidget(new QLabel(QString::fromStdString(name), this),
                      row, 0);
     grid_->addWidget(
-      new QLabel(QString::fromStdString(ymdhms(player.tcreated_)), this),
-      row, 1);
+      new QLabel(QString::fromStdString(
+        (*created_tfunc)(player.tcreated_)), this), row, 1);
     grid_->addWidget(
-      new QLabel(QString::fromStdString(ymdhms(player.taction_)), this),
-      row, 2);
+      new QLabel(QString::fromStdString(
+        (*action_tfunc)(player.taction_)), this), row, 2);
     grid_->addWidget(new QLabel(QString::number(player.score()), this),
       row, 3, Qt::AlignRight);
     grid_->addWidget(new QLabel(QString::number(player.set_calls_good_), this),
