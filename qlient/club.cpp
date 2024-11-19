@@ -192,14 +192,20 @@ Club::TitleSort::TitleSort(const std::string &text, QWidget *parent) {
   container_ = new QWidget(parent);
   container_->setStyleSheet("background-color: #eee;");
   QCommonStyle style;
+  auto vlayout = new QVBoxLayout();
+  const std::string btextb = fmt::format("<b>{}</b>", text);
+  vlayout->addWidget(new QLabel(QString::fromStdString(btextb), parent), 1);
+
+  QWidget *buttons_box = new QWidget(parent);
+  auto hlayout = new QHBoxLayout();
   button_ascend_ = new QPushButton(parent);
   button_ascend_->setIcon(style.standardIcon(QStyle::SP_ArrowUp));
   button_descend_ = new QPushButton(parent);
   button_descend_->setIcon(style.standardIcon(QStyle::SP_ArrowDown));
-  auto layout = new QHBoxLayout();
-  const std::string btextb = fmt::format("<b>{}</b>", text);
-  layout->addWidget(new QLabel(QString::fromStdString(btextb), parent), 1);
-  layout->addWidget(button_ascend_);
-  layout->addWidget(button_descend_);
-  container_->setLayout(layout);
+  hlayout->addWidget(button_ascend_);
+  hlayout->addWidget(button_descend_);
+  buttons_box->setLayout(hlayout);
+  vlayout->addWidget(buttons_box);
+
+  container_->setLayout(vlayout);
 }
