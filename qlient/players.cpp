@@ -76,9 +76,9 @@ void Players::UpdatePlayers(const Game& game) {
     grid_->addWidget(new QLabel(QString::number(player.add3_bad_), this),
       row, 7, Qt::AlignRight);
     grid_->addWidget(new QLabel(QString::number(player.no_more_good_), this),
-      row, 6, Qt::AlignRight);
+      row, 8, Qt::AlignRight);
     grid_->addWidget(new QLabel(QString::number(player.no_more_bad_), this),
-      row, 7, Qt::AlignRight);
+      row, 9, Qt::AlignRight);
     ++row;
   }
 }
