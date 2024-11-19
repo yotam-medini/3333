@@ -23,11 +23,13 @@ Table::Table(QWidget *parent) :
   butt_new_game_ = new QPushButton("New Game", this);
   connect(butt_new_game_, &QPushButton::clicked, [this]() {
     this->new_game_func_(); });
+  butt_new_game_->setEnabled(false);
   hlayout_top->addWidget(butt_new_game_);
   butt_add3_nomore_ = new QPushButton("Add 3", this);
   hlayout_top->addWidget(butt_add3_nomore_);
   connect(butt_add3_nomore_, &QPushButton::clicked, [this]() {
     this->add3_nomore_func_(); });
+  butt_add3_nomore_->setEnabled(false);
   wrap = new QWidget(this);
   wrap->setLayout(hlayout_top);
   vlayout->addWidget(wrap);
@@ -112,6 +114,7 @@ void Table::JoinTable(const QVariantMap &result_map) {
 
 void Table::SetGame(const Game& game) {
   game_ = &game;
+  butt_add3_nomore_->setEnabled(game.active_);
   status_summary_->setText(QString::fromStdString(fmt::format(
     "{} players, {} found, {} @deck",
     game.players_.size(), game.sets_found_, game.deck_)));
