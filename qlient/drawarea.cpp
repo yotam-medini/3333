@@ -231,13 +231,15 @@ void DrawArea::DrawWaitForOwner(QPainter &painter) {
   int w = width();
   int h = height();
   QFont font = painter.font();
-  font.setPixelSize(h/12);
+  font.setPixelSize(h/16);
   painter.setFont(font);
   painter.setPen(Qt::black);
-  const QRect rect0 = QRect(w/8, h/8, (3*w)/4, (3*h)/4);
+  const QRect rect0 = QRect(w/16, h/16, (3*w)/4, (3*h)/4);
   painter.drawText(rect0, 0, tr("Wait for owner"));
-  const QRect rect1 = QRect(w/8, (3*h)/8, (3*w)/4, (3*h)/4);
-  painter.drawText(rect1, 0, tr("to start a new game"));
+  const QRect rect1 = QRect(w/16, (5*h)/16, (3*w)/4, (3*h)/4);
+  painter.drawText(rect1, 0, tr("to start"));
+  const QRect rect2 = QRect(w/16, (7*h)/16, (3*w)/4, (3*h)/4);
+  painter.drawText(rect2, 0, tr("a new game"));
 }
 
 void DrawArea::DrawGameOver() {
@@ -246,13 +248,15 @@ void DrawArea::DrawGameOver() {
   QPainter painter(this);
   QFont font = painter.font();
   painter.setPen(Qt::black);
-  font.setPixelSize(h/8);
-  painter.setFont(font);
-  const QRect rect0 = QRect(w/8, h/8, (3*w)/4, (3*h)/4);
-  painter.drawText(rect0, 0, tr("Game Over!"));
   font.setPixelSize(h/12);
-  const QRect rect1 = QRect(w/8, (3*h)/8, (3*w)/4, (3*h)/4);
+  painter.setFont(font);
+  const QRect rect0 = QRect(w/16, h/16, (3*w)/4, (3*h)/4);
+  painter.drawText(rect0, 0, tr("Game Over!"));
+  font.setPixelSize(h/16);
+  const QRect rect1 = QRect(w/16, (5*h)/16, (3*w)/4, (3*h)/4);
   painter.drawText(rect1, 0, tr("Wait for owner"));
-  const QRect rect2 = QRect(w/8, (5*h)/8, (3*w)/4, (3*h)/4);
-  painter.drawText(rect2, 0, tr("to start a new game"));
+  const QRect rect2 = QRect(w/8, (7*h)/16, (3*w)/4, (3*h)/4);
+  painter.drawText(rect2, 0, tr("to start"));
+  const QRect rect3 = QRect(w/8, (9*h)/16, (3*w)/4, (3*h)/4);
+  painter.drawText(rect3, 0, tr("a new game"));
 }
