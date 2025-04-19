@@ -7,7 +7,6 @@
 #
 
 import os
-import string
 import sys
 import time
 
@@ -29,17 +28,26 @@ def safe_open(fn):
     return f
 
 
+def backup_if_big(fn: str, sfx: str, max_size: int):
+    try:
+        sz = os.stat(fn).st_size
+        if sz > max_size:
+            fn_back = f"{fn[:-len(sfx)]}-1.{sfx}"
+            os.system("mv -f {fn} {fn_back}")
+    except:
+        pass
+
 def dbglog(msg):
-    flog = open("/tmp/3333-wd.log", "a")
-    flog.write("%s: %s\n" % (strnow(), msg))
+    fn = "/tmp/3333-watchdog.log"
+    backup_if_big(fn, "log", 0x10000)
+    flog = open(fn, "a")
+    flog.write(f"{strnow()}: {msg}\n")
     flog.close()
 
 
 home = os.getenv("HOME")
-d3333 = "%s/3333" % home
-xserver = "%s/bin/3333-server.py" % d3333
-pidfn = "%s/var/3333.pid" % d3333
-
+xserver = f"{home}/bin/3333-server"
+pidfn = "/tmp/3333-server.pid"
 
 f = safe_open(pidfn)
 pid = None
@@ -51,33 +59,22 @@ if f is not None:
 
 alive = False
 if pid is not None:
-    clfn = "/proc/%d/cmdline" % pid
+    clfn = f"/proc/{pid}/cmdline"
     # dbglog("clfn='%s'" % clfn)
     f = safe_open(clfn)
     if f is not None:
         progname = ""
         cmdline = f.read()
-        # dbglog("cmdline=%s, len=%d" % (cmdline, len(cmdline)))
-        ss = string.split(cmdline, '\0')
-        if len(ss) > 2:
-            progname = ss[1]
-        alive = progname == xserver
-        dbglog("progname=%s, alive=%d" % (progname, alive))
+        alive = cmdline.startswith(xserver)
+        dbglog(f"alive={alive}")
         f.close()
 
 rc = 0
 if not alive:
-    dbglog("pyver: %s" % sys.version)
-    precmd = "nohup nice -n 18"
-    localpy = "/usr/local/bin/python"
-    try:
-        os.stat(localpy)
-        precmd += (" %s" % localpy)
-    except:
-        dbglog("stat(%s) failed, will use default python" % localpy)
-    # ${HOME}/3333/bin/3333-server.py -portfn ${HOME}/3333/var/3333.port 
-    cmd = "%s %s/bin/3333-server.py -portfn %s/var/3333.port -pidfn %s &" % (
-        precmd, d3333, d3333, pidfn)
-    dbglog("%s" % cmd)
+    nohup_out = "/tmp/3333-nohup.out"
+    backup_if_big(nohup_out, "out", 0x100000)
+    cmd = f"nohup nice -n 18 {xserver} > {nohup_out} &"
+    dbglog(cmd)
     rc = os.system(cmd)
+    dbglog(f"rc={rc}")
 sys.exit(rc)
